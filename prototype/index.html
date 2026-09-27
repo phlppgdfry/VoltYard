@@ -1,0 +1,611 @@
+<title>VoltYard Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#EDF0EE; --surface:#FFFFFF; --surface-2:#F6F8F7; --ink:#172225; --muted:#5A6A6C; --line:#D5DCDA;
+  --accent:#13627A; --accent-ink:#FFFFFF; --accent-soft:#DCEBEF; --marking:#E3B21B; --frame:#1D2A2D;
+  --krit:#B8322A; --hoog:#CC6317; --middel:#9C7C06; --ok:#2B7D55;
+  --krit-soft:#F7E1DF; --hoog-soft:#FBE8D8; --middel-soft:#F5EDCB; --ok-soft:#DCEFE4;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0E1618; --surface:#162124; --surface-2:#1B282C; --ink:#E1EAE8; --muted:#8FA1A3; --line:#28383C;
+    --accent:#4FA6C2; --accent-ink:#0B1416; --accent-soft:#18343D; --marking:#E4C04B; --frame:#05090A;
+    --krit:#F0776C; --hoog:#F29A55; --middel:#D8BE4E; --ok:#5FC08E;
+    --krit-soft:#3A1E1C; --hoog-soft:#3A2717; --middel-soft:#343015; --ok-soft:#173026;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0E1618; --surface:#162124; --surface-2:#1B282C; --ink:#E1EAE8; --muted:#8FA1A3; --line:#28383C;
+  --accent:#4FA6C2; --accent-ink:#0B1416; --accent-soft:#18343D; --marking:#E4C04B; --frame:#05090A;
+  --krit:#F0776C; --hoog:#F29A55; --middel:#D8BE4E; --ok:#5FC08E;
+  --krit-soft:#3A1E1C; --hoog-soft:#3A2717; --middel-soft:#343015; --ok-soft:#173026;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font:14px/1.5 var(--body);margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible,.nav button:focus-visible,.task:focus-visible,.step:focus-visible,.seg button:focus-visible,.link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-size:.92em;letter-spacing:.02em}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+
+/* shell */
+.shell{display:grid;grid-template-columns:232px 1fr;min-height:100%}
+.rail{background:var(--surface);border-right:1px solid var(--line);padding:18px 14px;display:flex;flex-direction:column;gap:18px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px}
+.brand-mark{width:30px;height:30px;border-radius:6px;background:var(--accent);display:grid;place-items:center}
+.brand-name{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:.02em;line-height:1}
+.brand-sub{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{all:unset;cursor:pointer;display:flex;flex-direction:column;padding:8px 10px 8px 12px;border-radius:6px;border-left:3px solid transparent}
+.nav button:hover{background:var(--surface-2)}
+.nav button[aria-current="page"]{background:var(--accent-soft);border-left-color:var(--marking)}
+.nav .l1{font-weight:600}
+.nav .l2{font-size:12px;color:var(--muted)}
+.rail-foot{margin-top:auto;font-size:12px;color:var(--muted);padding:0 6px;display:flex;flex-direction:column;gap:6px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:var(--middel-soft);color:var(--middel);width:max-content}
+main{min-width:0;padding-inline:28px;padding-block:22px 48px;display:flex;flex-direction:column;gap:20px}
+.pagehead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+h1{font-family:var(--display);font-weight:700;font-size:34px;line-height:1.05;margin:0;letter-spacing:.01em;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:21px;margin:0;letter-spacing:.02em}
+h3{font-size:14px;margin:0}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* blocks */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:16px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.kpi{background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.kpi .v{font-family:var(--display);font-weight:600;font-size:32px;line-height:1}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .s{font-size:12px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:600;font-size:13px;white-space:nowrap}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{border-color:var(--krit);color:var(--krit)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.link{all:unset;cursor:pointer;color:var(--accent);font-weight:600}
+.link:hover{text-decoration:underline}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-Kritiek{background:var(--krit-soft);color:var(--krit)} .p-Hoog{background:var(--hoog-soft);color:var(--hoog)}
+.p-Middel{background:var(--middel-soft);color:var(--middel)} .p-ok{background:var(--ok-soft);color:var(--ok)}
+.p-neutral{background:var(--surface-2);color:var(--muted)} .p-info{background:var(--accent-soft);color:var(--accent)}
+.code{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* tables */
+.tablewrap{overflow-x:auto;margin-inline:-16px;padding-inline:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--surface-2)}
+td.sev{padding:0;width:4px} td.sev span{display:block;width:4px;min-height:40px;height:100%}
+.sev-Kritiek{background:var(--krit)} .sev-Hoog{background:var(--hoog)} .sev-Middel{background:var(--middel)}
+.r{text-align:right}
+
+/* zones */
+.zones{display:flex;flex-direction:column;gap:10px}
+.zone{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;font-size:13px}
+.zone .zc{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.03em}
+.bar{height:10px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:5px}
+.bar i.over{background:var(--krit)}
+.bar b{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);opacity:.55}
+
+/* chargers */
+.chargers{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+.ch{border:1px solid var(--line);border-radius:6px;padding:6px 4px;text-align:center;font-size:11px;background:var(--surface-2)}
+.ch b{display:block;font-family:var(--display);font-size:16px;font-weight:600}
+.ch.bezet{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.ch.defect{background:var(--krit-soft);border-color:var(--krit);color:var(--krit)}
+
+/* filters */
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.input,select.input{padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);min-width:0}
+.input.grow{flex:1 1 220px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:600}
+
+/* detail */
+.dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.dl div{background:var(--surface);padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.dl dt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.dl dd{margin:0;font-weight:600}
+.big-soc{font-family:var(--display);font-size:30px;font-weight:600;line-height:1}
+.chartwrap{overflow-x:auto}
+.chartwrap svg{display:block;width:100%;min-width:520px;height:auto}
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.timeline li{display:grid;grid-template-columns:86px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.timeline li:last-child{border-bottom:0}
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{display:grid;grid-template-columns:4px 1fr;gap:12px;background:var(--surface-2);border-radius:6px;overflow:hidden}
+.alert > span{display:block}
+.alert > div{padding:8px 10px 8px 0;display:flex;flex-direction:column;gap:2px}
+.alert .act{font-size:12px;color:var(--muted)}
+
+/* phone */
+.phone-stage{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:28px;align-items:start}
+.phone{border:10px solid var(--frame);border-radius:38px;background:var(--surface);overflow:hidden;min-height:720px;display:flex;flex-direction:column;box-shadow:0 20px 50px -24px rgba(10,30,35,.45)}
+.phone-top{background:var(--accent);color:var(--accent-ink);padding:26px 18px 14px;display:flex;flex-direction:column;gap:2px}
+.phone-top .t{font-family:var(--display);font-weight:600;font-size:22px}
+.phone-top .s{font-size:12px;opacity:.85}
+.phone-body{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1}
+.task{all:unset;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.task:hover{border-color:var(--accent)}
+.bigbtn{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px}
+.bigbtn.ghost{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+.bigbtn:focus-visible{outline:3px solid var(--marking)}
+.socdial{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.socdial .n{font-family:var(--display);font-weight:700;font-size:64px;line-height:1}
+.step{all:unset;cursor:pointer;width:52px;height:52px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;font-size:24px;font-weight:700;background:var(--surface-2)}
+input[type=range]{width:100%;accent-color:var(--accent);height:32px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{all:unset;cursor:pointer;text-align:center;padding:12px 0;border-radius:10px;border:1px solid var(--line);font-weight:600;background:var(--surface-2)}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.toggle{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.toggle input{width:22px;height:22px;accent-color:var(--krit)}
+.notice{padding:10px 12px;border-radius:8px;background:var(--hoog-soft);color:var(--ink);font-size:13px;display:flex;flex-direction:column;gap:8px}
+.explain{display:flex;flex-direction:column;gap:12px;max-width:62ch}
+.explain ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.vinbox{font-family:var(--mono);font-size:17px;letter-spacing:.06em;padding:10px 12px;border-radius:8px;background:var(--surface-2);border:1px dashed var(--line);word-break:break-all}
+.err{color:var(--krit);font-size:12px;font-weight:600}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(8,16,18,.55);display:grid;place-items:center;padding:16px;z-index:50}
+.sheet{background:var(--surface);border-radius:10px;max-width:760px;width:100%;max-height:88vh;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:14px}
+.doc-head{display:flex;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 16px;border-radius:8px;font-weight:600;font-size:13px;z-index:60;max-width:calc(100% - 32px);box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.editor{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.cmp{display:flex;gap:18px;flex-wrap:wrap;align-items:baseline}
+.cmp .n{font-family:var(--display);font-size:28px;font-weight:600}
+
+@media (max-width:1100px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} .grid-2,.phone-stage{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);height:auto;flex-direction:row;align-items:center;padding:10px 16px;border-right:0;border-bottom:1px solid var(--line);z-index:20;gap:12px}
+  .brand-sub,.rail-foot{display:none}
+  .nav{flex-direction:row;overflow-x:auto;gap:4px}
+  .nav button{padding:6px 10px;border-left:0;border-bottom:3px solid transparent;border-radius:6px 6px 0 0}
+  .nav button[aria-current="page"]{border-bottom-color:var(--marking)}
+  .nav .l2{display:none}
+  main{padding-inline:16px}
+}
+@media (max-width:520px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} .phone{border:0;border-radius:12px;min-height:0} h1{font-size:28px} }
+@media (prefers-reduced-motion:no-preference){ .toast{animation:up .2s ease-out} @keyframes up{from{transform:translate(-50%,8px);opacity:0}} }
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" fill="var(--marking)"/></svg>
+      </div>
+      <div><div class="brand-name">VoltYard</div><div class="brand-sub">Demo Terminal Zeebrugge</div></div>
+    </div>
+    <nav class="nav" id="nav" aria-label="Hoofdnavigatie"></nav>
+    <div class="rail-foot">
+      <span class="tag">Prototype</span>
+      <span>Fictieve merken en data. Geen echte koppelingen: acties werken alleen in deze sessie.</span>
+    </div>
+  </aside>
+  <main id="app" tabindex="-1"></main>
+</div>
+<div id="overlay"></div>
+
+<script>
+const D = {"referentiedatum":"2026-09-28","profielen":[{"id":"TERMINAL-DEFAULT","fabrikantCode":null,"naam":"Terminal – veilige standaard","modelPatroon":null,"aandrijving":"BEV","minOpslagSoc":35,"doelOpslagSoc":50,"maxLaadSoc":60,"kritiekSoc":20,"controleIntervalDagen":7,"twaalfVoltIntervalDagen":14,"standaardOntlaadPerDag":0.15,"versie":1,"geldigVanaf":"2026-06-01","vertrekRegels":[{"bestemmingsType":"Verscheping","minSoc":20,"maxSoc":50},{"bestemmingsType":"Veerboot","minSoc":20,"maxSoc":40},{"bestemmingsType":"Truck","minSoc":30,"maxSoc":80},{"bestemmingsType":"Trein","minSoc":30,"maxSoc":80},{"bestemmingsType":"Dealer","minSoc":50,"maxSoc":80}]},{"id":"VLT-BEV","fabrikantCode":"VLT","naam":"Voltara – standaard BEV","modelPatroon":null,"aandrijving":"BEV","minOpslagSoc":30,"doelOpslagSoc":50,"maxLaadSoc":60,"kritiekSoc":15,"controleIntervalDagen":14,"twaalfVoltIntervalDagen":14,"standaardOntlaadPerDag":0.1,"versie":3,"geldigVanaf":"2026-06-01","vertrekRegels":[{"bestemmingsType":"Verscheping","minSoc":20,"maxSoc":50},{"bestemmingsType":"Veerboot","minSoc":20,"maxSoc":40},{"bestemmingsType":"Truck","minSoc":30,"maxSoc":80},{"bestemmingsType":"Trein","minSoc":30,"maxSoc":80},{"bestemmingsType":"Dealer","minSoc":50,"maxSoc":80}]},{"id":"VLT-V7","fabrikantCode":"VLT","naam":"Voltara – V7 Long Range","modelPatroon":"Voltara V7*","aandrijving":"BEV","minOpslagSoc":30,"doelOpslagSoc":50,"maxLaadSoc":60,"kritiekSoc":15,"controleIntervalDagen":10,"twaalfVoltIntervalDagen":14,"standaardOntlaadPerDag":0.12,"versie":1,"geldigVanaf":"2026-06-01","vertrekRegels":[{"bestemmingsType":"Verscheping","minSoc":20,"maxSoc":50},{"bestemmingsType":"Veerboot","minSoc":20,"maxSoc":40},{"bestemmingsType":"Truck","minSoc":30,"maxSoc":80},{"bestemmingsType":"Trein","minSoc":30,"maxSoc":80},{"bestemmingsType":"Dealer","minSoc":50,"maxSoc":80}]},{"id":"KST-BEV","fabrikantCode":"KST","naam":"Kestrel – BEV","modelPatroon":null,"aandrijving":"BEV","minOpslagSoc":25,"doelOpslagSoc":50,"maxLaadSoc":70,"kritiekSoc":12,"controleIntervalDagen":21,"twaalfVoltIntervalDagen":14,"standaardOntlaadPerDag":0.08,"versie":1,"geldigVanaf":"2026-06-01","vertrekRegels":[{"bestemmingsType":"Verscheping","minSoc":20,"maxSoc":50},{"bestemmingsType":"Veerboot","minSoc":20,"maxSoc":40},{"bestemmingsType":"Truck","minSoc":30,"maxSoc":80},{"bestemmingsType":"Trein","minSoc":30,"maxSoc":80},{"bestemmingsType":"Dealer","minSoc":50,"maxSoc":80}]},{"id":"KST-PHEV","fabrikantCode":"KST","naam":"Kestrel – PHEV","modelPatroon":null,"aandrijving":"PHEV","minOpslagSoc":20,"doelOpslagSoc":40,"maxLaadSoc":60,"kritiekSoc":10,"controleIntervalDagen":21,"twaalfVoltIntervalDagen":10,"standaardOntlaadPerDag":0.2,"versie":1,"geldigVanaf":"2026-06-01","vertrekRegels":[{"bestemmingsType":"Verscheping","minSoc":20,"maxSoc":50},{"bestemmingsType":"Veerboot","minSoc":20,"maxSoc":40},{"bestemmingsType":"Truck","minSoc":30,"maxSoc":80},{"bestemmingsType":"Trein","minSoc":30,"maxSoc":80},{"bestemmingsType":"Dealer","minSoc":50,"maxSoc":80}]},{"id":"NHV-BEV","fabrikantCode":"NHV","naam":"Nordhavn – BEV","modelPatroon":null,"aandrijving":"BEV","minOpslagSoc":30,"doelOpslagSoc":55,"maxLaadSoc":60,"kritiekSoc":15,"controleIntervalDagen":14,"twaalfVoltIntervalDagen":14,"standaardOntlaadPerDag":0.09,"versie":1,"geldigVanaf":"2026-06-01","vertrekRegels":[{"bestemmingsType":"Verscheping","minSoc":20,"maxSoc":45},{"bestemmingsType":"Veerboot","minSoc":20,"maxSoc":40},{"bestemmingsType":"Truck","minSoc":30,"maxSoc":80},{"bestemmingsType":"Trein","minSoc":30,"maxSoc":80},{"bestemmingsType":"Dealer","minSoc":50,"maxSoc":80}]},{"id":"SNL-BEV","fabrikantCode":"SNL","naam":"Sunlei – BEV","modelPatroon":null,"aandrijving":"BEV","minOpslagSoc":35,"doelOpslagSoc":50,"maxLaadSoc":55,"kritiekSoc":20,"controleIntervalDagen":7,"twaalfVoltIntervalDagen":7,"standaardOntlaadPerDag":0.25,"versie":1,"geldigVanaf":"2026-06-01","vertrekRegels":[{"bestemmingsType":"Verscheping","minSoc":20,"maxSoc":50},{"bestemmingsType":"Veerboot","minSoc":20,"maxSoc":40},{"bestemmingsType":"Truck","minSoc":30,"maxSoc":80},{"bestemmingsType":"Trein","minSoc":30,"maxSoc":80},{"bestemmingsType":"Dealer","minSoc":50,"maxSoc":80}]}],"fabrikanten":[{"code":"VLT","naam":"Voltara"},{"code":"KST","naam":"Kestrel Motors"},{"code":"NHV","naam":"Nordhavn EV"},{"code":"SNL","naam":"Sunlei"}],"zones":[{"code":"A-STD","type":"Standaard","capaciteit":2500,"maxEvs":0,"aantal":25},{"code":"B-EV-1","type":"EV","capaciteit":700,"maxEvs":520,"aantal":474},{"code":"B-EV-2","type":"EV","capaciteit":700,"maxEvs":520,"aantal":494},{"code":"C-EV-3","type":"EV","capaciteit":600,"maxEvs":480,"aantal":516},{"code":"D-EV-4","type":"EV","capaciteit":600,"maxEvs":500,"aantal":479},{"code":"L-LAAD","type":"Laden","capaciteit":60,"maxEvs":60,"aantal":0},{"code":"Q-QUAR","type":"Quarantaine","capaciteit":20,"maxEvs":20,"aantal":12}],"laders":[{"code":"L1","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L2","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L3","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L4","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L5","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L6","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L7","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L8","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L9","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L10","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L11","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L12","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L13","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L14","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L15","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L16","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L17","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Defect"},{"code":"L18","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L19","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"L20","type":"Vast","vermogenKw":22,"zone":"L-LAAD","aansluitingen":1,"status":"Beschikbaar"},{"code":"M1","type":"Mobiel","vermogenKw":50,"zone":null,"aansluitingen":1,"status":"Beschikbaar"},{"code":"M2","type":"Mobiel","vermogenKw":50,"zone":null,"aansluitingen":1,"status":"Beschikbaar"}],"facturatie":{"SNL":{"sessies":142,"kwh":1683.6},"VLT":{"sessies":54,"kwh":962.1},"KST":{"sessies":16,"kwh":102.4},"NHV":{"sessies":13,"kwh":334.4}},"voertuigen":[{"vin":"LVXV5S6L7SH103566","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"Q-QUAR","profiel":"VLT-BEV","aankomst":"2026-04-16","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":28,"twaalfV":"OK","laatsteControle":"2026-09-27","historiek":[{"t":"2026-05-03","soc":41},{"t":"2026-05-18","soc":39},{"t":"2026-06-24","soc":36},{"t":"2026-07-11","soc":34},{"t":"2026-07-29","soc":33},{"t":"2026-08-12","soc":32},{"t":"2026-08-27","soc":30},{"t":"2026-09-27","soc":28}]},{"vin":"LSNS31MW3SZ103090","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"Q-QUAR","profiel":"SNL-BEV","aankomst":"2026-05-04","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":33,"twaalfV":"OK","laatsteControle":"2026-09-15","historiek":[{"t":"2026-07-31","soc":48},{"t":"2026-08-09","soc":45},{"t":"2026-08-17","soc":42},{"t":"2026-08-22","soc":41},{"t":"2026-08-27","soc":39},{"t":"2026-09-01","soc":38},{"t":"2026-09-07","soc":36},{"t":"2026-09-15","soc":33}]},{"vin":"LVXV5JZV4SH103077","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"C-EV-3","profiel":"VLT-BEV","aankomst":"2026-08-17","vertrek":null,"bestemming":null,"rijvaardig":false,"soc":29,"twaalfV":"Dood","laatsteControle":"2026-09-17","historiek":[{"t":"2026-08-17","soc":33},{"t":"2026-08-30","soc":31},{"t":"2026-09-17","soc":29}]},{"vin":"YNHN4YRW3SG102530","fab":"NHV","merk":"Nordhavn EV","model":"Nordhavn N4","aandrijving":"BEV","kwh":107.0,"zone":"B-EV-1","profiel":"NHV-BEV","aankomst":"2026-07-03","vertrek":"2026-10-16","bestemming":"Trein","rijvaardig":false,"soc":28,"twaalfV":"Dood","laatsteControle":"2026-09-18","historiek":[{"t":"2026-07-03","soc":33},{"t":"2026-07-15","soc":32},{"t":"2026-07-30","soc":31},{"t":"2026-08-17","soc":30},{"t":"2026-08-31","soc":29},{"t":"2026-09-18","soc":28}]},{"vin":"LSNS1RUX4TZ103131","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"A-STD","profiel":"SNL-BEV","aankomst":"2026-04-08","vertrek":"2026-11-09","bestemming":"Trein","rijvaardig":true,"soc":34,"twaalfV":"OK","laatsteControle":"2026-09-22","historiek":[{"t":"2026-08-01","soc":35},{"t":"2026-08-07","soc":48},{"t":"2026-08-16","soc":45},{"t":"2026-08-23","soc":43},{"t":"2026-08-28","soc":41},{"t":"2026-09-03","soc":40},{"t":"2026-09-13","soc":36},{"t":"2026-09-22","soc":34}]},{"vin":"LVXV5AAD3TH104760","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"C-EV-3","profiel":"VLT-BEV","aankomst":"2026-05-26","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":21,"twaalfV":"Zwak","laatsteControle":"2026-09-15","historiek":[{"t":"2026-05-26","soc":45},{"t":"2026-06-22","soc":39},{"t":"2026-07-07","soc":36},{"t":"2026-07-23","soc":33},{"t":"2026-08-05","soc":30},{"t":"2026-08-19","soc":27},{"t":"2026-09-02","soc":24},{"t":"2026-09-15","soc":21}]},{"vin":"LSNS15NC1TZ103852","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"A-STD","profiel":"SNL-BEV","aankomst":"2026-08-20","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":33,"twaalfV":"OK","laatsteControle":"2026-09-21","historiek":[{"t":"2026-08-20","soc":44},{"t":"2026-09-10","soc":37},{"t":"2026-09-21","soc":33}]},{"vin":"LSNS1Z9G0TZ104575","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"C-EV-3","profiel":"SNL-BEV","aankomst":"2026-05-19","vertrek":"2026-10-24","bestemming":"Dealer","rijvaardig":true,"soc":34,"twaalfV":"Dood","laatsteControle":"2026-09-27","historiek":[{"t":"2026-07-10","soc":57},{"t":"2026-08-04","soc":50},{"t":"2026-08-15","soc":46},{"t":"2026-08-22","soc":44},{"t":"2026-08-30","soc":42},{"t":"2026-09-10","soc":39},{"t":"2026-09-20","soc":36},{"t":"2026-09-27","soc":34}]},{"vin":"LSNS39RL5SZ102052","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"Q-QUAR","profiel":"SNL-BEV","aankomst":"2026-06-10","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":38,"twaalfV":"OK","laatsteControle":"2026-09-24","historiek":[{"t":"2026-07-12","soc":47},{"t":"2026-07-17","soc":47},{"t":"2026-07-26","soc":45},{"t":"2026-08-06","soc":44},{"t":"2026-08-14","soc":43},{"t":"2026-08-21","soc":42},{"t":"2026-09-13","soc":40},{"t":"2026-09-24","soc":38}]},{"vin":"LVXV55CA1TH103150","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"A-STD","profiel":"VLT-BEV","aankomst":"2026-05-10","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":57,"twaalfV":"Zwak","laatsteControle":"2026-09-18","historiek":[{"t":"2026-05-25","soc":66},{"t":"2026-06-09","soc":65},{"t":"2026-06-25","soc":63},{"t":"2026-07-18","soc":62},{"t":"2026-08-05","soc":60},{"t":"2026-08-18","soc":59},{"t":"2026-09-01","soc":58},{"t":"2026-09-18","soc":57}]},{"vin":"WKMK36351TB100417","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K3","aandrijving":"BEV","kwh":77.0,"zone":"Q-QUAR","profiel":"KST-BEV","aankomst":"2026-08-30","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":64,"twaalfV":"OK","laatsteControle":"2026-09-21","historiek":[{"t":"2026-08-30","soc":66},{"t":"2026-09-21","soc":64}]},{"vin":"LSNS3LT64TZ102805","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"Q-QUAR","profiel":"SNL-BEV","aankomst":"2026-08-09","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":41,"twaalfV":"OK","laatsteControle":"2026-09-24","historiek":[{"t":"2026-08-09","soc":47},{"t":"2026-08-16","soc":46},{"t":"2026-08-26","soc":45},{"t":"2026-09-05","soc":43},{"t":"2026-09-15","soc":42},{"t":"2026-09-24","soc":41}]},{"vin":"LVXV7VP33TH104421","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"Q-QUAR","profiel":"VLT-V7","aankomst":"2026-08-19","vertrek":"2026-10-05","bestemming":"Truck","rijvaardig":true,"soc":62,"twaalfV":"OK","laatsteControle":"2026-09-24","historiek":[{"t":"2026-08-19","soc":66},{"t":"2026-08-31","soc":65},{"t":"2026-09-11","soc":63},{"t":"2026-09-24","soc":62}]},{"vin":"LSNS1B0SXTZ103054","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"Q-QUAR","profiel":"SNL-BEV","aankomst":"2026-07-20","vertrek":"2026-10-14","bestemming":"Dealer","rijvaardig":true,"soc":44,"twaalfV":"OK","laatsteControle":"2026-09-21","historiek":[{"t":"2026-07-30","soc":34},{"t":"2026-08-07","soc":47},{"t":"2026-08-13","soc":44},{"t":"2026-08-20","soc":41},{"t":"2026-08-28","soc":38},{"t":"2026-09-06","soc":34},{"t":"2026-09-13","soc":47},{"t":"2026-09-21","soc":44}]},{"vin":"LSNS106BXSZ103078","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"Q-QUAR","profiel":"SNL-BEV","aankomst":"2026-06-12","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":49,"twaalfV":"OK","laatsteControle":"2026-09-24","historiek":[{"t":"2026-07-09","soc":46},{"t":"2026-07-19","soc":44},{"t":"2026-07-30","soc":41},{"t":"2026-08-09","soc":39},{"t":"2026-08-20","soc":37},{"t":"2026-08-28","soc":35},{"t":"2026-09-19","soc":30},{"t":"2026-09-24","soc":49}]},{"vin":"YNHN4D5V5SG103068","fab":"NHV","merk":"Nordhavn EV","model":"Nordhavn N4","aandrijving":"BEV","kwh":107.0,"zone":"Q-QUAR","profiel":"NHV-BEV","aankomst":"2026-08-14","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":43,"twaalfV":"OK","laatsteControle":"2026-09-27","historiek":[{"t":"2026-08-14","soc":48},{"t":"2026-09-15","soc":44},{"t":"2026-09-27","soc":43}]},{"vin":"LVXV7F9A7SH105992","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"Q-QUAR","profiel":"VLT-V7","aankomst":"2026-08-21","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":45,"twaalfV":"OK","laatsteControle":"2026-09-01","historiek":[{"t":"2026-08-21","soc":46},{"t":"2026-09-01","soc":45}]},{"vin":"WKMK3KH81SB101996","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K3","aandrijving":"BEV","kwh":77.0,"zone":"Q-QUAR","profiel":"KST-BEV","aankomst":"2026-07-04","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":61,"twaalfV":"OK","laatsteControle":"2026-09-16","historiek":[{"t":"2026-07-04","soc":65},{"t":"2026-08-04","soc":63},{"t":"2026-08-27","soc":62},{"t":"2026-09-16","soc":61}]},{"vin":"WKMK5V7C8SB102015","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K5 Hybrid","aandrijving":"PHEV","kwh":19.7,"zone":"Q-QUAR","profiel":"KST-PHEV","aankomst":"2026-08-21","vertrek":"2026-10-14","bestemming":"Truck","rijvaardig":true,"soc":40,"twaalfV":"OK","laatsteControle":"2026-09-09","historiek":[{"t":"2026-08-21","soc":43},{"t":"2026-09-09","soc":40}]},{"vin":"LVXV543H1TH103012","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"B-EV-2","profiel":"VLT-BEV","aankomst":"2026-04-23","vertrek":"2026-10-17","bestemming":"Dealer","rijvaardig":true,"soc":27,"twaalfV":"OK","laatsteControle":"2026-09-17","historiek":[{"t":"2026-05-22","soc":39},{"t":"2026-06-05","soc":38},{"t":"2026-06-17","soc":37},{"t":"2026-07-05","soc":35},{"t":"2026-07-18","soc":33},{"t":"2026-07-31","soc":32},{"t":"2026-08-16","soc":31},{"t":"2026-09-17","soc":27}]},{"vin":"WKMK5HU86SB100250","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K5 Hybrid","aandrijving":"PHEV","kwh":19.7,"zone":"C-EV-3","profiel":"KST-PHEV","aankomst":"2026-02-18","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":3,"twaalfV":"OK","laatsteControle":"2026-09-19","historiek":[{"t":"2026-04-05","soc":20},{"t":"2026-04-24","soc":35},{"t":"2026-06-01","soc":25},{"t":"2026-06-25","soc":18},{"t":"2026-07-16","soc":12},{"t":"2026-08-04","soc":7},{"t":"2026-08-27","soc":3},{"t":"2026-09-19","soc":3}]},{"vin":"WKMK50YX4TB100316","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K5 Hybrid","aandrijving":"PHEV","kwh":19.7,"zone":"B-EV-2","profiel":"KST-PHEV","aankomst":"2026-05-09","vertrek":"2026-11-09","bestemming":"Verscheping","rijvaardig":true,"soc":19,"twaalfV":"OK","laatsteControle":"2026-09-20","historiek":[{"t":"2026-05-09","soc":51},{"t":"2026-05-28","soc":46},{"t":"2026-07-11","soc":36},{"t":"2026-08-02","soc":31},{"t":"2026-08-30","soc":24},{"t":"2026-09-20","soc":19}]},{"vin":"LSNS3SEU3SZ102170","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"B-EV-1","profiel":"SNL-BEV","aankomst":"2026-09-01","vertrek":"2026-10-19","bestemming":"Dealer","rijvaardig":true,"soc":31,"twaalfV":"OK","laatsteControle":"2026-09-15","historiek":[{"t":"2026-09-01","soc":35},{"t":"2026-09-08","soc":33},{"t":"2026-09-15","soc":31}]},{"vin":"LSNS376P4TZ102251","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"B-EV-2","profiel":"SNL-BEV","aankomst":"2026-03-30","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":34,"twaalfV":"OK","laatsteControle":"2026-09-24","historiek":[{"t":"2026-07-30","soc":28},{"t":"2026-08-05","soc":26},{"t":"2026-08-10","soc":48},{"t":"2026-08-23","soc":44},{"t":"2026-09-03","soc":41},{"t":"2026-09-10","soc":38},{"t":"2026-09-16","soc":37},{"t":"2026-09-24","soc":34}]},{"vin":"LVXV7M5D7TH105934","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"B-EV-1","profiel":"VLT-V7","aankomst":"2026-08-18","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":53,"twaalfV":"OK","laatsteControle":"2026-09-25","historiek":[{"t":"2026-08-18","soc":57},{"t":"2026-08-26","soc":56},{"t":"2026-09-03","soc":55},{"t":"2026-09-12","soc":54},{"t":"2026-09-25","soc":53}]},{"vin":"LSNS3BHT2TZ103542","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"B-EV-1","profiel":"SNL-BEV","aankomst":"2026-08-10","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":52,"twaalfV":"OK","laatsteControle":"2026-09-19","historiek":[{"t":"2026-08-10","soc":61},{"t":"2026-08-17","soc":59},{"t":"2026-08-26","soc":57},{"t":"2026-08-31","soc":56},{"t":"2026-09-05","soc":55},{"t":"2026-09-14","soc":53},{"t":"2026-09-19","soc":52}]},{"vin":"WKMK3GRC6SB100567","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K3","aandrijving":"BEV","kwh":77.0,"zone":"B-EV-2","profiel":"KST-BEV","aankomst":"2026-09-12","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":64,"twaalfV":"OK","laatsteControle":"2026-09-12","historiek":[{"t":"2026-09-12","soc":64}]},{"vin":"WKMK5TAH5SB101039","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K5 Hybrid","aandrijving":"PHEV","kwh":19.7,"zone":"B-EV-1","profiel":"KST-PHEV","aankomst":"2026-06-15","vertrek":"2026-10-04","bestemming":"Verscheping","rijvaardig":true,"soc":26,"twaalfV":"OK","laatsteControle":"2026-09-27","historiek":[{"t":"2026-06-15","soc":33},{"t":"2026-07-13","soc":26},{"t":"2026-08-06","soc":19},{"t":"2026-08-26","soc":35},{"t":"2026-09-27","soc":26}]},{"vin":"LVXV54MZXSH103693","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"B-EV-2","profiel":"VLT-BEV","aankomst":"2026-07-06","vertrek":"2026-11-06","bestemming":"Truck","rijvaardig":true,"soc":54,"twaalfV":"OK","laatsteControle":"2026-09-18","historiek":[{"t":"2026-07-06","soc":61},{"t":"2026-07-23","soc":59},{"t":"2026-08-04","soc":58},{"t":"2026-08-18","soc":57},{"t":"2026-09-05","soc":55},{"t":"2026-09-18","soc":54}]},{"vin":"YNHN2EF68SG103469","fab":"NHV","merk":"Nordhavn EV","model":"Nordhavn N2","aandrijving":"BEV","kwh":69.0,"zone":"C-EV-3","profiel":"NHV-BEV","aankomst":"2026-07-16","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":48,"twaalfV":"OK","laatsteControle":"2026-09-18","historiek":[{"t":"2026-07-16","soc":29},{"t":"2026-08-01","soc":53},{"t":"2026-08-17","soc":52},{"t":"2026-08-31","soc":50},{"t":"2026-09-18","soc":48}]},{"vin":"LVXV5NBTXTH103165","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"C-EV-3","profiel":"VLT-BEV","aankomst":"2026-06-09","vertrek":"2026-11-09","bestemming":"Truck","rijvaardig":false,"soc":42,"twaalfV":"Zwak","laatsteControle":"2026-09-24","historiek":[{"t":"2026-06-09","soc":57},{"t":"2026-06-26","soc":55},{"t":"2026-07-11","soc":52},{"t":"2026-07-28","soc":50},{"t":"2026-08-27","soc":46},{"t":"2026-09-11","soc":44},{"t":"2026-09-24","soc":42}]},{"vin":"LSNS383H3SZ102145","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"B-EV-2","profiel":"SNL-BEV","aankomst":"2026-02-16","vertrek":"2026-10-20","bestemming":"Trein","rijvaardig":true,"soc":46,"twaalfV":"OK","laatsteControle":"2026-09-23","historiek":[{"t":"2026-07-13","soc":46},{"t":"2026-08-04","soc":41},{"t":"2026-08-10","soc":39},{"t":"2026-08-20","soc":37},{"t":"2026-08-31","soc":34},{"t":"2026-09-06","soc":32},{"t":"2026-09-16","soc":47},{"t":"2026-09-23","soc":46}]},{"vin":"LSNS1F0C0TZ102883","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"D-EV-4","profiel":"SNL-BEV","aankomst":"2026-05-06","vertrek":"2026-10-05","bestemming":"Truck","rijvaardig":true,"soc":43,"twaalfV":"OK","laatsteControle":"2026-09-20","historiek":[{"t":"2026-07-02","soc":43},{"t":"2026-07-09","soc":40},{"t":"2026-07-15","soc":38},{"t":"2026-07-24","soc":34},{"t":"2026-08-04","soc":46},{"t":"2026-08-28","soc":36},{"t":"2026-09-02","soc":34},{"t":"2026-09-20","soc":43}]},{"vin":"LVXV523K1SH106443","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"D-EV-4","profiel":"VLT-BEV","aankomst":"2026-07-18","vertrek":"2026-10-03","bestemming":"Verscheping","rijvaardig":true,"soc":48,"twaalfV":"OK","laatsteControle":"2026-09-21","historiek":[{"t":"2026-07-18","soc":36},{"t":"2026-08-05","soc":34},{"t":"2026-08-21","soc":32},{"t":"2026-09-06","soc":29},{"t":"2026-09-21","soc":48}]},{"vin":"LVXV76TZ2TH104586","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"B-EV-1","profiel":"VLT-V7","aankomst":"2026-07-18","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":52,"twaalfV":"OK","laatsteControle":"2026-09-28","historiek":[{"t":"2026-07-18","soc":61},{"t":"2026-07-30","soc":60},{"t":"2026-08-12","soc":58},{"t":"2026-08-22","soc":57},{"t":"2026-09-03","soc":55},{"t":"2026-09-16","soc":54},{"t":"2026-09-28","soc":52}]},{"vin":"WKMK5BJW5SB101678","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K5 Hybrid","aandrijving":"PHEV","kwh":19.7,"zone":"B-EV-2","profiel":"KST-PHEV","aankomst":"2026-06-27","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":23,"twaalfV":"OK","laatsteControle":"2026-09-23","historiek":[{"t":"2026-06-27","soc":41},{"t":"2026-07-16","soc":37},{"t":"2026-08-07","soc":32},{"t":"2026-08-31","soc":27},{"t":"2026-09-23","soc":23}]},{"vin":"LVXV5A2C7SH104491","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"B-EV-2","profiel":"VLT-BEV","aankomst":"2026-04-06","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":45,"twaalfV":"OK","laatsteControle":"2026-09-18","historiek":[{"t":"2026-06-07","soc":54},{"t":"2026-06-21","soc":53},{"t":"2026-07-09","soc":52},{"t":"2026-07-22","soc":50},{"t":"2026-08-03","soc":49},{"t":"2026-08-16","soc":48},{"t":"2026-09-03","soc":47},{"t":"2026-09-18","soc":45}]},{"vin":"WKMK55J40TB100908","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K5 Hybrid","aandrijving":"PHEV","kwh":19.7,"zone":"B-EV-1","profiel":"KST-PHEV","aankomst":"2026-08-14","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":37,"twaalfV":"Dood","laatsteControle":"2026-09-08","historiek":[{"t":"2026-08-14","soc":41},{"t":"2026-09-08","soc":37}]},{"vin":"LSNS1ZFHXSZ104272","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"C-EV-3","profiel":"SNL-BEV","aankomst":"2026-09-05","vertrek":"2026-10-30","bestemming":"Trein","rijvaardig":true,"soc":67,"twaalfV":"OK","laatsteControle":"2026-09-23","historiek":[{"t":"2026-09-05","soc":70},{"t":"2026-09-14","soc":68},{"t":"2026-09-23","soc":67}]},{"vin":"YNHN43GJ2SG103615","fab":"NHV","merk":"Nordhavn EV","model":"Nordhavn N4","aandrijving":"BEV","kwh":107.0,"zone":"D-EV-4","profiel":"NHV-BEV","aankomst":"2026-05-11","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":43,"twaalfV":"OK","laatsteControle":"2026-09-07","historiek":[{"t":"2026-06-06","soc":56},{"t":"2026-06-18","soc":54},{"t":"2026-07-06","soc":52},{"t":"2026-07-18","soc":50},{"t":"2026-08-01","soc":48},{"t":"2026-08-13","soc":46},{"t":"2026-08-26","soc":45},{"t":"2026-09-07","soc":43}]},{"vin":"LSNS39157TZ103752","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"D-EV-4","profiel":"SNL-BEV","aankomst":"2026-06-11","vertrek":null,"bestemming":null,"rijvaardig":false,"soc":35,"twaalfV":"Dood","laatsteControle":"2026-09-27","historiek":[{"t":"2026-07-17","soc":37},{"t":"2026-07-22","soc":36},{"t":"2026-07-28","soc":35},{"t":"2026-08-06","soc":48},{"t":"2026-08-13","soc":46},{"t":"2026-08-24","soc":43},{"t":"2026-09-04","soc":41},{"t":"2026-09-27","soc":35}]},{"vin":"LVXV78AG2SH103207","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"B-EV-2","profiel":"VLT-V7","aankomst":"2026-09-07","vertrek":"2026-10-03","bestemming":"Trein","rijvaardig":true,"soc":70,"twaalfV":"OK","laatsteControle":"2026-09-27","historiek":[{"t":"2026-09-07","soc":72},{"t":"2026-09-17","soc":71},{"t":"2026-09-27","soc":70}]},{"vin":"LSNS1VT39SZ102935","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"B-EV-2","profiel":"SNL-BEV","aankomst":"2026-06-04","vertrek":"2026-10-03","bestemming":"Trein","rijvaardig":true,"soc":48,"twaalfV":"OK","laatsteControle":"2026-09-03","historiek":[{"t":"2026-06-29","soc":46},{"t":"2026-07-10","soc":43},{"t":"2026-07-20","soc":41},{"t":"2026-07-27","soc":40},{"t":"2026-08-04","soc":38},{"t":"2026-08-12","soc":36},{"t":"2026-08-24","soc":34},{"t":"2026-09-03","soc":48}]},{"vin":"YNHN43H07TG102791","fab":"NHV","merk":"Nordhavn EV","model":"Nordhavn N4","aandrijving":"BEV","kwh":107.0,"zone":"D-EV-4","profiel":"NHV-BEV","aankomst":"2026-09-14","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":62,"twaalfV":"OK","laatsteControle":"2026-09-27","historiek":[{"t":"2026-09-14","soc":62},{"t":"2026-09-27","soc":62}]},{"vin":"LSNS1AEY2TZ104593","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"B-EV-2","profiel":"SNL-BEV","aankomst":"2026-07-11","vertrek":"2026-10-31","bestemming":"Dealer","rijvaardig":true,"soc":40,"twaalfV":"OK","laatsteControle":"2026-09-21","historiek":[{"t":"2026-07-22","soc":37},{"t":"2026-08-01","soc":35},{"t":"2026-08-10","soc":48},{"t":"2026-08-16","soc":47},{"t":"2026-09-02","soc":44},{"t":"2026-09-09","soc":43},{"t":"2026-09-14","soc":42},{"t":"2026-09-21","soc":40}]},{"vin":"LVXV55ZU1TH105921","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"D-EV-4","profiel":"VLT-BEV","aankomst":"2026-05-10","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":34,"twaalfV":"OK","laatsteControle":"2026-09-26","historiek":[{"t":"2026-05-24","soc":46},{"t":"2026-06-10","soc":44},{"t":"2026-06-25","soc":43},{"t":"2026-07-08","soc":41},{"t":"2026-07-26","soc":40},{"t":"2026-08-12","soc":38},{"t":"2026-09-13","soc":35},{"t":"2026-09-26","soc":34}]},{"vin":"LVXV58CV0SH105300","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"B-EV-1","profiel":"VLT-BEV","aankomst":"2026-08-20","vertrek":null,"bestemming":null,"rijvaardig":false,"soc":68,"twaalfV":"Zwak","laatsteControle":"2026-09-18","historiek":[{"t":"2026-08-20","soc":71},{"t":"2026-09-02","soc":70},{"t":"2026-09-18","soc":68}]},{"vin":"LVXV5HFE2TH106283","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"D-EV-4","profiel":"VLT-BEV","aankomst":"2026-05-03","vertrek":"2026-11-05","bestemming":"Verscheping","rijvaardig":true,"soc":46,"twaalfV":"OK","laatsteControle":"2026-09-25","historiek":[{"t":"2026-06-26","soc":40},{"t":"2026-07-08","soc":38},{"t":"2026-07-23","soc":36},{"t":"2026-08-04","soc":34},{"t":"2026-08-16","soc":32},{"t":"2026-08-30","soc":30},{"t":"2026-09-11","soc":48},{"t":"2026-09-25","soc":46}]},{"vin":"LVXV7TFB5SH106084","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"B-EV-1","profiel":"VLT-V7","aankomst":"2026-07-04","vertrek":"2026-10-06","bestemming":"Verscheping","rijvaardig":true,"soc":49,"twaalfV":"OK","laatsteControle":"2026-09-23","historiek":[{"t":"2026-07-04","soc":59},{"t":"2026-07-16","soc":57},{"t":"2026-07-25","soc":56},{"t":"2026-08-22","soc":53},{"t":"2026-08-31","soc":52},{"t":"2026-09-10","soc":50},{"t":"2026-09-23","soc":49}]},{"vin":"LVXV7D8P4TH103581","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"B-EV-2","profiel":"VLT-V7","aankomst":"2026-07-05","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":53,"twaalfV":"OK","laatsteControle":"2026-09-26","historiek":[{"t":"2026-07-05","soc":63},{"t":"2026-07-17","soc":62},{"t":"2026-07-30","soc":60},{"t":"2026-08-07","soc":59},{"t":"2026-08-28","soc":57},{"t":"2026-09-07","soc":56},{"t":"2026-09-18","soc":54},{"t":"2026-09-26","soc":53}]},{"vin":"LSNS3AXA8SZ103263","fab":"SNL","merk":"Sunlei","model":"Sunlei S3","aandrijving":"BEV","kwh":72.0,"zone":"C-EV-3","profiel":"SNL-BEV","aankomst":"2026-09-02","vertrek":"2026-10-21","bestemming":"Trein","rijvaardig":true,"soc":54,"twaalfV":"OK","laatsteControle":"2026-09-27","historiek":[{"t":"2026-09-02","soc":63},{"t":"2026-09-11","soc":60},{"t":"2026-09-19","soc":57},{"t":"2026-09-27","soc":54}]},{"vin":"WKMK56F63SB100626","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K5 Hybrid","aandrijving":"PHEV","kwh":19.7,"zone":"D-EV-4","profiel":"KST-PHEV","aankomst":"2026-05-28","vertrek":"2026-10-24","bestemming":"Trein","rijvaardig":true,"soc":20,"twaalfV":"OK","laatsteControle":"2026-09-11","historiek":[{"t":"2026-05-28","soc":28},{"t":"2026-06-19","soc":26},{"t":"2026-07-09","soc":25},{"t":"2026-08-02","soc":23},{"t":"2026-08-21","soc":22},{"t":"2026-09-11","soc":20}]},{"vin":"WKMK3C3G5SB100600","fab":"KST","merk":"Kestrel Motors","model":"Kestrel K3","aandrijving":"BEV","kwh":77.0,"zone":"B-EV-1","profiel":"KST-BEV","aankomst":"2026-05-11","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":41,"twaalfV":"OK","laatsteControle":"2026-09-17","historiek":[{"t":"2026-05-11","soc":47},{"t":"2026-05-31","soc":46},{"t":"2026-06-20","soc":45},{"t":"2026-07-12","soc":44},{"t":"2026-08-04","soc":43},{"t":"2026-08-23","soc":42},{"t":"2026-09-17","soc":41}]},{"vin":"LVXV5THZ0TH105975","fab":"VLT","merk":"Voltara","model":"Voltara V5","aandrijving":"BEV","kwh":60.0,"zone":"C-EV-3","profiel":"VLT-BEV","aankomst":"2026-05-15","vertrek":"2026-10-03","bestemming":"Verscheping","rijvaardig":true,"soc":43,"twaalfV":"Dood","laatsteControle":"2026-09-20","historiek":[{"t":"2026-05-30","soc":58},{"t":"2026-07-02","soc":54},{"t":"2026-07-14","soc":52},{"t":"2026-07-27","soc":50},{"t":"2026-08-10","soc":48},{"t":"2026-08-25","soc":46},{"t":"2026-09-07","soc":44},{"t":"2026-09-20","soc":43}]},{"vin":"LSNS1TSZ6TZ104203","fab":"SNL","merk":"Sunlei","model":"Sunlei S1","aandrijving":"BEV","kwh":45.0,"zone":"B-EV-1","profiel":"SNL-BEV","aankomst":"2026-09-01","vertrek":"2026-10-17","bestemming":"Dealer","rijvaardig":true,"soc":42,"twaalfV":"OK","laatsteControle":"2026-09-23","historiek":[{"t":"2026-09-01","soc":50},{"t":"2026-09-09","soc":47},{"t":"2026-09-16","soc":45},{"t":"2026-09-23","soc":42}]},{"vin":"LVXV7UREXSH106982","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"B-EV-1","profiel":"VLT-V7","aankomst":"2026-08-21","vertrek":"2026-11-03","bestemming":"Truck","rijvaardig":true,"soc":46,"twaalfV":"OK","laatsteControle":"2026-09-22","historiek":[{"t":"2026-08-21","soc":50},{"t":"2026-09-02","soc":48},{"t":"2026-09-11","soc":47},{"t":"2026-09-22","soc":46}]},{"vin":"LVXV7MFK1SH106802","fab":"VLT","merk":"Voltara","model":"Voltara V7 Long Range","aandrijving":"BEV","kwh":82.0,"zone":"C-EV-3","profiel":"VLT-V7","aankomst":"2026-08-06","vertrek":null,"bestemming":null,"rijvaardig":true,"soc":68,"twaalfV":"OK","laatsteControle":"2026-09-19","historiek":[{"t":"2026-08-06","soc":72},{"t":"2026-08-16","soc":71},{"t":"2026-08-26","soc":70},{"t":"2026-09-07","soc":69},{"t":"2026-09-19","soc":68}]}],"totaalVoertuigen":2000};
+const REF = D.referentiedatum, SET = {venster:7, horizon:14};
+const P = Object.fromEntries(D.profielen.map(p=>[p.id,p]));
+const FAB = Object.fromEntries(D.fabrikanten.map(f=>[f.code,f.naam]));
+const ZONE = Object.fromEntries(D.zones.map(z=>[z.code,z]));
+const SEV = {Kritiek:4,Hoog:3,Middel:2,Laag:1};
+const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dt = iso => new Date(iso+'T12:00:00');
+const days = (a,b) => Math.round((dt(b)-dt(a))/864e5);
+const addDays = (iso,n) => { const d=dt(iso); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+const fd = iso => dt(iso).toLocaleDateString('nl-BE',{day:'numeric',month:'short'});
+const nf = n => n.toLocaleString('nl-BE');
+
+const S = {
+  view:'dashboard', vin:null, filter:{q:'',status:'',fab:'',zone:''},
+  veh: D.voertuigen.map(v=>({...v, historiek:[...v.historiek], quarantaineVereist:false,
+        dossier: v.zone==='Q-QUAR' ? {reden:'Schade gemeld bij aankomstcontrole', geopend:v.aankomst, beslissing:'Open'} : null})),
+  opdr:{}, laders: D.laders.map(l=>({...l, bezetDoor:null})), fact: JSON.parse(JSON.stringify(D.facturatie)),
+  zoneDelta:{}, mob:{step:'taken', vin:null, form:null, confirm:false, result:null, err:''},
+  nood:'C-EV-3', regel:'VLT-BEV', draft:null
+};
+const V = vin => S.veh.find(v=>v.vin===vin);
+
+/* ---------- regelmotor (vereenvoudigde versie van docs/03-concept/regelprofielen.md) ---------- */
+function vertrekRegel(v,p){ return v.bestemming ? p.vertrekRegels.find(r=>r.bestemmingsType===v.bestemming) : null; }
+function binnenVenster(v){ return v.vertrek && days(REF,v.vertrek) <= SET.venster; }
+function doelSoc(v,p=P[v.profiel]){ let d=Math.min(p.doelOpslagSoc,p.maxLaadSoc); const r=vertrekRegel(v,p); if(r && binnenVenster(v)) d=Math.min(d,r.maxSoc); return d; }
+function ontlaad(v,p){ const h=v.historiek; if(h.length>=2){ const a=h[h.length-2], b=h[h.length-1], n=days(a.t,b.t); if(n>0 && a.soc>b.soc) return (a.soc-b.soc)/n; } return p.standaardOntlaadPerDag; }
+function horizon(v){ return Math.min(SET.horizon, v.vertrek ? Math.max(0,days(REF,v.vertrek)) : Infinity); }
+function evaluate(v, p=P[v.profiel]){
+  const out=[], add=(code,ernst,msg,actie)=>out.push({code,ernst,msg,actie});
+  const r=ontlaad(v,p), h=horizon(v), pred=v.soc-r*h;
+  if(v.soc<p.kritiekSoc) add('SOC_KRITIEK','Kritiek',`Laadtoestand ${v.soc}% onder kritieke grens ${p.kritiekSoc}%`,'Onmiddellijk laden en 12V controleren');
+  else if(v.soc<p.minOpslagSoc) add('SOC_ONDER_MIN','Hoog',`Laadtoestand ${v.soc}% onder minimum ${p.minOpslagSoc}%`,`Laden tot ${doelSoc(v,p)}%`);
+  else if(pred<p.minOpslagSoc) add('SOC_VOORSPELD_ONDER_MIN','Middel',`Voorspeld ${pred.toFixed(1)}% over ${h} d (−${r.toFixed(2)}%/dag)`,'Laden inplannen');
+  const sinds=days(v.laatsteControle,REF);
+  if(sinds>p.controleIntervalDagen) add('CONTROLE_TE_LAAT','Middel',`Laatste controle ${sinds} d geleden (interval ${p.controleIntervalDagen} d)`,'Controle inplannen');
+  if(v.twaalfV==='Zwak') add('TWAALFVOLT_ZWAK','Middel','12V-batterij zwak','Onderhoudsladen 12V');
+  if(v.twaalfV==='Dood' || !v.rijvaardig) add('NIET_RIJVAARDIG','Hoog','Wagen start niet (12V)','Hulpstart of trailer; staat op noodlijst');
+  const vr=vertrekRegel(v,p);
+  if(vr && binnenVenster(v)){
+    const b=v.bestemming.toLowerCase();
+    if(v.soc>vr.maxSoc) add('VERTREK_SOC_TE_HOOG','Hoog',`${v.soc}% boven max ${vr.maxSoc}% voor ${b} op ${fd(v.vertrek)}`,'Niet laden; uitzondering aanvragen');
+    else if(v.soc<vr.minSoc) add('VERTREK_SOC_TE_LAAG','Hoog',`${v.soc}% onder min ${vr.minSoc}% voor ${b} op ${fd(v.vertrek)}`,`Laden tot ${doelSoc(v,p)}% vóór ${fd(v.vertrek)}`);
+  }
+  if(v.quarantaineVereist && v.zone!=='Q-QUAR') add('QUARANTAINE_VEREIST','Kritiek','Verdachte batterij of schade gemeld','Naar quarantainezone Q-QUAR');
+  if(ZONE[v.zone]?.type==='Standaard') add('VERKEERDE_ZONE','Middel',`EV staat in standaardzone ${v.zone}`,'Verplaatsen naar een EV-zone');
+  return out.sort((a,b)=>SEV[b.ernst]-SEV[a.ernst]);
+}
+function status(v,al=evaluate(v)){
+  if(v.zone==='Q-QUAR') return 'In quarantaine';
+  if(al.some(a=>a.code==='QUARANTAINE_VEREIST')) return 'Quarantaine vereist';
+  if(S.opdr[v.vin]?.status==='Bezig') return 'Laden';
+  if(al.some(a=>SEV[a.ernst]>=3)) return 'Aandacht nodig';
+  if(binnenVenster(v) && !al.length) return 'Klaar voor vertrek';
+  return 'Opgeslagen';
+}
+const STATUS_PILL = {'In quarantaine':'p-Kritiek','Quarantaine vereist':'p-Kritiek','Aandacht nodig':'p-Hoog','Laden':'p-info','Klaar voor vertrek':'p-ok','Opgeslagen':'p-neutral'};
+const pill = (t,c) => `<span class="pill ${c}">${esc(t)}</span>`;
+const sevPill = e => pill(e,'p-'+e);
+function zoneCount(code){ return ZONE[code].aantal + (S.zoneDelta[code]||0); }
+function zoneAlerts(){ return D.zones.filter(z=>z.type==='EV' && zoneCount(z.code)>z.maxEvs)
+  .map(z=>({code:'ZONE_DICHTHEID',ernst:'Hoog',msg:`${zoneCount(z.code)} EV's in ${z.code}, maximum ${z.maxEvs}`,actie:'Wagens herverdelen',zone:z.code})); }
+function allAlerts(){ return S.veh.flatMap(v=>evaluate(v).map(a=>({...a,v}))).sort((a,b)=>SEV[b.ernst]-SEV[a.ernst]); }
+function moveTo(v,zone){ S.zoneDelta[v.zone]=(S.zoneDelta[v.zone]||0)-1; S.zoneDelta[zone]=(S.zoneDelta[zone]||0)+1; v.zone=zone; }
+
+/* ---------- laadopdrachten ---------- */
+const LAAD_CODES=['SOC_KRITIEK','SOC_ONDER_MIN','VERTREK_SOC_TE_LAAG','SOC_VOORSPELD_ONDER_MIN'];
+function opdrachten(){
+  return S.veh.filter(v=>v.zone!=='Q-QUAR').map(v=>{
+    const al=evaluate(v), trig=al.find(a=>LAAD_CODES.includes(a.code)), o=S.opdr[v.vin];
+    if(!trig && !o) return null;
+    const vi=v.vertrek?days(REF,v.vertrek):null;
+    const prio=(trig?SEV[trig.ernst]*100:0)-(vi??60);
+    return {v, trig, doel:doelSoc(v), status:o?.status||'Voorgesteld', lader:o?.lader, deadline: vi!==null && vi<=SET.venster ? v.vertrek : addDays(REF, trig?.ernst==='Kritiek'?0:2), prio};
+  }).filter(Boolean).sort((a,b)=>b.prio-a.prio);
+}
+
+/* ---------- VIN-validatie (ISO 3779) ---------- */
+const TR={...Object.fromEntries([...'0123456789'].map((c,i)=>[c,i])),A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,J:1,K:2,L:3,M:4,N:5,P:7,R:9,S:2,T:3,U:4,V:5,W:6,X:7,Y:8,Z:9};
+const W=[8,7,6,5,4,3,2,10,0,9,8,7,6,5,4,3,2];
+function vinFout(vin){
+  vin=vin.trim().toUpperCase();
+  if(vin.length!==17) return `Een VIN heeft 17 tekens (nu ${vin.length}).`;
+  if(/[IOQ]/.test(vin)) return 'De letters I, O en Q komen niet voor in een VIN. Controleer of het een 1 of 0 is.';
+  if(!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) return 'Alleen letters en cijfers zijn toegelaten.';
+  const r=[...vin].reduce((s,c,i)=>s+TR[c]*W[i],0)%11, cd=r===10?'X':String(r);
+  if(vin[8]!==cd) return `Controlecijfer klopt niet (verwacht ${cd} op positie 9). Controleer op typfouten.`;
+  return '';
+}
+
+/* ---------- views ---------- */
+const NAV=[['dashboard','Dashboard','Planner'],['voertuigen','Voertuigen','Zoeken en filteren'],['terrein','Terrein','Controle op de gsm'],['laden','Laden','Opdrachten en laders'],['veiligheid','Veiligheid','Quarantaine en noodoverzicht'],['regels','Regelprofielen','Per fabrikant']];
+function renderNav(){
+  const cur = S.view==='voertuig' ? 'voertuigen' : S.view;
+  document.getElementById('nav').innerHTML = NAV.map(([k,a,b])=>`<button data-go="${k}" ${cur===k?'aria-current="page"':''}><span class="l1">${a}</span><span class="l2">${b}</span></button>`).join('');
+}
+function head(title, eyebrow, right=''){ return `<div class="pagehead"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1></div>${right}</div>`; }
+const vandaag = dt(REF).toLocaleDateString('nl-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+function viewDashboard(){
+  const al=allAlerts(), za=zoneAlerts(), cnt=e=>al.filter(a=>a.ernst===e).length+za.filter(a=>a.ernst===e).length;
+  const opd=opdrachten(), bezet=S.laders.filter(l=>l.bezetDoor).length, werkend=S.laders.filter(l=>l.status!=='Defect').length;
+  const quar=S.veh.filter(v=>['In quarantaine','Quarantaine vereist'].includes(status(v))).length;
+  const rows=[...za.map(a=>({...a,v:null})),...al].slice(0,12);
+  return `${head('Wat vraagt vandaag aandacht?', vandaag, `<span class="muted" style="font-size:12px">Prototype toont ${S.veh.length} voorbeeldvoertuigen van de ${nf(D.totaalVoertuigen)} op het terrein</span>`)}
+  <section class="kpis" aria-label="Kerncijfers">
+    <div class="kpi"><span class="k">EV's op het terrein</span><span class="v num">${nf(D.totaalVoertuigen)}</span><span class="s muted">4 fabrikanten</span></div>
+    <div class="kpi"><span class="k">Open waarschuwingen</span><span class="v num">${al.length+za.length}</span><span class="s"><span style="color:var(--krit)">${cnt('Kritiek')} kritiek</span> · <span style="color:var(--hoog)">${cnt('Hoog')} hoog</span></span></div>
+    <div class="kpi"><span class="k">Te laden</span><span class="v num">${opd.filter(o=>o.status!=='Bezig').length}</span><span class="s muted">${opd.filter(o=>o.status==='Voorgesteld').length} wachten op goedkeuring</span></div>
+    <div class="kpi"><span class="k">Quarantaine</span><span class="v num">${quar}</span><span class="s muted">zone Q-QUAR</span></div>
+    <div class="kpi"><span class="k">Laders in gebruik</span><span class="v num">${bezet}<span style="font-size:18px" class="muted">/${werkend}</span></span><span class="s" style="color:var(--krit)">L17 defect</span></div>
+  </section>
+  <div class="grid-2">
+    <section class="panel">
+      <div class="panel-head"><h2>Waarschuwingen</h2><span class="muted" style="font-size:12px">Gesorteerd op ernst · klik voor details</span></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th></th><th>Voertuig</th><th>Regel</th><th>Voorgestelde actie</th></tr></thead>
+        <tbody>${rows.map(a=>`<tr class="${a.v?'click':''}" ${a.v?`data-vin="${a.v.vin}"`:''}>
+          <td class="sev"><span class="sev-${a.ernst}"></span></td>
+          <td>${a.v?`<div class="mono">${a.v.vin}</div><div class="muted" style="font-size:12px">${esc(a.v.model)} · ${a.v.zone}</div>`:`<div class="zc" style="font-family:var(--display);font-weight:600;font-size:16px">Zone ${a.zone}</div>`}</td>
+          <td>${sevPill(a.ernst)}<div style="margin-top:4px">${esc(a.msg)}</div><div class="code">${a.code}</div></td>
+          <td>${esc(a.actie)}</td></tr>`).join('')}</tbody></table></div>
+      <div><button class="link" data-go="voertuigen" data-f="attention">Alle voertuigen met waarschuwingen →</button></div>
+    </section>
+    <div class="stack">
+      <section class="panel"><div class="panel-head"><h2>Zones</h2><span class="muted" style="font-size:12px">EV's / maximum</span></div>
+        <div class="zones">${D.zones.filter(z=>z.type!=='Laden').map(z=>{ const n=zoneCount(z.code), max=z.type==='Standaard'?z.capaciteit:z.maxEvs, over=z.type==='EV'&&n>z.maxEvs;
+          const pct=Math.min(100,n/(z.type==='Standaard'?z.capaciteit:z.capaciteit)*100), mark=z.type==='EV'?z.maxEvs/z.capaciteit*100:null;
+          return `<div class="zone"><span class="zc">${z.code}</span><div class="bar" title="${n} van capaciteit ${z.capaciteit}"><i class="${over?'over':''}" style="width:${pct}%"></i>${mark?`<b style="left:${mark}%"></b>`:''}</div><span class="num" style="${over?'color:var(--krit);font-weight:700':''}">${n}${z.type==='EV'?` / ${z.maxEvs}`:''}</span></div>`;}).join('')}
+        </div><p class="muted" style="margin:0;font-size:12px">Het streepje toont de maximale EV-dichtheid. De balk toont de bezetting van de capaciteit.</p></section>
+      <section class="panel"><div class="panel-head"><h2>Laders</h2><button class="link" data-go="laden">Naar laden →</button></div>${chargerGrid()}</section>
+    </div>
+  </div>`;
+}
+function chargerGrid(){ return `<div class="chargers">${S.laders.map(l=>`<div class="ch ${l.status==='Defect'?'defect':l.bezetDoor?'bezet':''}" title="${l.type} · ${l.vermogenKw} kW${l.bezetDoor?' · '+l.bezetDoor:''}"><b>${l.code}</b>${l.status==='Defect'?'defect':l.bezetDoor?'bezig':l.vermogenKw+' kW'}</div>`).join('')}</div>`; }
+
+function viewVoertuigen(){
+  const f=S.filter, q=f.q.trim().toUpperCase();
+  const list=S.veh.map(v=>({v,al:evaluate(v)})).map(x=>({...x,st:status(x.v,x.al)}))
+    .filter(x=>(!q||x.v.vin.includes(q)||x.v.model.toUpperCase().includes(q))&&(!f.status||(f.status==='attention'?x.al.length>0:x.st===f.status))&&(!f.fab||x.v.fab===f.fab)&&(!f.zone||x.v.zone===f.zone))
+    .sort((a,b)=>(SEV[b.al[0]?.ernst]||0)-(SEV[a.al[0]?.ernst]||0));
+  const opt=(arr,val)=>arr.map(([k,l])=>`<option value="${k}" ${val===k?'selected':''}>${esc(l)}</option>`).join('');
+  return `${head('Voertuigen','Terrein · '+S.veh.length+' voorbeeldvoertuigen')}
+  <section class="panel">
+    <div class="filters">
+      <input class="input grow" id="f-q" type="search" placeholder="Zoek op VIN of model" value="${esc(f.q)}" aria-label="Zoek op VIN of model">
+      <select class="input" id="f-status" aria-label="Status">${opt([['','Alle statussen'],['attention','Met waarschuwingen'],...Object.keys(STATUS_PILL).map(s=>[s,s])],f.status)}</select>
+      <select class="input" id="f-fab" aria-label="Fabrikant">${opt([['','Alle fabrikanten'],...D.fabrikanten.map(x=>[x.code,x.naam])],f.fab)}</select>
+      <select class="input" id="f-zone" aria-label="Zone">${opt([['','Alle zones'],...D.zones.map(z=>[z.code,z.code])],f.zone)}</select>
+      <span class="muted num" style="font-size:12px">${list.length} resultaten</span>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th></th><th>VIN</th><th>Model</th><th>Zone</th><th class="r">SOC</th><th>12V</th><th>Status</th><th>Belangrijkste waarschuwing</th><th>Vertrek</th></tr></thead>
+      <tbody>${list.map(({v,al,st})=>`<tr class="click" data-vin="${v.vin}">
+        <td class="sev"><span class="${al[0]?'sev-'+al[0].ernst:''}"></span></td>
+        <td class="mono">${v.vin}</td><td>${esc(v.model)}<div class="muted" style="font-size:12px">${esc(v.merk)}</div></td><td>${v.zone}</td>
+        <td class="r num" style="font-weight:600">${v.soc}%</td><td>${v.twaalfV}</td><td>${pill(st,STATUS_PILL[st])}</td>
+        <td>${al[0]?esc(al[0].msg):'<span class="muted">—</span>'}</td><td>${v.vertrek?fd(v.vertrek)+`<div class="muted" style="font-size:12px">${v.bestemming}</div>`:'<span class="muted">—</span>'}</td></tr>`).join('')}</tbody>
+    </table></div>
+  </section>`;
+}
+
+function socChart(v){
+  const p=P[v.profiel], h=v.historiek, r=ontlaad(v,p);
+  const end=v.vertrek && days(REF,v.vertrek)<=30 ? v.vertrek : addDays(REF,SET.horizon);
+  const start=h[0].t, span=Math.max(1,days(start,end));
+  const Wd=640,Ht=240,L=40,R=16,T=14,B=30, x=t=>L+(days(start,t)/span)*(Wd-L-R), y=s=>T+(1-s/100)*(Ht-T-B);
+  const vr=vertrekRegel(v,p), last=h[h.length-1], predEnd=Math.max(0,v.soc-r*days(REF,end));
+  const hline=(val,color,label,dash)=>`<line x1="${L}" x2="${Wd-R}" y1="${y(val)}" y2="${y(val)}" stroke="${color}" stroke-width="1.2" ${dash?'stroke-dasharray="5 4"':''}/><text x="${Wd-R}" y="${y(val)-4}" text-anchor="end" font-size="10.5" fill="${color}">${label} ${val}%</text>`;
+  const pts=h.map(p_=>`${x(p_.t).toFixed(1)},${y(p_.soc).toFixed(1)}`).join(' ');
+  return `<svg viewBox="0 0 ${Wd} ${Ht}" role="img" aria-label="Laadtoestand over tijd met voorspelling">
+    ${[0,25,50,75,100].map(s=>`<line x1="${L}" x2="${Wd-R}" y1="${y(s)}" y2="${y(s)}" stroke="var(--line)" stroke-width="1"/><text x="${L-8}" y="${y(s)+3.5}" text-anchor="end" font-size="10.5" fill="var(--muted)">${s}%</text>`).join('')}
+    ${hline(p.minOpslagSoc,'var(--hoog)','min. opslag',true)}
+    ${hline(p.kritiekSoc,'var(--krit)','kritiek',true)}
+    ${vr?hline(vr.maxSoc,'var(--accent)','max. '+vr.bestemmingsType.toLowerCase(),true):''}
+    <polyline points="${pts}" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    ${h.map(p_=>`<circle cx="${x(p_.t)}" cy="${y(p_.soc)}" r="3.2" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.6"/>`).join('')}
+    <line x1="${x(last.t)}" y1="${y(last.soc)}" x2="${x(end)}" y2="${y(predEnd)}" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 4" opacity=".6"/>
+    <circle cx="${x(end)}" cy="${y(predEnd)}" r="4" fill="var(--ink)" opacity=".6"/>
+    <line x1="${x(REF)}" x2="${x(REF)}" y1="${T}" y2="${Ht-B}" stroke="var(--marking)" stroke-width="2"/>
+    <text x="${x(start)}" y="${Ht-10}" font-size="10.5" fill="var(--muted)">${fd(start)}</text>
+    <text x="${x(REF)}" y="${Ht-10}" font-size="10.5" fill="var(--ink)" text-anchor="middle" font-weight="600">vandaag</text>
+    <text x="${x(end)}" y="${Ht-10}" font-size="10.5" fill="var(--muted)" text-anchor="end">${v.vertrek===end?'vertrek '+fd(end):fd(end)}</text>
+  </svg>`;
+}
+function viewVoertuig(){
+  const v=V(S.vin); if(!v) return viewVoertuigen();
+  const p=P[v.profiel], al=evaluate(v), st=status(v,al), vr=vertrekRegel(v,p);
+  return `<div><button class="link" data-go="voertuigen">← Voertuigen</button></div>
+  ${head(`<span class="mono" style="font-family:var(--mono);font-size:26px;font-weight:500">${v.vin}</span>`, esc(v.merk)+' · '+esc(v.model)+' · '+v.aandrijving+' · '+v.kwh+' kWh',
+     `<div class="filters">${pill(st,STATUS_PILL[st])}<button class="btn" data-mob="${v.vin}">Controle registreren</button>${v.zone!=='Q-QUAR'?`<button class="btn danger" data-quar="${v.vin}">Quarantaine openen</button>`:''}<button class="btn primary" data-rapport="${v.vin}">Overdrachtsrapport</button></div>`)}
+  <dl class="dl">
+    <div><dt>Laadtoestand</dt><dd class="big-soc num">${v.soc}%</dd></div>
+    <div><dt>12V</dt><dd>${v.twaalfV}${v.rijvaardig?'':' · niet rijvaardig'}</dd></div>
+    <div><dt>Zone</dt><dd>${v.zone}</dd></div>
+    <div><dt>Regelprofiel</dt><dd>${esc(p.naam)} <span class="code">v${p.versie}</span></dd></div>
+    <div><dt>Laatste controle</dt><dd>${fd(v.laatsteControle)} <span class="muted" style="font-weight:400">(${days(v.laatsteControle,REF)} d)</span></dd></div>
+    <div><dt>Vertrek</dt><dd>${v.vertrek?`${fd(v.vertrek)} · ${v.bestemming}`:'Niet gepland'}</dd></div>
+  </dl>
+  <div class="grid-2">
+    <section class="panel"><div class="panel-head"><h2>Laadtoestand</h2><span class="muted" style="font-size:12px">Ontlading ${ontlaad(v,p).toFixed(2)}%/dag · stippellijn = voorspelling</span></div>
+      <div class="chartwrap">${socChart(v)}</div>
+      ${vr?`<p class="muted" style="margin:0;font-size:12px">Vertrekregel ${v.bestemming.toLowerCase()}: tussen ${vr.minSoc}% en ${vr.maxSoc}%. Doel bij laden: ${doelSoc(v)}%.</p>`:''}
+    </section>
+    <section class="panel"><h2>Waarschuwingen</h2>
+      ${al.length?`<div class="alerts">${al.map(a=>`<div class="alert"><span class="sev-${a.ernst}"></span><div>${sevPill(a.ernst)}<strong style="font-size:13px">${esc(a.msg)}</strong><span class="act">→ ${esc(a.actie)}</span><span class="code">${a.code}</span></div></div>`).join('')}</div>`:`<p style="margin:0">${pill('Geen open waarschuwingen','p-ok')}</p>`}
+    </section>
+  </div>
+  <section class="panel"><h2>Tijdlijn</h2><ul class="timeline">
+    ${[...v.historiek].reverse().map((h,i,arr)=>`<li><span class="num muted">${fd(h.t)}</span><span>Controle · laadtoestand <strong class="num">${h.soc}%</strong>${i===arr.length-1?' · aankomstcontrole':''}</span></li>`).join('')}
+    <li><span class="num muted">${fd(v.aankomst)}</span><span>Aangekomen · geïmporteerd uit scheepslijst · profiel ${esc(p.id)} gekoppeld</span></li>
+  </ul></section>`;
+}
+
+function viewTerrein(){
+  const m=S.mob; let body='';
+  if(m.step==='taken'){
+    const taken=S.veh.filter(v=>v.zone!=='Q-QUAR').map(v=>({v,al:evaluate(v)})).filter(x=>x.al.some(a=>['CONTROLE_TE_LAAT','SOC_ONDER_MIN','SOC_KRITIEK','TWAALFVOLT_ZWAK'].includes(a.code))).slice(0,7);
+    body=`<button class="bigbtn" data-scan="${taken[0]?.v.vin||''}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V4h3M21 7V4h-3M3 17v3h3M21 17v3h-3M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>VIN scannen</button>
+      <div class="explain" style="gap:6px"><label class="f" for="m-vin">Of typ een VIN</label><div style="display:flex;gap:6px"><input class="input grow mono" id="m-vin" maxlength="20" autocomplete="off" placeholder="17 tekens"><button class="btn" data-vinsubmit>OK</button></div>${m.err?`<span class="err">${esc(m.err)}</span>`:''}</div>
+      <h3 style="margin-top:4px">Mijn taken vandaag <span class="muted" style="font-weight:400">(${taken.length})</span></h3>
+      ${taken.map(({v,al})=>`<button class="task" data-mob="${v.vin}"><span class="mono" style="font-size:13px">${v.vin}</span><span class="pill p-${al[0].ernst}">${al[0].ernst}</span><span class="muted" style="font-size:12px">${esc(v.model)} · zone ${v.zone}</span><span class="muted" style="font-size:12px">${al[0].code==='CONTROLE_TE_LAAT'?'controle':'laadtoestand'}</span></button>`).join('')}`;
+  } else if(m.step==='form'){
+    const v=V(m.vin), f=m.form;
+    body=`<div class="vinbox">${v.vin}</div><div class="muted" style="font-size:13px;margin-top:-6px">${esc(v.model)} · zone ${v.zone} · vorige: ${v.soc}% op ${fd(v.laatsteControle)}</div>
+      <label class="f" for="m-soc">Laadtoestand (van het dashboard van de wagen)</label>
+      <div class="socdial"><button class="step" data-socstep="-1" aria-label="Eén procent minder">−</button><span class="n num" id="m-socval">${f.soc}%</span><button class="step" data-socstep="1" aria-label="Eén procent meer">+</button></div>
+      <input type="range" id="m-soc" min="0" max="100" value="${f.soc}">
+      <span class="f" style="font-size:12px;color:var(--muted);font-weight:600">12V-batterij</span>
+      <div class="seg" role="group" aria-label="12V-batterij">${['OK','Zwak','Dood'].map(s=>`<button data-12v="${s}" aria-pressed="${f.twaalfV===s}">${s}</button>`).join('')}</div>
+      <label class="toggle" for="m-schade"><span>Schade aan de wagen</span><input type="checkbox" id="m-schade" ${f.schade?'checked':''}></label>
+      <label class="toggle" for="m-verdacht"><span><strong>Verdachte batterij</strong><br><span class="muted" style="font-size:12px">rook, geur, warmte, waarschuwing op dashboard</span></span><input type="checkbox" id="m-verdacht" ${f.verdacht?'checked':''}></label>
+      ${m.confirm?`<div class="notice"><strong>Klopt ${f.soc}%?</strong><span>Dat is een grote daling tegenover de vorige meting (${v.soc}%) of een zeer lage waarde.</span><div style="display:flex;gap:8px"><button class="btn primary sm" data-save="force">Ja, opslaan</button><button class="btn sm" data-unconfirm>Aanpassen</button></div></div>`:''}
+      <button class="bigbtn" data-save>Controle opslaan</button><button class="bigbtn ghost" data-mobback>Annuleren</button>`;
+  } else {
+    const v=V(m.vin), al=evaluate(v), st=status(v,al);
+    body=`<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span class="pill p-ok">Controle opgeslagen</span><div class="vinbox" style="width:100%">${v.vin}</div></div>
+      <div>Nieuwe status: ${pill(st,STATUS_PILL[st])}</div>
+      ${al.length?`<div class="alerts">${al.map(a=>`<div class="alert"><span class="sev-${a.ernst}"></span><div>${sevPill(a.ernst)}<strong style="font-size:13px">${esc(a.msg)}</strong><span class="act">→ ${esc(a.actie)}</span></div></div>`).join('')}</div>`:`<p style="margin:0">Geen waarschuwingen. Alles in orde.</p>`}
+      <button class="bigbtn" data-mobback>Volgende taak</button>`;
+  }
+  return `${head('Terrein','Weergave voor de terreinmedewerker')}
+  <div class="phone-stage">
+    <div class="phone"><div class="phone-top"><span class="t">${m.step==='taken'?'Controles':m.step==='form'?'Controle':'Resultaat'}</span><span class="s">Yusuf · Terreinmedewerker · ${fd(REF)}</span></div><div class="phone-body">${body}</div></div>
+    <div class="explain">
+      <h2>Zo werkt een controle</h2>
+      <ol><li><strong>VIN scannen</strong> met de camera. In het prototype kiest de knop de eerste taak, omdat de camera hier niet beschikbaar is. Typ je een VIN, dan wordt die gecontroleerd op lengte, verboden letters en controlecijfer.</li>
+      <li><strong>Laadtoestand invoeren</strong> met grote knoppen: bruikbaar met handschoenen.</li>
+      <li><strong>Opslaan</strong>: de regelmotor van de fabrikant rekent meteen de nieuwe waarschuwingen uit. In de echte app ziet de planner ze live verschijnen via SignalR.</li></ol>
+      <p class="muted" style="margin:0">Probeer: sla een controle op met 18% en "Zwak" op de 12V, en bekijk dan het dashboard. Of vink "Verdachte batterij" aan en ga naar Veiligheid.</p>
+      <p class="muted" style="margin:0">Probeer ook deze VIN met een typfout: <span class="mono">${S.veh[3].vin.slice(0,8)}${S.veh[3].vin[8]==='5'?'6':'5'}${S.veh[3].vin.slice(9)}</span></p>
+    </div>
+  </div>`;
+}
+
+function viewLaden(){
+  const opd=opdrachten();
+  const fabs=D.fabrikanten.map(f=>({...f,...(S.fact[f.code]||{sessies:0,kwh:0})}));
+  return `${head('Laden','Laadmodule')}
+  <div class="grid-2">
+    <section class="panel"><div class="panel-head"><h2>Laadopdrachten</h2><span class="muted" style="font-size:12px">Voorgesteld door de regelmotor · hoogste prioriteit eerst</span></div>
+      <div class="tablewrap"><table><thead><tr><th></th><th>Voertuig</th><th>Reden</th><th class="r">Nu → doel</th><th>Deadline</th><th>Actie</th></tr></thead><tbody>
+      ${opd.slice(0,14).map(o=>`<tr><td class="sev"><span class="${o.trig?'sev-'+o.trig.ernst:''}"></span></td>
+        <td><button class="link mono" data-vin="${o.v.vin}" style="font-weight:500">${o.v.vin}</button><div class="muted" style="font-size:12px">${esc(o.v.model)} · ${o.v.zone}</div></td>
+        <td style="font-size:12px">${o.trig?esc(o.trig.msg):'—'}<div class="code">${o.trig?.code||''}</div></td>
+        <td class="r num" style="white-space:nowrap"><strong>${o.v.soc}% → ${o.doel}%</strong><div class="muted" style="font-size:12px">${(Math.max(0,o.doel-o.v.soc)/100*o.v.kwh/0.9).toFixed(1)} kWh</div></td>
+        <td class="num">${fd(o.deadline)}</td>
+        <td>${o.status==='Voorgesteld'?`<button class="btn sm" data-opd="goed" data-v="${o.v.vin}">Goedkeuren</button>`:o.status==='Goedgekeurd'?`<button class="btn primary sm" data-opd="start" data-v="${o.v.vin}">Start</button>`:`<span class="pill p-info">${o.lader}</span> <button class="btn sm" data-opd="stop" data-v="${o.v.vin}">Stop</button>`}</td></tr>`).join('')}
+      </tbody></table></div>
+      <p class="muted" style="margin:0;font-size:12px">Doel = het laagste van: doel voor opslag, maximum laden, en het maximum voor de volgende bestemming als het vertrek binnen ${SET.venster} dagen valt. Een Nordhavn die per schip vertrekt, wordt dus nooit boven 45% geladen.</p>
+    </section>
+    <div class="stack">
+      <section class="panel"><h2>Laders</h2>${chargerGrid()}<p class="muted" style="margin:0;font-size:12px">L1–L20: vast, 22 kW · M1–M2: mobiel, 50 kW</p></section>
+      <section class="panel"><div class="panel-head"><h2>Facturatie ${dt(REF).toLocaleDateString('nl-BE',{month:'long'})}</h2><button class="btn sm" data-copycsv="fact">Kopieer als CSV</button></div>
+        <div class="tablewrap"><table><thead><tr><th>Fabrikant</th><th class="r">Laadbeurten</th><th class="r">kWh</th></tr></thead><tbody>
+        ${fabs.map(f=>`<tr><td>${esc(f.naam)}</td><td class="r num">${f.sessies}</td><td class="r num">${nf(Math.round(f.kwh*10)/10)}</td></tr>`).join('')}</tbody></table></div></section>
+    </div>
+  </div>`;
+}
+
+function viewVeiligheid(){
+  const q=S.veh.filter(v=>['In quarantaine','Quarantaine vereist'].includes(status(v)));
+  const z=ZONE[S.nood], inZone=S.veh.filter(v=>v.zone===S.nood);
+  return `${head('Veiligheid','HSE')}
+  <section class="panel"><div class="panel-head"><h2>Quarantaine</h2><span class="muted" style="font-size:12px">Elke quarantaine vraagt een beslissing met motivering</span></div>
+    <div class="tablewrap"><table><thead><tr><th>Voertuig</th><th>Status</th><th>Reden</th><th>Beslissing</th></tr></thead><tbody>
+    ${q.map(v=>{const st=status(v); const d=v.dossier; return `<tr><td><button class="link mono" data-vin="${v.vin}" style="font-weight:500">${v.vin}</button><div class="muted" style="font-size:12px">${esc(v.model)} · ${v.soc}%</div></td><td>${pill(st,STATUS_PILL[st])}</td>
+      <td style="font-size:13px">${esc(d?.reden||'Gemeld bij controle')}<div class="muted" style="font-size:12px">sinds ${fd(d?.geopend||REF)}</div></td>
+      <td>${st==='Quarantaine vereist'?`<button class="btn danger sm" data-toq="${v.vin}">Verplaats naar Q-QUAR</button>`:d&&d.beslissing!=='Open'?`${pill(d.beslissing,'p-ok')}<div class="muted" style="font-size:12px;margin-top:4px">${esc(d.motivering)}</div>`:
+       `<div style="display:flex;flex-direction:column;gap:6px;min-width:240px"><select class="input" id="bes-${v.vin}" aria-label="Beslissing"><option>Vrijgegeven</option><option>Naar hersteller</option><option>Wacht op fabrikant</option></select><textarea class="input" id="mot-${v.vin}" rows="2" placeholder="Motivering (verplicht)" aria-label="Motivering"></textarea><button class="btn sm" data-beslis="${v.vin}">Beslissing vastleggen</button></div>`}</td></tr>`;}).join('')}
+    </tbody></table></div></section>
+  <section class="panel"><div class="panel-head"><h2>Noodoverzicht per zone</h2>
+    <div class="filters"><select class="input" id="nood-zone" aria-label="Zone">${D.zones.filter(z=>z.type!=='Laden').map(z=>`<option ${z.code===S.nood?'selected':''}>${z.code}</option>`).join('')}</select><button class="btn sm" data-copycsv="nood">Kopieer als CSV voor de brandweer</button></div></div>
+    <div class="cmp"><div><div class="n num">${zoneCount(S.nood)}</div><div class="muted" style="font-size:12px">EV's in ${S.nood}${z.type==='EV'?` (max. ${z.maxEvs})`:''}</div></div>
+      <div><div class="n num" style="color:var(--krit)">${inZone.filter(v=>!v.rijvaardig||v.twaalfV==='Dood').length}</div><div class="muted" style="font-size:12px">niet rijvaardig (steekproef)</div></div>
+      <div><div class="n num">${inZone.length?Math.round(inZone.reduce((s,v)=>s+v.soc,0)/inZone.length):'–'}%</div><div class="muted" style="font-size:12px">gem. laadtoestand (steekproef)</div></div></div>
+    <div class="tablewrap"><table><thead><tr><th>VIN</th><th>Model</th><th class="r">SOC</th><th>Rijvaardig</th><th>Waarschuwing</th></tr></thead><tbody>
+    ${inZone.map(v=>{const a=evaluate(v)[0]; return `<tr class="click" data-vin="${v.vin}"><td class="mono">${v.vin}</td><td>${esc(v.model)}</td><td class="r num">${v.soc}%</td><td>${v.rijvaardig&&v.twaalfV!=='Dood'?'Ja':'<strong style="color:var(--krit)">Nee</strong>'}</td><td>${a?sevPill(a.ernst)+' '+esc(a.code):'—'}</td></tr>`;}).join('')||'<tr><td colspan="5" class="muted">Geen voorbeeldvoertuigen in deze zone.</td></tr>'}
+    </tbody></table></div>
+    <p class="muted" style="margin:0;font-size:12px">Het prototype toont de voorbeeldvoertuigen. In de app bevat de lijst alle voertuigen in de zone.</p></section>`;
+}
+
+function viewRegels(){
+  const p=P[S.regel], d=S.draft && S.draft.id===p.id ? S.draft : (S.draft={...p});
+  const betrokken=S.veh.filter(v=>v.profiel===p.id);
+  const nu=betrokken.filter(v=>evaluate(v,p).length).length, straks=betrokken.filter(v=>evaluate(v,d).length).length;
+  const field=(k,l,unit)=>`<label class="f" for="d-${k}">${l}<input class="input num" id="d-${k}" data-draft="${k}" type="number" min="0" max="${unit==='d'?90:100}" value="${d[k]}"></label>`;
+  return `${head('Regelprofielen','Regels per fabrikant, als data')}
+  <div class="grid-2">
+    <section class="panel"><div class="panel-head"><h2>${esc(p.naam)}</h2><span class="code">${p.id} · versie ${p.versie}${p.modelPatroon?' · model '+esc(p.modelPatroon):''}</span></div>
+      <div class="editor">${field('minOpslagSoc','Min. opslag (%)')}${field('doelOpslagSoc','Doel opslag (%)')}${field('maxLaadSoc','Max. laden (%)')}${field('kritiekSoc','Kritiek (%)')}${field('controleIntervalDagen','Controle-interval (d)','d')}</div>
+      <div class="cmp" style="padding:12px;background:var(--surface-2);border-radius:8px"><div><div class="n num">${nu}</div><div class="muted" style="font-size:12px">met waarschuwing nu</div></div><div><div class="n num" style="color:${straks>nu?'var(--hoog)':straks<nu?'var(--ok)':'var(--ink)'}">${straks}</div><div class="muted" style="font-size:12px">met deze wijziging</div></div><div class="muted" style="font-size:12px;max-width:34ch">Simulatie op ${betrokken.length} voorbeeldvoertuigen met dit profiel.</div></div>
+      <div class="filters"><button class="btn primary" data-saveprof>Opslaan als versie ${p.versie+1}</button><button class="btn" data-resetprof>Herstellen</button></div>
+      <h3>Vertrekregels</h3>
+      <div class="tablewrap"><table><thead><tr><th>Bestemming</th><th class="r">Min.</th><th class="r">Max.</th></tr></thead><tbody>${p.vertrekRegels.map(r=>`<tr><td>${r.bestemmingsType}</td><td class="r num">${r.minSoc}%</td><td class="r num">${r.maxSoc}%</td></tr>`).join('')}</tbody></table></div>
+    </section>
+    <section class="panel"><h2>Alle profielen</h2><div class="tablewrap"><table><thead><tr><th>Profiel</th><th class="r">Min–max</th><th class="r">Interval</th></tr></thead><tbody>
+      ${D.profielen.map(x=>`<tr class="click" data-regel="${x.id}" ${x.id===p.id?'style="background:var(--accent-soft)"':''}><td><strong style="font-size:13px">${esc(x.naam)}</strong><div class="code">${x.id} · v${x.versie}</div></td><td class="r num">${x.minOpslagSoc}–${x.maxLaadSoc}%</td><td class="r num">${x.controleIntervalDagen} d</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="muted" style="margin:0;font-size:12px">Het meest specifieke profiel wint: fabrikant + model, dan fabrikant, dan de standaard van de terminal. Een nieuwe fabrikant toevoegen vraagt geen nieuwe softwareversie.</p></section>
+  </div>`;
+}
+
+function rapport(vin){
+  const v=V(vin), p=P[v.profiel], al=evaluate(v), id='VY-'+vin.slice(-6)+'-'+REF.replaceAll('-','');
+  document.getElementById('overlay').innerHTML=`<div class="modal" data-close><div class="sheet" role="dialog" aria-modal="true" aria-label="Overdrachtsrapport">
+    <div class="doc-head"><div><div class="eyebrow">Overdrachtsrapport</div><h2 style="font-size:26px">VoltYard · Demo Terminal Zeebrugge</h2></div><div class="code" style="text-align:right">Rapport ${id}<br>Gegenereerd ${fd(REF)} 2026</div></div>
+    <dl class="dl"><div><dt>VIN</dt><dd class="mono">${v.vin}</dd></div><div><dt>Voertuig</dt><dd>${esc(v.merk)} ${esc(v.model)}</dd></div><div><dt>Aangekomen</dt><dd>${fd(v.aankomst)}</dd></div><div><dt>Regelprofiel</dt><dd>${p.id} v${p.versie}</dd></div><div><dt>Laatste SOC</dt><dd>${v.soc}%</dd></div><div><dt>12V</dt><dd>${v.twaalfV}</dd></div></dl>
+    <h3>Controles (${v.historiek.length} laatste)</h3>
+    <div class="tablewrap"><table><thead><tr><th>Datum</th><th class="r">SOC</th><th>Bron</th></tr></thead><tbody>${v.historiek.map(h=>`<tr><td>${fd(h.t)}</td><td class="r num">${h.soc}%</td><td>Handmatig</td></tr>`).join('')}</tbody></table></div>
+    <h3>Open waarschuwingen bij overdracht</h3><p style="margin:0">${al.length?al.map(a=>a.code).join(', '):'Geen'}</p>
+    <p class="muted" style="margin:0;font-size:12px">In de app is dit een PDF met de volledige geschiedenis: alle controles, laadbeurten, zones, quarantaines en waarschuwingen, met tijdstempels en de naam van de medewerker.</p>
+    <div><button class="btn primary" data-close>Sluiten</button></div></div></div>`;
+}
+
+/* ---------- render & events ---------- */
+const VIEWS={dashboard:viewDashboard,voertuigen:viewVoertuigen,voertuig:viewVoertuig,terrein:viewTerrein,laden:viewLaden,veiligheid:viewVeiligheid,regels:viewRegels};
+function render(){ renderNav(); document.getElementById('app').innerHTML=VIEWS[S.view](); }
+function go(view){ S.view=view; if(view!=='regels') S.draft=null; render(); document.getElementById('app').focus({preventScroll:true}); window.scrollTo(0,0); try{localStorage.setItem('vy-view',view)}catch(e){} }
+let tt; function toast(msg){ clearTimeout(tt); document.querySelectorAll('.toast').forEach(t=>t.remove()); const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; document.body.appendChild(t); tt=setTimeout(()=>t.remove(),3200); }
+function openMob(vin){ const v=V(vin); S.mob={step:'form',vin,form:{soc:v.soc,twaalfV:v.twaalfV,schade:false,verdacht:false},confirm:false,err:''}; go('terrein'); }
+function saveCheck(force){
+  const m=S.mob, v=V(m.vin), f=m.form;
+  if(!force && (f.soc<5 || v.soc-f.soc>20)){ m.confirm=true; render(); return; }
+  v.historiek.push({t:REF,soc:f.soc}); v.soc=f.soc; v.twaalfV=f.twaalfV; v.rijvaardig=f.twaalfV!=='Dood'; v.laatsteControle=REF;
+  if(f.verdacht||f.schade){ v.quarantaineVereist=true; v.dossier={reden:f.verdacht?'Verdachte batterij gemeld bij controle':'Schade gemeld bij controle',geopend:REF,beslissing:'Open'}; }
+  m.step='result'; m.confirm=false; render(); toast('Controle opgeslagen · dashboard bijgewerkt');
+}
+async function copyText(txt){ try{ await navigator.clipboard.writeText(txt); toast('Gekopieerd naar het klembord'); }catch(e){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); toast('Gekopieerd naar het klembord');}catch(_){toast('Kopiëren lukte niet. Selecteer de tabel handmatig.');} ta.remove(); } }
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go],[data-vin],[data-mob],[data-scan],[data-vinsubmit],[data-socstep],[data-12v],[data-save],[data-unconfirm],[data-mobback],[data-opd],[data-toq],[data-beslis],[data-quar],[data-rapport],[data-close],[data-copycsv],[data-regel],[data-saveprof],[data-resetprof]');
+  if(!t) return; const d=t.dataset;
+  if('close' in d){ if(e.target===t||t.tagName==='BUTTON') document.getElementById('overlay').innerHTML=''; return; }
+  if(d.go){ if(d.f==='attention') S.filter={q:'',status:'attention',fab:'',zone:''}; if(d.go==='terrein') S.mob={step:'taken',vin:null,form:null,confirm:false,err:''}; go(d.go); return; }
+  if(d.vin && !('opd' in d)){ S.vin=d.vin; go('voertuig'); return; }
+  if(d.mob){ openMob(d.mob); return; }
+  if('scan' in d){ if(d.scan) openMob(d.scan); return; }
+  if('vinsubmit' in d){ const val=document.getElementById('m-vin').value.trim().toUpperCase(), err=vinFout(val); if(err){S.mob.err=err;render();return;} const v=V(val); if(!v){S.mob.err='Geldige VIN, maar niet gevonden op dit terrein. Controleer de scheepslijst.';render();return;} openMob(val); return; }
+  if(d.socstep){ const f=S.mob.form; f.soc=Math.max(0,Math.min(100,f.soc+ +d.socstep)); render(); return; }
+  if(d['12v']){ S.mob.form.twaalfV=d['12v']; render(); return; }
+  if('save' in d){ saveCheck(d.save==='force'); return; }
+  if('unconfirm' in d){ S.mob.confirm=false; render(); return; }
+  if('mobback' in d){ S.mob={step:'taken',vin:null,form:null,confirm:false,err:''}; render(); return; }
+  if(d.opd){ const v=V(d.v), o=S.opdr[d.v]||(S.opdr[d.v]={});
+    if(d.opd==='goed'){ o.status='Goedgekeurd'; toast('Laadopdracht goedgekeurd'); }
+    else if(d.opd==='start'){ const l=S.laders.find(l=>l.status!=='Defect'&&!l.bezetDoor); if(!l){toast('Geen vrije lader. Wacht tot er een vrijkomt.');return;} l.bezetDoor=v.vin; o.status='Bezig'; o.lader=l.code; o.startSoc=v.soc; toast(`Laadsessie gestart op ${l.code}`); }
+    else { const doel=doelSoc(v), kwh=Math.max(0,(doel-o.startSoc)/100*v.kwh/0.9); const l=S.laders.find(l=>l.bezetDoor===v.vin); if(l) l.bezetDoor=null;
+      v.historiek.push({t:REF,soc:doel}); v.soc=doel; v.laatsteControle=REF; const fa=S.fact[v.fab]||(S.fact[v.fab]={sessies:0,kwh:0}); fa.sessies++; fa.kwh+=kwh; delete S.opdr[d.v];
+      toast(`Laden gestopt op ${doel}% · ${kwh.toFixed(1)} kWh gefactureerd aan ${FAB[v.fab]}`); }
+    render(); return; }
+  if(d.quar){ const v=V(d.quar); v.quarantaineVereist=true; v.dossier={reden:'Handmatig geopend door planner',geopend:REF,beslissing:'Open'}; toast('Quarantaine vereist · HSE verwittigd'); go('veiligheid'); return; }
+  if(d.toq){ const v=V(d.toq); moveTo(v,'Q-QUAR'); v.quarantaineVereist=false; toast('Verplaatst naar Q-QUAR'); render(); return; }
+  if(d.beslis){ const v=V(d.beslis), b=document.getElementById('bes-'+d.beslis).value, mot=document.getElementById('mot-'+d.beslis).value.trim();
+    if(mot.length<10){ toast('Geef een motivering van minstens 10 tekens.'); document.getElementById('mot-'+d.beslis).focus(); return; }
+    v.dossier={...v.dossier,beslissing:b,motivering:mot}; if(b==='Vrijgegeven'){ moveTo(v,'B-EV-1'); toast('Vrijgegeven en verplaatst naar B-EV-1'); } else toast('Beslissing vastgelegd'); render(); return; }
+  if(d.rapport){ rapport(d.rapport); return; }
+  if(d.regel){ S.regel=d.regel; S.draft=null; render(); return; }
+  if('saveprof' in d){ const p=P[S.regel]; Object.assign(p,S.draft,{versie:p.versie+1}); S.draft=null; toast(`${p.naam} opgeslagen als versie ${p.versie}. Alle voertuigen herberekend.`); render(); return; }
+  if('resetprof' in d){ S.draft=null; render(); return; }
+  if(d.copycsv==='fact'){ copyText('fabrikant;laadbeurten;kwh\n'+D.fabrikanten.map(f=>{const x=S.fact[f.code]||{sessies:0,kwh:0};return `${f.naam};${x.sessies};${x.kwh.toFixed(1).replace('.',',')}`}).join('\n')); return; }
+  if(d.copycsv==='nood'){ copyText('vin;model;soc;rijvaardig\n'+S.veh.filter(v=>v.zone===S.nood).map(v=>`${v.vin};${v.model};${v.soc};${v.rijvaardig&&v.twaalfV!=='Dood'?'ja':'nee'}`).join('\n')); return; }
+});
+document.addEventListener('input',e=>{
+  const id=e.target.id;
+  if(id==='f-q'){ S.filter.q=e.target.value; const pos=e.target.selectionStart; render(); const el=document.getElementById('f-q'); el.focus(); el.setSelectionRange(pos,pos); }
+  if(id==='m-soc'){ S.mob.form.soc=+e.target.value; document.getElementById('m-socval').textContent=S.mob.form.soc+'%'; }
+  if(e.target.dataset.draft){ const k=e.target.dataset.draft, val=Math.max(0,Math.min(100,+e.target.value||0)); S.draft[k]=val; const pos=e.target.selectionStart; render(); const el=document.getElementById('d-'+k); el.focus(); try{el.setSelectionRange(pos,pos)}catch(_){} }
+});
+document.addEventListener('change',e=>{
+  const id=e.target.id;
+  if(id==='f-status'){S.filter.status=e.target.value;render();} if(id==='f-fab'){S.filter.fab=e.target.value;render();} if(id==='f-zone'){S.filter.zone=e.target.value;render();}
+  if(id==='m-schade') S.mob.form.schade=e.target.checked; if(id==='m-verdacht') S.mob.form.verdacht=e.target.checked;
+  if(id==='nood-zone'){ S.nood=e.target.value; render(); }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('overlay').innerHTML=''; if(e.key==='Enter'&&e.target.id==='m-vin') document.querySelector('[data-vinsubmit]').click(); });
+
+(function start(){ const h=location.hash.slice(1); let v=null; try{v=localStorage.getItem('vy-view')}catch(e){} S.view=VIEWS[h]&&h!=='voertuig'?h:(VIEWS[v]&&v!=='voertuig'?v:'dashboard'); render(); })();
+</script>

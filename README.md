@@ -32,6 +32,18 @@ Dat zorgt voor drie problemen die de sector vandaag grotendeels op papier en met
 
 ---
 
+## Snel naar
+
+| | |
+|---|---|
+| 🖱️ **Klikbaar prototype** | [Online bekijken](https://claude.ai/artifact/9FzRFJfQecUib1gaK1AeXj) (privé link) · [uitleg](prototype/README.md) |
+| 📋 **Backlog** | [47 issues in 8 mijlpalen](https://github.com/phlppgdfry/VoltYard/milestones) · het projectbord maak je aan met `tools/setup-projectbord.sh` |
+| 🧪 **Demodata** | [demo/](demo/README.md): regelprofielen, scheepslijst, 2.000 voertuigen, testgevallen voor de regelmotor |
+| 📚 **Leerplan C#** | [docs/leerplan-csharp.md](docs/leerplan-csharp.md) |
+| 🤝 **Contacten voor gesprekken** | [docs/04-validatie/contactlijst.md](docs/04-validatie/contactlijst.md) |
+
+---
+
 ## Documentatie
 
 | # | Onderdeel | Inhoud |
@@ -49,6 +61,7 @@ Dat zorgt voor drie problemen die de sector vandaag grotendeels op papier en met
 | 03 | [Laadmodule](docs/03-concept/laadmodule.md) | Laden als functie en als betaalde dienst |
 | 04 | [Hypotheses](docs/04-validatie/hypotheses.md) | Wat we aannemen en moeten bewijzen |
 | 04 | [Interviewgids](docs/04-validatie/interviewgids.md) | Vragen voor terminalmedewerkers |
+| 04 | [Contactlijst en berichten](docs/04-validatie/contactlijst.md) | Wie contacteren, berichten in NL en EN |
 | 05 | [Architectuur](docs/05-architectuur/architectuur.md) | C4-diagrammen en technologie |
 | 05 | [Datamodel](docs/05-architectuur/datamodel.md) | Entiteiten en relaties (ERD) |
 | 05 | [API-ontwerp](docs/05-architectuur/api-ontwerp.md) | Endpoints en conventies |
@@ -63,6 +76,7 @@ Dat zorgt voor drie problemen die de sector vandaag grotendeels op papier en met
 | 08 | [Businessmodel](docs/08-business/businessmodel.md) | Lean Canvas, prijshypotheses, markttoegang |
 | – | [Open vragen](docs/open-vragen.md) | Wat nog beslist of uitgezocht moet worden |
 | – | [Logboek](docs/logboek.md) | Wekelijks: beslissingen, problemen, voortgang |
+| – | [Leerplan C#](docs/leerplan-csharp.md) | TypeScript → C#, Microsoft Learn per blok, mini-oefeningen |
 | – | [Woordenlijst](docs/woordenlijst.md) | SOC, PDI, PCTC, OCPP... |
 
 ---
@@ -80,9 +94,17 @@ De motivering per keuze staat in de [ADR's](docs/05-architectuur/adr/README.md).
 
 ---
 
+## Mac klaar?
+
+| Tool | Status (27-09-2026) |
+|---|---|
+| .NET 10 SDK, Node 24, VS Code + C# Dev Kit (+ Docker, Bicep, Playwright, REST Client...), Rider | ✅ |
+| Docker Desktop | ⚠️ De app start, maar de engine antwoordt niet (500-fout). Open Docker Desktop en kijk of er een melding, update of "Restart" nodig is. Test daarna met `docker run --rm hello-world` |
+
 ## Volgende stappen
 
 1. [ ] De eisen van de opleiding naast [finalisatie.md](docs/07-finalisatie/finalisatie.md) leggen
-2. [ ] 3 à 5 validatiegesprekken voeren met de [interviewgids](docs/04-validatie/interviewgids.md)
-3. [ ] De [hypotheses](docs/04-validatie/hypotheses.md) bijwerken en de scope vastleggen
-4. [ ] Fase 1 starten: het fundament (zie het [plan van aanpak](docs/06-plan-van-aanpak/plan-van-aanpak.md))
+2. [ ] 3 à 5 validatiegesprekken voeren met de [interviewgids](docs/04-validatie/interviewgids.md), de [contactlijst](docs/04-validatie/contactlijst.md) en het prototype
+3. [ ] Blok 1–2 van het [leerplan](docs/leerplan-csharp.md) (VIN-validator + eerste regel, test-first)
+4. [ ] De [hypotheses](docs/04-validatie/hypotheses.md) bijwerken en de scope vastleggen
+5. [ ] Fase 1 starten: het fundament (zie het [plan van aanpak](docs/06-plan-van-aanpak/plan-van-aanpak.md))

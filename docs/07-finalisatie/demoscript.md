@@ -7,7 +7,7 @@ Toon: één slide met een foto van een vol terrein + drie pijnpunten.
 
 ## 1. Een schip komt aan (1,5 min)
 - Log in als **planner**.
-- Importeer `demo/schip-byd-400.csv` → toon het importrapport (398 aangemaakt, 2 ongeldige VIN's met reden).
+- Importeer `demo/schip-voltara-400.csv` → toon het importrapport (398 aangemaakt, 2 ongeldige VIN's met reden).
 - Toon dat elk voertuig automatisch een **regelprofiel** kreeg.
 
 ## 2. Controle op het terrein (2 min)

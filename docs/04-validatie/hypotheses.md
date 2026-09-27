@@ -18,8 +18,8 @@ Alles wat we **aannemen** maar nog niet **weten**. Na elk validatiegesprek de ko
 
 | # | Hypothese | Hoe testen | Criterium | Status |
 |---|---|---|---|---|
-| O1 | Een controle via de gsm met VIN-scan is sneller dan de huidige manier | Mock-up tonen en tijd meten | < 30 sec per wagen, gebruiker vindt het sneller | ❓ |
-| O2 | Waarschuwingen met prioriteit en voorspelling helpen de planner | Mock-up van het dashboard | Planner zegt: "hier zou ik elke dag naar kijken" | ❓ |
+| O1 | Een controle via de gsm met VIN-scan is sneller dan de huidige manier | [Prototype](https://claude.ai/artifact/9FzRFJfQecUib1gaK1AeXj) (scherm Terrein) tonen en tijd meten | < 30 sec per wagen, gebruiker vindt het sneller | ❓ |
+| O2 | Waarschuwingen met prioriteit en voorspelling helpen de planner | Prototype: dashboard | Planner zegt: "hier zou ik elke dag naar kijken" | ❓ |
 | O3 | Configureerbare regelprofielen dekken de werkelijke regels | Echte regels van 2–3 fabrikanten naast ons model leggen | Past zonder grote aanpassingen | ❓ |
 | O4 | De laadmodule heeft waarde, ook als terminals al laders hebben | Interview Q17–Q19 | ≥ 2 zien meerwaarde in planning en facturatie | ❓ |
 

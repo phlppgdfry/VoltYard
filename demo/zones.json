@@ -1,0 +1,44 @@
+[
+  {
+    "code": "A-STD",
+    "type": "Standaard",
+    "capaciteit": 2500,
+    "maxEvs": 0
+  },
+  {
+    "code": "B-EV-1",
+    "type": "EV",
+    "capaciteit": 700,
+    "maxEvs": 520
+  },
+  {
+    "code": "B-EV-2",
+    "type": "EV",
+    "capaciteit": 700,
+    "maxEvs": 520
+  },
+  {
+    "code": "C-EV-3",
+    "type": "EV",
+    "capaciteit": 600,
+    "maxEvs": 480
+  },
+  {
+    "code": "D-EV-4",
+    "type": "EV",
+    "capaciteit": 600,
+    "maxEvs": 500
+  },
+  {
+    "code": "L-LAAD",
+    "type": "Laden",
+    "capaciteit": 60,
+    "maxEvs": 60
+  },
+  {
+    "code": "Q-QUAR",
+    "type": "Quarantaine",
+    "capaciteit": 20,
+    "maxEvs": 20
+  }
+]

@@ -15,6 +15,8 @@ Begrijpen hoe car terminals, compounds en PDI-centra vandaag omgaan met EV's, **
 
 ## Bericht om contact te leggen (LinkedIn / e-mail)
 
+Meer varianten (NL/EN, opvolging, via netwerkorganisaties) en een lijst met organisaties: zie [contactlijst.md](contactlijst.md).
+
 > Dag [naam],
 >
 > Ik ben Philippe, student Full Stack Development, en ik werk aan een eindproject rond het beheer van elektrische wagens op car terminals: batterijtoestand, laden en veiligheid. Omdat Zeebrugge de grootste autohaven van Europa is, wil ik vertrekken van hoe het er in de praktijk aan toegaat, en niet van wat ik online lees.
@@ -70,7 +72,7 @@ Begrijpen hoe car terminals, compounds en PDI-centra vandaag omgaan met EV's, **
 21. Bestaat er budget voor tools op dit vlak? Wie zou daarover beslissen?
 22. Ken je iemand anders met wie ik hierover zou moeten praten?
 
-*(Pas na vraag 22, als er tijd is: kort het idee VoltYard toelichten en de eerste reactie noteren.)*
+*(Pas na vraag 22, als er tijd is: het [klikbare prototype](https://claude.ai/artifact/9FzRFJfQecUib1gaK1AeXj) tonen en de eerste reactie noteren. Vraag "Wat zie je hier?", niet "Is dit handig?")*
 
 ## Notitiesjabloon (per gesprek)
 

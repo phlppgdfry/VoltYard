@@ -52,12 +52,19 @@ De regelmotor loopt:
 | `SOC_VOORSPELD_ONDER_MIN` | Voorspelde laadtoestand bij vertrek, of binnen X dagen, < `MinOpslagSoc` | Middel | Laden inplannen |
 | `CONTROLE_TE_LAAT` | Dagen sinds de laatste controle > `ControleIntervalDagen` | Middel | Controle inplannen |
 | `TWAALFVOLT_TE_LAAT` | Dagen sinds de laatste 12V-controle > interval | Middel | 12V controleren of onderhoudsladen |
+| `TWAALFVOLT_ZWAK` | Laatste 12V-status = Zwak | Middel | Onderhoudsladen 12V |
 | `VERTREK_SOC_TE_HOOG` | Vertrek binnen X dagen en laadtoestand > max. voor die bestemming | Hoog | Niet laden, eventueel ontladen of een uitzondering aanvragen |
 | `VERTREK_SOC_TE_LAAG` | Vertrek binnen X dagen en laadtoestand < min. voor die bestemming | Hoog | Laadopdracht met deadline |
 | `QUARANTAINE_VEREIST` | Schade, verdachte batterij of incident gemeld | Kritiek | Naar quarantainezone, HSE beoordeelt |
 | `VERKEERDE_ZONE` | EV staat in een zone die niet voor EV's bedoeld is | Middel | Verplaatsen |
 | `ZONE_DICHTHEID` | Aantal EV's in een zone > maximum van de zone | Hoog | Wagens herverdelen |
 | `NIET_RIJVAARDIG` | Wagen start niet (12V dood) | Hoog | Hulpstart of trailer, en deze wagen staat op de noodlijst |
+
+**Afspraken**
+- `SOC_KRITIEK` **vervangt** `SOC_ONDER_MIN` (niet allebei tegelijk). `SOC_ONDER_MIN` vervangt `SOC_VOORSPELD_ONDER_MIN`.
+- Grenzen zijn **inclusief OK**: een laadtoestand die precies het minimum is, geeft geen waarschuwing.
+- Instellingen per terminal: `VertrekVensterDagen` (standaard 7: vertrekregels gelden binnen dit venster) en `VoorspellingsHorizonDagen` (standaard 14).
+- Alle gevallen staan uitgeschreven in [demo/regelmotor-testgevallen.md](../../demo/regelmotor-testgevallen.md).
 
 ### Voorspelling (eenvoudig, V1)
 

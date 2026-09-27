@@ -1,0 +1,178 @@
+[
+  {
+    "code": "L1",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L2",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L3",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L4",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L5",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L6",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L7",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L8",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L9",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L10",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L11",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L12",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L13",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L14",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L15",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L16",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L17",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Defect"
+  },
+  {
+    "code": "L18",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L19",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "L20",
+    "type": "Vast",
+    "vermogenKw": 22,
+    "zone": "L-LAAD",
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "M1",
+    "type": "Mobiel",
+    "vermogenKw": 50,
+    "zone": null,
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  },
+  {
+    "code": "M2",
+    "type": "Mobiel",
+    "vermogenKw": 50,
+    "zone": null,
+    "aansluitingen": 1,
+    "status": "Beschikbaar"
+  }
+]

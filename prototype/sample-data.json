@@ -1,0 +1,2981 @@
+{
+  "referentiedatum": "2026-09-28",
+  "profielen": [
+    {
+      "id": "TERMINAL-DEFAULT",
+      "fabrikantCode": null,
+      "naam": "Terminal – veilige standaard",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 35,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 20,
+      "controleIntervalDagen": 7,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.15,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "VLT-BEV",
+      "fabrikantCode": "VLT",
+      "naam": "Voltara – standaard BEV",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 30,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 15,
+      "controleIntervalDagen": 14,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.1,
+      "versie": 3,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "VLT-V7",
+      "fabrikantCode": "VLT",
+      "naam": "Voltara – V7 Long Range",
+      "modelPatroon": "Voltara V7*",
+      "aandrijving": "BEV",
+      "minOpslagSoc": 30,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 15,
+      "controleIntervalDagen": 10,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.12,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "KST-BEV",
+      "fabrikantCode": "KST",
+      "naam": "Kestrel – BEV",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 25,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 70,
+      "kritiekSoc": 12,
+      "controleIntervalDagen": 21,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.08,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "KST-PHEV",
+      "fabrikantCode": "KST",
+      "naam": "Kestrel – PHEV",
+      "modelPatroon": null,
+      "aandrijving": "PHEV",
+      "minOpslagSoc": 20,
+      "doelOpslagSoc": 40,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 10,
+      "controleIntervalDagen": 21,
+      "twaalfVoltIntervalDagen": 10,
+      "standaardOntlaadPerDag": 0.2,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "NHV-BEV",
+      "fabrikantCode": "NHV",
+      "naam": "Nordhavn – BEV",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 30,
+      "doelOpslagSoc": 55,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 15,
+      "controleIntervalDagen": 14,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.09,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 45
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "SNL-BEV",
+      "fabrikantCode": "SNL",
+      "naam": "Sunlei – BEV",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 35,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 55,
+      "kritiekSoc": 20,
+      "controleIntervalDagen": 7,
+      "twaalfVoltIntervalDagen": 7,
+      "standaardOntlaadPerDag": 0.25,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    }
+  ],
+  "fabrikanten": [
+    {
+      "code": "VLT",
+      "naam": "Voltara"
+    },
+    {
+      "code": "KST",
+      "naam": "Kestrel Motors"
+    },
+    {
+      "code": "NHV",
+      "naam": "Nordhavn EV"
+    },
+    {
+      "code": "SNL",
+      "naam": "Sunlei"
+    }
+  ],
+  "zones": [
+    {
+      "code": "A-STD",
+      "type": "Standaard",
+      "capaciteit": 2500,
+      "maxEvs": 0,
+      "aantal": 25
+    },
+    {
+      "code": "B-EV-1",
+      "type": "EV",
+      "capaciteit": 700,
+      "maxEvs": 520,
+      "aantal": 474
+    },
+    {
+      "code": "B-EV-2",
+      "type": "EV",
+      "capaciteit": 700,
+      "maxEvs": 520,
+      "aantal": 494
+    },
+    {
+      "code": "C-EV-3",
+      "type": "EV",
+      "capaciteit": 600,
+      "maxEvs": 480,
+      "aantal": 516
+    },
+    {
+      "code": "D-EV-4",
+      "type": "EV",
+      "capaciteit": 600,
+      "maxEvs": 500,
+      "aantal": 479
+    },
+    {
+      "code": "L-LAAD",
+      "type": "Laden",
+      "capaciteit": 60,
+      "maxEvs": 60,
+      "aantal": 0
+    },
+    {
+      "code": "Q-QUAR",
+      "type": "Quarantaine",
+      "capaciteit": 20,
+      "maxEvs": 20,
+      "aantal": 12
+    }
+  ],
+  "laders": [
+    {
+      "code": "L1",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L2",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L3",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L4",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L5",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L6",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L7",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L8",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L9",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L10",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L11",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L12",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L13",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L14",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L15",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L16",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L17",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Defect"
+    },
+    {
+      "code": "L18",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L19",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "L20",
+      "type": "Vast",
+      "vermogenKw": 22,
+      "zone": "L-LAAD",
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "M1",
+      "type": "Mobiel",
+      "vermogenKw": 50,
+      "zone": null,
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    },
+    {
+      "code": "M2",
+      "type": "Mobiel",
+      "vermogenKw": 50,
+      "zone": null,
+      "aansluitingen": 1,
+      "status": "Beschikbaar"
+    }
+  ],
+  "facturatie": {
+    "SNL": {
+      "sessies": 142,
+      "kwh": 1683.6
+    },
+    "VLT": {
+      "sessies": 54,
+      "kwh": 962.1
+    },
+    "KST": {
+      "sessies": 16,
+      "kwh": 102.4
+    },
+    "NHV": {
+      "sessies": 13,
+      "kwh": 334.4
+    }
+  },
+  "voertuigen": [
+    {
+      "vin": "LVXV5S6L7SH103566",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "Q-QUAR",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-04-16",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 28,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-27",
+      "historiek": [
+        {
+          "t": "2026-05-03",
+          "soc": 41
+        },
+        {
+          "t": "2026-05-18",
+          "soc": 39
+        },
+        {
+          "t": "2026-06-24",
+          "soc": 36
+        },
+        {
+          "t": "2026-07-11",
+          "soc": 34
+        },
+        {
+          "t": "2026-07-29",
+          "soc": 33
+        },
+        {
+          "t": "2026-08-12",
+          "soc": 32
+        },
+        {
+          "t": "2026-08-27",
+          "soc": 30
+        },
+        {
+          "t": "2026-09-27",
+          "soc": 28
+        }
+      ]
+    },
+    {
+      "vin": "LSNS31MW3SZ103090",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "Q-QUAR",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-05-04",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 33,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-15",
+      "historiek": [
+        {
+          "t": "2026-07-31",
+          "soc": 48
+        },
+        {
+          "t": "2026-08-09",
+          "soc": 45
+        },
+        {
+          "t": "2026-08-17",
+          "soc": 42
+        },
+        {
+          "t": "2026-08-22",
+          "soc": 41
+        },
+        {
+          "t": "2026-08-27",
+          "soc": 39
+        },
+        {
+          "t": "2026-09-01",
+          "soc": 38
+        },
+        {
+          "t": "2026-09-07",
+          "soc": 36
+        },
+        {
+          "t": "2026-09-15",
+          "soc": 33
+        }
+      ]
+    },
+    {
+      "vin": "LVXV5JZV4SH103077",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "C-EV-3",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-08-17",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": false,
+      "soc": 29,
+      "twaalfV": "Dood",
+      "laatsteControle": "2026-09-17",
+      "historiek": [
+        {
+          "t": "2026-08-17",
+          "soc": 33
+        },
+        {
+          "t": "2026-08-30",
+          "soc": 31
+        },
+        {
+          "t": "2026-09-17",
+          "soc": 29
+        }
+      ]
+    },
+    {
+      "vin": "YNHN4YRW3SG102530",
+      "fab": "NHV",
+      "merk": "Nordhavn EV",
+      "model": "Nordhavn N4",
+      "aandrijving": "BEV",
+      "kwh": 107.0,
+      "zone": "B-EV-1",
+      "profiel": "NHV-BEV",
+      "aankomst": "2026-07-03",
+      "vertrek": "2026-10-16",
+      "bestemming": "Trein",
+      "rijvaardig": false,
+      "soc": 28,
+      "twaalfV": "Dood",
+      "laatsteControle": "2026-09-18",
+      "historiek": [
+        {
+          "t": "2026-07-03",
+          "soc": 33
+        },
+        {
+          "t": "2026-07-15",
+          "soc": 32
+        },
+        {
+          "t": "2026-07-30",
+          "soc": 31
+        },
+        {
+          "t": "2026-08-17",
+          "soc": 30
+        },
+        {
+          "t": "2026-08-31",
+          "soc": 29
+        },
+        {
+          "t": "2026-09-18",
+          "soc": 28
+        }
+      ]
+    },
+    {
+      "vin": "LSNS1RUX4TZ103131",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "A-STD",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-04-08",
+      "vertrek": "2026-11-09",
+      "bestemming": "Trein",
+      "rijvaardig": true,
+      "soc": 34,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-22",
+      "historiek": [
+        {
+          "t": "2026-08-01",
+          "soc": 35
+        },
+        {
+          "t": "2026-08-07",
+          "soc": 48
+        },
+        {
+          "t": "2026-08-16",
+          "soc": 45
+        },
+        {
+          "t": "2026-08-23",
+          "soc": 43
+        },
+        {
+          "t": "2026-08-28",
+          "soc": 41
+        },
+        {
+          "t": "2026-09-03",
+          "soc": 40
+        },
+        {
+          "t": "2026-09-13",
+          "soc": 36
+        },
+        {
+          "t": "2026-09-22",
+          "soc": 34
+        }
+      ]
+    },
+    {
+      "vin": "LVXV5AAD3TH104760",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "C-EV-3",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-05-26",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 21,
+      "twaalfV": "Zwak",
+      "laatsteControle": "2026-09-15",
+      "historiek": [
+        {
+          "t": "2026-05-26",
+          "soc": 45
+        },
+        {
+          "t": "2026-06-22",
+          "soc": 39
+        },
+        {
+          "t": "2026-07-07",
+          "soc": 36
+        },
+        {
+          "t": "2026-07-23",
+          "soc": 33
+        },
+        {
+          "t": "2026-08-05",
+          "soc": 30
+        },
+        {
+          "t": "2026-08-19",
+          "soc": 27
+        },
+        {
+          "t": "2026-09-02",
+          "soc": 24
+        },
+        {
+          "t": "2026-09-15",
+          "soc": 21
+        }
+      ]
+    },
+    {
+      "vin": "LSNS15NC1TZ103852",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "A-STD",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-08-20",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 33,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-21",
+      "historiek": [
+        {
+          "t": "2026-08-20",
+          "soc": 44
+        },
+        {
+          "t": "2026-09-10",
+          "soc": 37
+        },
+        {
+          "t": "2026-09-21",
+          "soc": 33
+        }
+      ]
+    },
+    {
+      "vin": "LSNS1Z9G0TZ104575",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "C-EV-3",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-05-19",
+      "vertrek": "2026-10-24",
+      "bestemming": "Dealer",
+      "rijvaardig": true,
+      "soc": 34,
+      "twaalfV": "Dood",
+      "laatsteControle": "2026-09-27",
+      "historiek": [
+        {
+          "t": "2026-07-10",
+          "soc": 57
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 50
+        },
+        {
+          "t": "2026-08-15",
+          "soc": 46
+        },
+        {
+          "t": "2026-08-22",
+          "soc": 44
+        },
+        {
+          "t": "2026-08-30",
+          "soc": 42
+        },
+        {
+          "t": "2026-09-10",
+          "soc": 39
+        },
+        {
+          "t": "2026-09-20",
+          "soc": 36
+        },
+        {
+          "t": "2026-09-27",
+          "soc": 34
+        }
+      ]
+    },
+    {
+      "vin": "LSNS39RL5SZ102052",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "Q-QUAR",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-06-10",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 38,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-24",
+      "historiek": [
+        {
+          "t": "2026-07-12",
+          "soc": 47
+        },
+        {
+          "t": "2026-07-17",
+          "soc": 47
+        },
+        {
+          "t": "2026-07-26",
+          "soc": 45
+        },
+        {
+          "t": "2026-08-06",
+          "soc": 44
+        },
+        {
+          "t": "2026-08-14",
+          "soc": 43
+        },
+        {
+          "t": "2026-08-21",
+          "soc": 42
+        },
+        {
+          "t": "2026-09-13",
+          "soc": 40
+        },
+        {
+          "t": "2026-09-24",
+          "soc": 38
+        }
+      ]
+    },
+    {
+      "vin": "LVXV55CA1TH103150",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "A-STD",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-05-10",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 57,
+      "twaalfV": "Zwak",
+      "laatsteControle": "2026-09-18",
+      "historiek": [
+        {
+          "t": "2026-05-25",
+          "soc": 66
+        },
+        {
+          "t": "2026-06-09",
+          "soc": 65
+        },
+        {
+          "t": "2026-06-25",
+          "soc": 63
+        },
+        {
+          "t": "2026-07-18",
+          "soc": 62
+        },
+        {
+          "t": "2026-08-05",
+          "soc": 60
+        },
+        {
+          "t": "2026-08-18",
+          "soc": 59
+        },
+        {
+          "t": "2026-09-01",
+          "soc": 58
+        },
+        {
+          "t": "2026-09-18",
+          "soc": 57
+        }
+      ]
+    },
+    {
+      "vin": "WKMK36351TB100417",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K3",
+      "aandrijving": "BEV",
+      "kwh": 77.0,
+      "zone": "Q-QUAR",
+      "profiel": "KST-BEV",
+      "aankomst": "2026-08-30",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 64,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-21",
+      "historiek": [
+        {
+          "t": "2026-08-30",
+          "soc": 66
+        },
+        {
+          "t": "2026-09-21",
+          "soc": 64
+        }
+      ]
+    },
+    {
+      "vin": "LSNS3LT64TZ102805",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "Q-QUAR",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-08-09",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 41,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-24",
+      "historiek": [
+        {
+          "t": "2026-08-09",
+          "soc": 47
+        },
+        {
+          "t": "2026-08-16",
+          "soc": 46
+        },
+        {
+          "t": "2026-08-26",
+          "soc": 45
+        },
+        {
+          "t": "2026-09-05",
+          "soc": 43
+        },
+        {
+          "t": "2026-09-15",
+          "soc": 42
+        },
+        {
+          "t": "2026-09-24",
+          "soc": 41
+        }
+      ]
+    },
+    {
+      "vin": "LVXV7VP33TH104421",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "Q-QUAR",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-08-19",
+      "vertrek": "2026-10-05",
+      "bestemming": "Truck",
+      "rijvaardig": true,
+      "soc": 62,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-24",
+      "historiek": [
+        {
+          "t": "2026-08-19",
+          "soc": 66
+        },
+        {
+          "t": "2026-08-31",
+          "soc": 65
+        },
+        {
+          "t": "2026-09-11",
+          "soc": 63
+        },
+        {
+          "t": "2026-09-24",
+          "soc": 62
+        }
+      ]
+    },
+    {
+      "vin": "LSNS1B0SXTZ103054",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "Q-QUAR",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-07-20",
+      "vertrek": "2026-10-14",
+      "bestemming": "Dealer",
+      "rijvaardig": true,
+      "soc": 44,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-21",
+      "historiek": [
+        {
+          "t": "2026-07-30",
+          "soc": 34
+        },
+        {
+          "t": "2026-08-07",
+          "soc": 47
+        },
+        {
+          "t": "2026-08-13",
+          "soc": 44
+        },
+        {
+          "t": "2026-08-20",
+          "soc": 41
+        },
+        {
+          "t": "2026-08-28",
+          "soc": 38
+        },
+        {
+          "t": "2026-09-06",
+          "soc": 34
+        },
+        {
+          "t": "2026-09-13",
+          "soc": 47
+        },
+        {
+          "t": "2026-09-21",
+          "soc": 44
+        }
+      ]
+    },
+    {
+      "vin": "LSNS106BXSZ103078",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "Q-QUAR",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-06-12",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 49,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-24",
+      "historiek": [
+        {
+          "t": "2026-07-09",
+          "soc": 46
+        },
+        {
+          "t": "2026-07-19",
+          "soc": 44
+        },
+        {
+          "t": "2026-07-30",
+          "soc": 41
+        },
+        {
+          "t": "2026-08-09",
+          "soc": 39
+        },
+        {
+          "t": "2026-08-20",
+          "soc": 37
+        },
+        {
+          "t": "2026-08-28",
+          "soc": 35
+        },
+        {
+          "t": "2026-09-19",
+          "soc": 30
+        },
+        {
+          "t": "2026-09-24",
+          "soc": 49
+        }
+      ]
+    },
+    {
+      "vin": "YNHN4D5V5SG103068",
+      "fab": "NHV",
+      "merk": "Nordhavn EV",
+      "model": "Nordhavn N4",
+      "aandrijving": "BEV",
+      "kwh": 107.0,
+      "zone": "Q-QUAR",
+      "profiel": "NHV-BEV",
+      "aankomst": "2026-08-14",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 43,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-27",
+      "historiek": [
+        {
+          "t": "2026-08-14",
+          "soc": 48
+        },
+        {
+          "t": "2026-09-15",
+          "soc": 44
+        },
+        {
+          "t": "2026-09-27",
+          "soc": 43
+        }
+      ]
+    },
+    {
+      "vin": "LVXV7F9A7SH105992",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "Q-QUAR",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-08-21",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 45,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-01",
+      "historiek": [
+        {
+          "t": "2026-08-21",
+          "soc": 46
+        },
+        {
+          "t": "2026-09-01",
+          "soc": 45
+        }
+      ]
+    },
+    {
+      "vin": "WKMK3KH81SB101996",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K3",
+      "aandrijving": "BEV",
+      "kwh": 77.0,
+      "zone": "Q-QUAR",
+      "profiel": "KST-BEV",
+      "aankomst": "2026-07-04",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 61,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-16",
+      "historiek": [
+        {
+          "t": "2026-07-04",
+          "soc": 65
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 63
+        },
+        {
+          "t": "2026-08-27",
+          "soc": 62
+        },
+        {
+          "t": "2026-09-16",
+          "soc": 61
+        }
+      ]
+    },
+    {
+      "vin": "WKMK5V7C8SB102015",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K5 Hybrid",
+      "aandrijving": "PHEV",
+      "kwh": 19.7,
+      "zone": "Q-QUAR",
+      "profiel": "KST-PHEV",
+      "aankomst": "2026-08-21",
+      "vertrek": "2026-10-14",
+      "bestemming": "Truck",
+      "rijvaardig": true,
+      "soc": 40,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-09",
+      "historiek": [
+        {
+          "t": "2026-08-21",
+          "soc": 43
+        },
+        {
+          "t": "2026-09-09",
+          "soc": 40
+        }
+      ]
+    },
+    {
+      "vin": "LVXV543H1TH103012",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "B-EV-2",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-04-23",
+      "vertrek": "2026-10-17",
+      "bestemming": "Dealer",
+      "rijvaardig": true,
+      "soc": 27,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-17",
+      "historiek": [
+        {
+          "t": "2026-05-22",
+          "soc": 39
+        },
+        {
+          "t": "2026-06-05",
+          "soc": 38
+        },
+        {
+          "t": "2026-06-17",
+          "soc": 37
+        },
+        {
+          "t": "2026-07-05",
+          "soc": 35
+        },
+        {
+          "t": "2026-07-18",
+          "soc": 33
+        },
+        {
+          "t": "2026-07-31",
+          "soc": 32
+        },
+        {
+          "t": "2026-08-16",
+          "soc": 31
+        },
+        {
+          "t": "2026-09-17",
+          "soc": 27
+        }
+      ]
+    },
+    {
+      "vin": "WKMK5HU86SB100250",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K5 Hybrid",
+      "aandrijving": "PHEV",
+      "kwh": 19.7,
+      "zone": "C-EV-3",
+      "profiel": "KST-PHEV",
+      "aankomst": "2026-02-18",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 3,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-19",
+      "historiek": [
+        {
+          "t": "2026-04-05",
+          "soc": 20
+        },
+        {
+          "t": "2026-04-24",
+          "soc": 35
+        },
+        {
+          "t": "2026-06-01",
+          "soc": 25
+        },
+        {
+          "t": "2026-06-25",
+          "soc": 18
+        },
+        {
+          "t": "2026-07-16",
+          "soc": 12
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 7
+        },
+        {
+          "t": "2026-08-27",
+          "soc": 3
+        },
+        {
+          "t": "2026-09-19",
+          "soc": 3
+        }
+      ]
+    },
+    {
+      "vin": "WKMK50YX4TB100316",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K5 Hybrid",
+      "aandrijving": "PHEV",
+      "kwh": 19.7,
+      "zone": "B-EV-2",
+      "profiel": "KST-PHEV",
+      "aankomst": "2026-05-09",
+      "vertrek": "2026-11-09",
+      "bestemming": "Verscheping",
+      "rijvaardig": true,
+      "soc": 19,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-20",
+      "historiek": [
+        {
+          "t": "2026-05-09",
+          "soc": 51
+        },
+        {
+          "t": "2026-05-28",
+          "soc": 46
+        },
+        {
+          "t": "2026-07-11",
+          "soc": 36
+        },
+        {
+          "t": "2026-08-02",
+          "soc": 31
+        },
+        {
+          "t": "2026-08-30",
+          "soc": 24
+        },
+        {
+          "t": "2026-09-20",
+          "soc": 19
+        }
+      ]
+    },
+    {
+      "vin": "LSNS3SEU3SZ102170",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "B-EV-1",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-09-01",
+      "vertrek": "2026-10-19",
+      "bestemming": "Dealer",
+      "rijvaardig": true,
+      "soc": 31,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-15",
+      "historiek": [
+        {
+          "t": "2026-09-01",
+          "soc": 35
+        },
+        {
+          "t": "2026-09-08",
+          "soc": 33
+        },
+        {
+          "t": "2026-09-15",
+          "soc": 31
+        }
+      ]
+    },
+    {
+      "vin": "LSNS376P4TZ102251",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "B-EV-2",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-03-30",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 34,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-24",
+      "historiek": [
+        {
+          "t": "2026-07-30",
+          "soc": 28
+        },
+        {
+          "t": "2026-08-05",
+          "soc": 26
+        },
+        {
+          "t": "2026-08-10",
+          "soc": 48
+        },
+        {
+          "t": "2026-08-23",
+          "soc": 44
+        },
+        {
+          "t": "2026-09-03",
+          "soc": 41
+        },
+        {
+          "t": "2026-09-10",
+          "soc": 38
+        },
+        {
+          "t": "2026-09-16",
+          "soc": 37
+        },
+        {
+          "t": "2026-09-24",
+          "soc": 34
+        }
+      ]
+    },
+    {
+      "vin": "LVXV7M5D7TH105934",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "B-EV-1",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-08-18",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 53,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-25",
+      "historiek": [
+        {
+          "t": "2026-08-18",
+          "soc": 57
+        },
+        {
+          "t": "2026-08-26",
+          "soc": 56
+        },
+        {
+          "t": "2026-09-03",
+          "soc": 55
+        },
+        {
+          "t": "2026-09-12",
+          "soc": 54
+        },
+        {
+          "t": "2026-09-25",
+          "soc": 53
+        }
+      ]
+    },
+    {
+      "vin": "LSNS3BHT2TZ103542",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "B-EV-1",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-08-10",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 52,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-19",
+      "historiek": [
+        {
+          "t": "2026-08-10",
+          "soc": 61
+        },
+        {
+          "t": "2026-08-17",
+          "soc": 59
+        },
+        {
+          "t": "2026-08-26",
+          "soc": 57
+        },
+        {
+          "t": "2026-08-31",
+          "soc": 56
+        },
+        {
+          "t": "2026-09-05",
+          "soc": 55
+        },
+        {
+          "t": "2026-09-14",
+          "soc": 53
+        },
+        {
+          "t": "2026-09-19",
+          "soc": 52
+        }
+      ]
+    },
+    {
+      "vin": "WKMK3GRC6SB100567",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K3",
+      "aandrijving": "BEV",
+      "kwh": 77.0,
+      "zone": "B-EV-2",
+      "profiel": "KST-BEV",
+      "aankomst": "2026-09-12",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 64,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-12",
+      "historiek": [
+        {
+          "t": "2026-09-12",
+          "soc": 64
+        }
+      ]
+    },
+    {
+      "vin": "WKMK5TAH5SB101039",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K5 Hybrid",
+      "aandrijving": "PHEV",
+      "kwh": 19.7,
+      "zone": "B-EV-1",
+      "profiel": "KST-PHEV",
+      "aankomst": "2026-06-15",
+      "vertrek": "2026-10-04",
+      "bestemming": "Verscheping",
+      "rijvaardig": true,
+      "soc": 26,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-27",
+      "historiek": [
+        {
+          "t": "2026-06-15",
+          "soc": 33
+        },
+        {
+          "t": "2026-07-13",
+          "soc": 26
+        },
+        {
+          "t": "2026-08-06",
+          "soc": 19
+        },
+        {
+          "t": "2026-08-26",
+          "soc": 35
+        },
+        {
+          "t": "2026-09-27",
+          "soc": 26
+        }
+      ]
+    },
+    {
+      "vin": "LVXV54MZXSH103693",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "B-EV-2",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-07-06",
+      "vertrek": "2026-11-06",
+      "bestemming": "Truck",
+      "rijvaardig": true,
+      "soc": 54,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-18",
+      "historiek": [
+        {
+          "t": "2026-07-06",
+          "soc": 61
+        },
+        {
+          "t": "2026-07-23",
+          "soc": 59
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 58
+        },
+        {
+          "t": "2026-08-18",
+          "soc": 57
+        },
+        {
+          "t": "2026-09-05",
+          "soc": 55
+        },
+        {
+          "t": "2026-09-18",
+          "soc": 54
+        }
+      ]
+    },
+    {
+      "vin": "YNHN2EF68SG103469",
+      "fab": "NHV",
+      "merk": "Nordhavn EV",
+      "model": "Nordhavn N2",
+      "aandrijving": "BEV",
+      "kwh": 69.0,
+      "zone": "C-EV-3",
+      "profiel": "NHV-BEV",
+      "aankomst": "2026-07-16",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 48,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-18",
+      "historiek": [
+        {
+          "t": "2026-07-16",
+          "soc": 29
+        },
+        {
+          "t": "2026-08-01",
+          "soc": 53
+        },
+        {
+          "t": "2026-08-17",
+          "soc": 52
+        },
+        {
+          "t": "2026-08-31",
+          "soc": 50
+        },
+        {
+          "t": "2026-09-18",
+          "soc": 48
+        }
+      ]
+    },
+    {
+      "vin": "LVXV5NBTXTH103165",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "C-EV-3",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-06-09",
+      "vertrek": "2026-11-09",
+      "bestemming": "Truck",
+      "rijvaardig": false,
+      "soc": 42,
+      "twaalfV": "Zwak",
+      "laatsteControle": "2026-09-24",
+      "historiek": [
+        {
+          "t": "2026-06-09",
+          "soc": 57
+        },
+        {
+          "t": "2026-06-26",
+          "soc": 55
+        },
+        {
+          "t": "2026-07-11",
+          "soc": 52
+        },
+        {
+          "t": "2026-07-28",
+          "soc": 50
+        },
+        {
+          "t": "2026-08-27",
+          "soc": 46
+        },
+        {
+          "t": "2026-09-11",
+          "soc": 44
+        },
+        {
+          "t": "2026-09-24",
+          "soc": 42
+        }
+      ]
+    },
+    {
+      "vin": "LSNS383H3SZ102145",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "B-EV-2",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-02-16",
+      "vertrek": "2026-10-20",
+      "bestemming": "Trein",
+      "rijvaardig": true,
+      "soc": 46,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-23",
+      "historiek": [
+        {
+          "t": "2026-07-13",
+          "soc": 46
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 41
+        },
+        {
+          "t": "2026-08-10",
+          "soc": 39
+        },
+        {
+          "t": "2026-08-20",
+          "soc": 37
+        },
+        {
+          "t": "2026-08-31",
+          "soc": 34
+        },
+        {
+          "t": "2026-09-06",
+          "soc": 32
+        },
+        {
+          "t": "2026-09-16",
+          "soc": 47
+        },
+        {
+          "t": "2026-09-23",
+          "soc": 46
+        }
+      ]
+    },
+    {
+      "vin": "LSNS1F0C0TZ102883",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "D-EV-4",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-05-06",
+      "vertrek": "2026-10-05",
+      "bestemming": "Truck",
+      "rijvaardig": true,
+      "soc": 43,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-20",
+      "historiek": [
+        {
+          "t": "2026-07-02",
+          "soc": 43
+        },
+        {
+          "t": "2026-07-09",
+          "soc": 40
+        },
+        {
+          "t": "2026-07-15",
+          "soc": 38
+        },
+        {
+          "t": "2026-07-24",
+          "soc": 34
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 46
+        },
+        {
+          "t": "2026-08-28",
+          "soc": 36
+        },
+        {
+          "t": "2026-09-02",
+          "soc": 34
+        },
+        {
+          "t": "2026-09-20",
+          "soc": 43
+        }
+      ]
+    },
+    {
+      "vin": "LVXV523K1SH106443",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "D-EV-4",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-07-18",
+      "vertrek": "2026-10-03",
+      "bestemming": "Verscheping",
+      "rijvaardig": true,
+      "soc": 48,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-21",
+      "historiek": [
+        {
+          "t": "2026-07-18",
+          "soc": 36
+        },
+        {
+          "t": "2026-08-05",
+          "soc": 34
+        },
+        {
+          "t": "2026-08-21",
+          "soc": 32
+        },
+        {
+          "t": "2026-09-06",
+          "soc": 29
+        },
+        {
+          "t": "2026-09-21",
+          "soc": 48
+        }
+      ]
+    },
+    {
+      "vin": "LVXV76TZ2TH104586",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "B-EV-1",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-07-18",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 52,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-28",
+      "historiek": [
+        {
+          "t": "2026-07-18",
+          "soc": 61
+        },
+        {
+          "t": "2026-07-30",
+          "soc": 60
+        },
+        {
+          "t": "2026-08-12",
+          "soc": 58
+        },
+        {
+          "t": "2026-08-22",
+          "soc": 57
+        },
+        {
+          "t": "2026-09-03",
+          "soc": 55
+        },
+        {
+          "t": "2026-09-16",
+          "soc": 54
+        },
+        {
+          "t": "2026-09-28",
+          "soc": 52
+        }
+      ]
+    },
+    {
+      "vin": "WKMK5BJW5SB101678",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K5 Hybrid",
+      "aandrijving": "PHEV",
+      "kwh": 19.7,
+      "zone": "B-EV-2",
+      "profiel": "KST-PHEV",
+      "aankomst": "2026-06-27",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 23,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-23",
+      "historiek": [
+        {
+          "t": "2026-06-27",
+          "soc": 41
+        },
+        {
+          "t": "2026-07-16",
+          "soc": 37
+        },
+        {
+          "t": "2026-08-07",
+          "soc": 32
+        },
+        {
+          "t": "2026-08-31",
+          "soc": 27
+        },
+        {
+          "t": "2026-09-23",
+          "soc": 23
+        }
+      ]
+    },
+    {
+      "vin": "LVXV5A2C7SH104491",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "B-EV-2",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-04-06",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 45,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-18",
+      "historiek": [
+        {
+          "t": "2026-06-07",
+          "soc": 54
+        },
+        {
+          "t": "2026-06-21",
+          "soc": 53
+        },
+        {
+          "t": "2026-07-09",
+          "soc": 52
+        },
+        {
+          "t": "2026-07-22",
+          "soc": 50
+        },
+        {
+          "t": "2026-08-03",
+          "soc": 49
+        },
+        {
+          "t": "2026-08-16",
+          "soc": 48
+        },
+        {
+          "t": "2026-09-03",
+          "soc": 47
+        },
+        {
+          "t": "2026-09-18",
+          "soc": 45
+        }
+      ]
+    },
+    {
+      "vin": "WKMK55J40TB100908",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K5 Hybrid",
+      "aandrijving": "PHEV",
+      "kwh": 19.7,
+      "zone": "B-EV-1",
+      "profiel": "KST-PHEV",
+      "aankomst": "2026-08-14",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 37,
+      "twaalfV": "Dood",
+      "laatsteControle": "2026-09-08",
+      "historiek": [
+        {
+          "t": "2026-08-14",
+          "soc": 41
+        },
+        {
+          "t": "2026-09-08",
+          "soc": 37
+        }
+      ]
+    },
+    {
+      "vin": "LSNS1ZFHXSZ104272",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "C-EV-3",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-09-05",
+      "vertrek": "2026-10-30",
+      "bestemming": "Trein",
+      "rijvaardig": true,
+      "soc": 67,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-23",
+      "historiek": [
+        {
+          "t": "2026-09-05",
+          "soc": 70
+        },
+        {
+          "t": "2026-09-14",
+          "soc": 68
+        },
+        {
+          "t": "2026-09-23",
+          "soc": 67
+        }
+      ]
+    },
+    {
+      "vin": "YNHN43GJ2SG103615",
+      "fab": "NHV",
+      "merk": "Nordhavn EV",
+      "model": "Nordhavn N4",
+      "aandrijving": "BEV",
+      "kwh": 107.0,
+      "zone": "D-EV-4",
+      "profiel": "NHV-BEV",
+      "aankomst": "2026-05-11",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 43,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-07",
+      "historiek": [
+        {
+          "t": "2026-06-06",
+          "soc": 56
+        },
+        {
+          "t": "2026-06-18",
+          "soc": 54
+        },
+        {
+          "t": "2026-07-06",
+          "soc": 52
+        },
+        {
+          "t": "2026-07-18",
+          "soc": 50
+        },
+        {
+          "t": "2026-08-01",
+          "soc": 48
+        },
+        {
+          "t": "2026-08-13",
+          "soc": 46
+        },
+        {
+          "t": "2026-08-26",
+          "soc": 45
+        },
+        {
+          "t": "2026-09-07",
+          "soc": 43
+        }
+      ]
+    },
+    {
+      "vin": "LSNS39157TZ103752",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "D-EV-4",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-06-11",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": false,
+      "soc": 35,
+      "twaalfV": "Dood",
+      "laatsteControle": "2026-09-27",
+      "historiek": [
+        {
+          "t": "2026-07-17",
+          "soc": 37
+        },
+        {
+          "t": "2026-07-22",
+          "soc": 36
+        },
+        {
+          "t": "2026-07-28",
+          "soc": 35
+        },
+        {
+          "t": "2026-08-06",
+          "soc": 48
+        },
+        {
+          "t": "2026-08-13",
+          "soc": 46
+        },
+        {
+          "t": "2026-08-24",
+          "soc": 43
+        },
+        {
+          "t": "2026-09-04",
+          "soc": 41
+        },
+        {
+          "t": "2026-09-27",
+          "soc": 35
+        }
+      ]
+    },
+    {
+      "vin": "LVXV78AG2SH103207",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "B-EV-2",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-09-07",
+      "vertrek": "2026-10-03",
+      "bestemming": "Trein",
+      "rijvaardig": true,
+      "soc": 70,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-27",
+      "historiek": [
+        {
+          "t": "2026-09-07",
+          "soc": 72
+        },
+        {
+          "t": "2026-09-17",
+          "soc": 71
+        },
+        {
+          "t": "2026-09-27",
+          "soc": 70
+        }
+      ]
+    },
+    {
+      "vin": "LSNS1VT39SZ102935",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "B-EV-2",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-06-04",
+      "vertrek": "2026-10-03",
+      "bestemming": "Trein",
+      "rijvaardig": true,
+      "soc": 48,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-03",
+      "historiek": [
+        {
+          "t": "2026-06-29",
+          "soc": 46
+        },
+        {
+          "t": "2026-07-10",
+          "soc": 43
+        },
+        {
+          "t": "2026-07-20",
+          "soc": 41
+        },
+        {
+          "t": "2026-07-27",
+          "soc": 40
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 38
+        },
+        {
+          "t": "2026-08-12",
+          "soc": 36
+        },
+        {
+          "t": "2026-08-24",
+          "soc": 34
+        },
+        {
+          "t": "2026-09-03",
+          "soc": 48
+        }
+      ]
+    },
+    {
+      "vin": "YNHN43H07TG102791",
+      "fab": "NHV",
+      "merk": "Nordhavn EV",
+      "model": "Nordhavn N4",
+      "aandrijving": "BEV",
+      "kwh": 107.0,
+      "zone": "D-EV-4",
+      "profiel": "NHV-BEV",
+      "aankomst": "2026-09-14",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 62,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-27",
+      "historiek": [
+        {
+          "t": "2026-09-14",
+          "soc": 62
+        },
+        {
+          "t": "2026-09-27",
+          "soc": 62
+        }
+      ]
+    },
+    {
+      "vin": "LSNS1AEY2TZ104593",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "B-EV-2",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-07-11",
+      "vertrek": "2026-10-31",
+      "bestemming": "Dealer",
+      "rijvaardig": true,
+      "soc": 40,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-21",
+      "historiek": [
+        {
+          "t": "2026-07-22",
+          "soc": 37
+        },
+        {
+          "t": "2026-08-01",
+          "soc": 35
+        },
+        {
+          "t": "2026-08-10",
+          "soc": 48
+        },
+        {
+          "t": "2026-08-16",
+          "soc": 47
+        },
+        {
+          "t": "2026-09-02",
+          "soc": 44
+        },
+        {
+          "t": "2026-09-09",
+          "soc": 43
+        },
+        {
+          "t": "2026-09-14",
+          "soc": 42
+        },
+        {
+          "t": "2026-09-21",
+          "soc": 40
+        }
+      ]
+    },
+    {
+      "vin": "LVXV55ZU1TH105921",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "D-EV-4",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-05-10",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 34,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-26",
+      "historiek": [
+        {
+          "t": "2026-05-24",
+          "soc": 46
+        },
+        {
+          "t": "2026-06-10",
+          "soc": 44
+        },
+        {
+          "t": "2026-06-25",
+          "soc": 43
+        },
+        {
+          "t": "2026-07-08",
+          "soc": 41
+        },
+        {
+          "t": "2026-07-26",
+          "soc": 40
+        },
+        {
+          "t": "2026-08-12",
+          "soc": 38
+        },
+        {
+          "t": "2026-09-13",
+          "soc": 35
+        },
+        {
+          "t": "2026-09-26",
+          "soc": 34
+        }
+      ]
+    },
+    {
+      "vin": "LVXV58CV0SH105300",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "B-EV-1",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-08-20",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": false,
+      "soc": 68,
+      "twaalfV": "Zwak",
+      "laatsteControle": "2026-09-18",
+      "historiek": [
+        {
+          "t": "2026-08-20",
+          "soc": 71
+        },
+        {
+          "t": "2026-09-02",
+          "soc": 70
+        },
+        {
+          "t": "2026-09-18",
+          "soc": 68
+        }
+      ]
+    },
+    {
+      "vin": "LVXV5HFE2TH106283",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "D-EV-4",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-05-03",
+      "vertrek": "2026-11-05",
+      "bestemming": "Verscheping",
+      "rijvaardig": true,
+      "soc": 46,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-25",
+      "historiek": [
+        {
+          "t": "2026-06-26",
+          "soc": 40
+        },
+        {
+          "t": "2026-07-08",
+          "soc": 38
+        },
+        {
+          "t": "2026-07-23",
+          "soc": 36
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 34
+        },
+        {
+          "t": "2026-08-16",
+          "soc": 32
+        },
+        {
+          "t": "2026-08-30",
+          "soc": 30
+        },
+        {
+          "t": "2026-09-11",
+          "soc": 48
+        },
+        {
+          "t": "2026-09-25",
+          "soc": 46
+        }
+      ]
+    },
+    {
+      "vin": "LVXV7TFB5SH106084",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "B-EV-1",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-07-04",
+      "vertrek": "2026-10-06",
+      "bestemming": "Verscheping",
+      "rijvaardig": true,
+      "soc": 49,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-23",
+      "historiek": [
+        {
+          "t": "2026-07-04",
+          "soc": 59
+        },
+        {
+          "t": "2026-07-16",
+          "soc": 57
+        },
+        {
+          "t": "2026-07-25",
+          "soc": 56
+        },
+        {
+          "t": "2026-08-22",
+          "soc": 53
+        },
+        {
+          "t": "2026-08-31",
+          "soc": 52
+        },
+        {
+          "t": "2026-09-10",
+          "soc": 50
+        },
+        {
+          "t": "2026-09-23",
+          "soc": 49
+        }
+      ]
+    },
+    {
+      "vin": "LVXV7D8P4TH103581",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "B-EV-2",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-07-05",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 53,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-26",
+      "historiek": [
+        {
+          "t": "2026-07-05",
+          "soc": 63
+        },
+        {
+          "t": "2026-07-17",
+          "soc": 62
+        },
+        {
+          "t": "2026-07-30",
+          "soc": 60
+        },
+        {
+          "t": "2026-08-07",
+          "soc": 59
+        },
+        {
+          "t": "2026-08-28",
+          "soc": 57
+        },
+        {
+          "t": "2026-09-07",
+          "soc": 56
+        },
+        {
+          "t": "2026-09-18",
+          "soc": 54
+        },
+        {
+          "t": "2026-09-26",
+          "soc": 53
+        }
+      ]
+    },
+    {
+      "vin": "LSNS3AXA8SZ103263",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S3",
+      "aandrijving": "BEV",
+      "kwh": 72.0,
+      "zone": "C-EV-3",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-09-02",
+      "vertrek": "2026-10-21",
+      "bestemming": "Trein",
+      "rijvaardig": true,
+      "soc": 54,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-27",
+      "historiek": [
+        {
+          "t": "2026-09-02",
+          "soc": 63
+        },
+        {
+          "t": "2026-09-11",
+          "soc": 60
+        },
+        {
+          "t": "2026-09-19",
+          "soc": 57
+        },
+        {
+          "t": "2026-09-27",
+          "soc": 54
+        }
+      ]
+    },
+    {
+      "vin": "WKMK56F63SB100626",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K5 Hybrid",
+      "aandrijving": "PHEV",
+      "kwh": 19.7,
+      "zone": "D-EV-4",
+      "profiel": "KST-PHEV",
+      "aankomst": "2026-05-28",
+      "vertrek": "2026-10-24",
+      "bestemming": "Trein",
+      "rijvaardig": true,
+      "soc": 20,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-11",
+      "historiek": [
+        {
+          "t": "2026-05-28",
+          "soc": 28
+        },
+        {
+          "t": "2026-06-19",
+          "soc": 26
+        },
+        {
+          "t": "2026-07-09",
+          "soc": 25
+        },
+        {
+          "t": "2026-08-02",
+          "soc": 23
+        },
+        {
+          "t": "2026-08-21",
+          "soc": 22
+        },
+        {
+          "t": "2026-09-11",
+          "soc": 20
+        }
+      ]
+    },
+    {
+      "vin": "WKMK3C3G5SB100600",
+      "fab": "KST",
+      "merk": "Kestrel Motors",
+      "model": "Kestrel K3",
+      "aandrijving": "BEV",
+      "kwh": 77.0,
+      "zone": "B-EV-1",
+      "profiel": "KST-BEV",
+      "aankomst": "2026-05-11",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 41,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-17",
+      "historiek": [
+        {
+          "t": "2026-05-11",
+          "soc": 47
+        },
+        {
+          "t": "2026-05-31",
+          "soc": 46
+        },
+        {
+          "t": "2026-06-20",
+          "soc": 45
+        },
+        {
+          "t": "2026-07-12",
+          "soc": 44
+        },
+        {
+          "t": "2026-08-04",
+          "soc": 43
+        },
+        {
+          "t": "2026-08-23",
+          "soc": 42
+        },
+        {
+          "t": "2026-09-17",
+          "soc": 41
+        }
+      ]
+    },
+    {
+      "vin": "LVXV5THZ0TH105975",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V5",
+      "aandrijving": "BEV",
+      "kwh": 60.0,
+      "zone": "C-EV-3",
+      "profiel": "VLT-BEV",
+      "aankomst": "2026-05-15",
+      "vertrek": "2026-10-03",
+      "bestemming": "Verscheping",
+      "rijvaardig": true,
+      "soc": 43,
+      "twaalfV": "Dood",
+      "laatsteControle": "2026-09-20",
+      "historiek": [
+        {
+          "t": "2026-05-30",
+          "soc": 58
+        },
+        {
+          "t": "2026-07-02",
+          "soc": 54
+        },
+        {
+          "t": "2026-07-14",
+          "soc": 52
+        },
+        {
+          "t": "2026-07-27",
+          "soc": 50
+        },
+        {
+          "t": "2026-08-10",
+          "soc": 48
+        },
+        {
+          "t": "2026-08-25",
+          "soc": 46
+        },
+        {
+          "t": "2026-09-07",
+          "soc": 44
+        },
+        {
+          "t": "2026-09-20",
+          "soc": 43
+        }
+      ]
+    },
+    {
+      "vin": "LSNS1TSZ6TZ104203",
+      "fab": "SNL",
+      "merk": "Sunlei",
+      "model": "Sunlei S1",
+      "aandrijving": "BEV",
+      "kwh": 45.0,
+      "zone": "B-EV-1",
+      "profiel": "SNL-BEV",
+      "aankomst": "2026-09-01",
+      "vertrek": "2026-10-17",
+      "bestemming": "Dealer",
+      "rijvaardig": true,
+      "soc": 42,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-23",
+      "historiek": [
+        {
+          "t": "2026-09-01",
+          "soc": 50
+        },
+        {
+          "t": "2026-09-09",
+          "soc": 47
+        },
+        {
+          "t": "2026-09-16",
+          "soc": 45
+        },
+        {
+          "t": "2026-09-23",
+          "soc": 42
+        }
+      ]
+    },
+    {
+      "vin": "LVXV7UREXSH106982",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "B-EV-1",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-08-21",
+      "vertrek": "2026-11-03",
+      "bestemming": "Truck",
+      "rijvaardig": true,
+      "soc": 46,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-22",
+      "historiek": [
+        {
+          "t": "2026-08-21",
+          "soc": 50
+        },
+        {
+          "t": "2026-09-02",
+          "soc": 48
+        },
+        {
+          "t": "2026-09-11",
+          "soc": 47
+        },
+        {
+          "t": "2026-09-22",
+          "soc": 46
+        }
+      ]
+    },
+    {
+      "vin": "LVXV7MFK1SH106802",
+      "fab": "VLT",
+      "merk": "Voltara",
+      "model": "Voltara V7 Long Range",
+      "aandrijving": "BEV",
+      "kwh": 82.0,
+      "zone": "C-EV-3",
+      "profiel": "VLT-V7",
+      "aankomst": "2026-08-06",
+      "vertrek": null,
+      "bestemming": null,
+      "rijvaardig": true,
+      "soc": 68,
+      "twaalfV": "OK",
+      "laatsteControle": "2026-09-19",
+      "historiek": [
+        {
+          "t": "2026-08-06",
+          "soc": 72
+        },
+        {
+          "t": "2026-08-16",
+          "soc": 71
+        },
+        {
+          "t": "2026-08-26",
+          "soc": 70
+        },
+        {
+          "t": "2026-09-07",
+          "soc": 69
+        },
+        {
+          "t": "2026-09-19",
+          "soc": 68
+        }
+      ]
+    }
+  ],
+  "totaalVoertuigen": 2000
+}

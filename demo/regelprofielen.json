@@ -1,0 +1,387 @@
+{
+  "fabrikanten": [
+    {
+      "code": "VLT",
+      "naam": "Voltara",
+      "land": "China",
+      "wmi": "LVX",
+      "modellen": [
+        {
+          "naam": "Voltara V5",
+          "code": "V5",
+          "aandrijving": "BEV",
+          "kwh": 60.0
+        },
+        {
+          "naam": "Voltara V7 Long Range",
+          "code": "V7",
+          "aandrijving": "BEV",
+          "kwh": 82.0
+        }
+      ]
+    },
+    {
+      "code": "KST",
+      "naam": "Kestrel Motors",
+      "land": "Duitsland",
+      "wmi": "WKM",
+      "modellen": [
+        {
+          "naam": "Kestrel K3",
+          "code": "K3",
+          "aandrijving": "BEV",
+          "kwh": 77.0
+        },
+        {
+          "naam": "Kestrel K5 Hybrid",
+          "code": "K5",
+          "aandrijving": "PHEV",
+          "kwh": 19.7
+        }
+      ]
+    },
+    {
+      "code": "NHV",
+      "naam": "Nordhavn EV",
+      "land": "Zweden",
+      "wmi": "YNH",
+      "modellen": [
+        {
+          "naam": "Nordhavn N2",
+          "code": "N2",
+          "aandrijving": "BEV",
+          "kwh": 69.0
+        },
+        {
+          "naam": "Nordhavn N4",
+          "code": "N4",
+          "aandrijving": "BEV",
+          "kwh": 107.0
+        }
+      ]
+    },
+    {
+      "code": "SNL",
+      "naam": "Sunlei",
+      "land": "China",
+      "wmi": "LSN",
+      "modellen": [
+        {
+          "naam": "Sunlei S1",
+          "code": "S1",
+          "aandrijving": "BEV",
+          "kwh": 45.0
+        },
+        {
+          "naam": "Sunlei S3",
+          "code": "S3",
+          "aandrijving": "BEV",
+          "kwh": 72.0
+        }
+      ]
+    }
+  ],
+  "profielen": [
+    {
+      "id": "TERMINAL-DEFAULT",
+      "fabrikantCode": null,
+      "naam": "Terminal – veilige standaard",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 35,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 20,
+      "controleIntervalDagen": 7,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.15,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "VLT-BEV",
+      "fabrikantCode": "VLT",
+      "naam": "Voltara – standaard BEV",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 30,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 15,
+      "controleIntervalDagen": 14,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.1,
+      "versie": 3,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "VLT-V7",
+      "fabrikantCode": "VLT",
+      "naam": "Voltara – V7 Long Range",
+      "modelPatroon": "Voltara V7*",
+      "aandrijving": "BEV",
+      "minOpslagSoc": 30,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 15,
+      "controleIntervalDagen": 10,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.12,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "KST-BEV",
+      "fabrikantCode": "KST",
+      "naam": "Kestrel – BEV",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 25,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 70,
+      "kritiekSoc": 12,
+      "controleIntervalDagen": 21,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.08,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "KST-PHEV",
+      "fabrikantCode": "KST",
+      "naam": "Kestrel – PHEV",
+      "modelPatroon": null,
+      "aandrijving": "PHEV",
+      "minOpslagSoc": 20,
+      "doelOpslagSoc": 40,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 10,
+      "controleIntervalDagen": 21,
+      "twaalfVoltIntervalDagen": 10,
+      "standaardOntlaadPerDag": 0.2,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "NHV-BEV",
+      "fabrikantCode": "NHV",
+      "naam": "Nordhavn – BEV",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 30,
+      "doelOpslagSoc": 55,
+      "maxLaadSoc": 60,
+      "kritiekSoc": 15,
+      "controleIntervalDagen": 14,
+      "twaalfVoltIntervalDagen": 14,
+      "standaardOntlaadPerDag": 0.09,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 45
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "SNL-BEV",
+      "fabrikantCode": "SNL",
+      "naam": "Sunlei – BEV",
+      "modelPatroon": null,
+      "aandrijving": "BEV",
+      "minOpslagSoc": 35,
+      "doelOpslagSoc": 50,
+      "maxLaadSoc": 55,
+      "kritiekSoc": 20,
+      "controleIntervalDagen": 7,
+      "twaalfVoltIntervalDagen": 7,
+      "standaardOntlaadPerDag": 0.25,
+      "versie": 1,
+      "geldigVanaf": "2026-06-01",
+      "vertrekRegels": [
+        {
+          "bestemmingsType": "Verscheping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "bestemmingsType": "Veerboot",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "bestemmingsType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Trein",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "bestemmingsType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    }
+  ]
+}
