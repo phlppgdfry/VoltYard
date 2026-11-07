@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 — Operational fit review
+
+Added a sourced readiness assessment, incumbent-system comparison and shadow-mode pilot plan. Corrected forecast freshness after charging, unknown-arrival presentation, repeated public-demo quarantine release and spreadsheet-formula handling in CSV exports. Added targeted regressions and clarified remaining terminal-operation requirements.
+
 ## 0.2.0 — Public portfolio showcase
 
 Added the public GitHub Pages case study, an interactive illustrative terminal map, a six-step guided tour and a full-inventory browser sandbox. The public edition saves changes per tab, supports reset, CSV validation/import, charging sessions, quarantine decisions, profile history, reports and exports. Added ten adapter regression tests, static artifact checks, social metadata and a Pages publishing pipeline.

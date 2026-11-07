@@ -7,8 +7,8 @@ public sealed class YardCommand
 {
     public long Revision { get; set; }
     public string Vin { get; set; } = "";
-    public double Soc { get; set; }
-    public string TwelveV { get; set; } = "OK";
+    public double? Soc { get; set; }
+    public string TwelveV { get; set; } = "";
     public bool Damage { get; set; }
     public bool Suspected { get; set; }
     public bool Confirm { get; set; }
@@ -38,6 +38,7 @@ public sealed class YardService(IYardStore store, TimeProvider clock)
     {
         var today=DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
         var stamp=today.ToString("yyyy-MM-dd");
+        var observedSoc=c.Soc ?? double.NaN;
         c.Note ??= ""; c.Reason ??= ""; c.Justification ??= "";
         if(action=="import")return Import(d,c.Csv,today);
         if(action=="profile")
@@ -63,11 +64,11 @@ public sealed class YardService(IYardStore store, TimeProvider clock)
         switch(action)
         {
             case "inspect":
-                if(!double.IsFinite(c.Soc) || c.Soc is <0 or >100 || !new[]{"OK","Weak","Dead"}.Contains(c.TwelveV) || c.Note.Length>2000)
+                if(!double.IsFinite(observedSoc) || observedSoc is <0 or >100 || !new[]{"OK","Weak","Dead"}.Contains(c.TwelveV) || c.Note.Length>2000)
                     throw new DomainException("SOC must be 0–100, with a valid 12V status and a note of at most 2,000 characters.");
-                if(!c.Confirm && (c.Soc<5 || v.Soc-c.Soc>20))throw new DomainException("Confirm this unusually low reading.",409);
+                if(!c.Confirm && (observedSoc<5 || v.Soc-observedSoc>20))throw new DomainException("Confirm this unusually low reading.",409);
                 if(d.Orders.GetValueOrDefault(v.Vin)?.Status=="Running")throw new DomainException("Stop charging before recording a manual inspection.",409);
-                Record(c.Soc,"Manual");v.TwelveV=c.TwelveV;v.Driveable=c.TwelveV!="Dead";v.LastInspection=stamp;
+                Record(observedSoc,"Manual");v.TwelveV=c.TwelveV;v.Driveable=c.TwelveV!="Dead";v.LastInspection=stamp;
                 if(c.Damage || c.Suspected)
                 {
                     v.QuarantineRequired=true;
@@ -90,13 +91,13 @@ public sealed class YardService(IYardStore store, TimeProvider clock)
             case "charge-stop":
                 var running=d.Orders.GetValueOrDefault(v.Vin);
                 if(running?.Status!="Running")throw new DomainException("No running session for this vehicle.",409);
-                if(!double.IsFinite(c.Soc) || c.Soc<running.StartSoc || c.Soc>100 || c.Kwh is <0 or >1000 || (c.Kwh.HasValue && !double.IsFinite(c.Kwh.Value)))
+                if(!double.IsFinite(observedSoc) || observedSoc<running.StartSoc || observedSoc>100 || c.Kwh is <0 or >1000 || (c.Kwh.HasValue && !double.IsFinite(c.Kwh.Value)))
                     throw new DomainException("Provide a valid final SOC and non-negative energy reading.");
-                var energy=c.Kwh ?? Math.Round((c.Soc-running.StartSoc)/100*v.Kwh/.9,2);
-                d.ChargingSessions.Add(new(v.Vin,v.Fab,running.Charger!,running.StartedAt!.Value,clock.GetUtcNow(),running.StartSoc,c.Soc,energy,!c.Kwh.HasValue));
+                var energy=c.Kwh ?? Math.Round((observedSoc-running.StartSoc)/100*v.Kwh/.9,2);
+                d.ChargingSessions.Add(new(v.Vin,v.Fab,running.Charger!,running.StartedAt!.Value,clock.GetUtcNow(),running.StartSoc,observedSoc,energy,!c.Kwh.HasValue));
                 d.Chargers.First(l=>l.Code==running.Charger).OccupiedBy=null;
                 var bill=d.Billing.GetValueOrDefault(v.Fab) ?? new Billing();d.Billing[v.Fab]=bill;bill.Sessions++;bill.Kwh+=energy;
-                c.TwelveV=v.TwelveV;Record(c.Soc,"Charging");d.Orders.Remove(v.Vin);break;
+                c.TwelveV=v.TwelveV;Record(observedSoc,"Charging");d.Orders.Remove(v.Vin);break;
             case "quarantine":
                 if(c.Reason.Trim().Length<10 || c.Reason.Length>2000)throw new DomainException("Explain the concern in 10–2,000 characters.");
                 if(d.Orders.GetValueOrDefault(v.Vin)?.Status=="Running")throw new DomainException("Stop the charging session before opening quarantine.",409);

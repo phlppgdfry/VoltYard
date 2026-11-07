@@ -55,3 +55,18 @@ Status is based on repository behaviour, not the existence of an issue. The orig
 ## Verification rule
 
 A story is complete only when the [definition of done](definition-of-done.md) is met. Planned tests, interview templates and proposed infrastructure do not count as delivered evidence.
+
+## Operational review priorities
+
+Read the [readiness review](../09-review/operational-readiness.md) before extending feature scope. Add these explicit gates to the existing database/identity/evidence work:
+
+| ID | Priority | Deliverable | Acceptance evidence |
+|---|---|---|---|
+| VISIT-01 | Must before real use | Separate Vehicle from YardVisit | The same VIN can depart and return with independent custody, location and actual event times |
+| INT-01 | Must before real use | TOS/charger ownership and reconciliation | Signed-off source-of-truth matrix, units/identifiers, retry/replay and mismatch handling |
+| HSE-02 | Must before real use | Approved concern triage | Cosmetic damage, battery concern and incident follow distinct authorised procedures |
+| LOC-01 | Site-dependent | Precise position and observed mobility | Site/level/row/bay and explicit movement/recovery observation, not inferred solely from 12V |
+| CH-02 | Site-dependent | Compatible, schedulable charging | Connector/AC/DC support, power budget, deadlines, equipment fault and staff capacity checks |
+| VAL-02 | Must before commercial claims | Existing-system and buyer validation | Demonstrated gap against incumbent tools, baseline effort and a named budget owner |
+
+The unknown-arrival presentation and forecast timestamp defects are corrected in the current release. Nullable/independent observation modelling and full evidence history remain open; presentation fixes do not replace that migration.

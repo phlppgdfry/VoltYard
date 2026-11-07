@@ -10,7 +10,7 @@ public class RulesTests
     private static readonly DateOnly Today=new(2026,9,28);
     private static RuleProfile Profile()=>new(){Id="TEST",Name="Test profile",MinStorageSoc=30,TargetStorageSoc=50,MaxChargeSoc=60,CriticalSoc=15,
         InspectionIntervalDays=14,TwelveVoltIntervalDays=14,DefaultDischargePerDay=.1,DepartureRules=[new("Shipping",20,50),new("Dealer",50,80)]};
-    private static Vehicle Vehicle(double soc=50)=>new(){Vin="1HGCM82633A004352",Profile="TEST",Soc=soc,Zone="EV",LastInspection="2026-09-28",Arrival="2026-09-01"};
+    private static Vehicle Vehicle(double soc=50)=>new(){Vin="1HGCM82633A004352",Profile="TEST",Soc=soc,Zone="EV",LastInspection="2026-09-28",Arrival="2026-09-01",History=[new(){T="2026-09-28",Soc=soc,TwelveV="OK",Source="Manual"}]};
     private static Zone Zone()=>new(){Code="EV",Type="EV",Capacity=20,MaxEvs=20};
     [Theory]
     [InlineData(12,"SOC_CRITICAL")][InlineData(15,"SOC_BELOW_MIN")][InlineData(24,"SOC_BELOW_MIN")]
@@ -34,7 +34,7 @@ public class RulesTests
     }
     [Fact] public void Forecast_accounts_for_age_of_last_measurement()
     {
-        var v=Vehicle(32);v.LastInspection="2026-09-01";
+        var v=Vehicle(32);v.LastInspection="2026-09-01";v.History[0].T="2026-09-01";
         Assert.Contains(Rules.Evaluate(v,Profile(),Zone(),Today),a=>a.Code=="SOC_PREDICTED_LOW");
     }
     [Fact] public void Forecast_uses_latest_declining_segment_after_charging()
@@ -101,7 +101,7 @@ public class RulesTests
     {
         using var f=new StoreFixture();var service=new YardService(f.Store,new FixedClock());
         service.Execute("inspect",new(){Vin="1HGCM82633A004352",Soc=40,TwelveV="Weak"},"operator");
-        var h=f.Store.Read(d=>d.Vehicles[0].History.Single());Assert.Equal("operator",h.Actor);Assert.Equal(1,h.ProfileVersion);
+        var h=f.Store.Read(d=>d.Vehicles[0].History.Last());Assert.Equal("operator",h.Actor);Assert.Equal(1,h.ProfileVersion);
     }
     [Fact] public void Null_departure_rules_are_rejected_as_validation_errors()
     {
@@ -116,8 +116,30 @@ public class RulesTests
     [Fact] public void Charging_requires_a_real_arrival_observation()
     {
         using var f=new StoreFixture();var service=new YardService(f.Store,new FixedClock());
-        var error=Assert.Throws<DomainException>(()=>service.Execute("charge-approve",new(){Vin="1HGCM82633A004352"},"planner"));
+        f.Store.Write(0,"test","clear","vin",d=>{d.Vehicles[0].History.Clear();return true;});
+        var error=Assert.Throws<DomainException>(()=>service.Execute("charge-approve",new(){Vin="1HGCM82633A004352",Revision=1},"planner"));
         Assert.Contains("arrival inspection",error.Message);
+    }
+    [Fact] public void Forecast_uses_latest_charge_date_without_resetting_manual_inspection_age()
+    {
+        var v=Vehicle(32);v.LastInspection="2026-09-01";
+        v.History=[new(){T="2026-09-01",Soc=10,Source="Manual"},new(){T="2026-09-28",Soc=32,Source="Charging"}];
+        var alerts=Rules.Evaluate(v,Profile(),Zone(),Today);
+        Assert.DoesNotContain(alerts,a=>a.Code=="SOC_PREDICTED_LOW");
+        Assert.Contains(alerts,a=>a.Code=="INSPECTION_OVERDUE");
+    }
+    [Fact] public void Uninspected_vehicle_is_unknown_rather_than_a_measured_flat_battery()
+    {
+        var v=Vehicle(0);v.History.Clear();
+        var alerts=Rules.Evaluate(v,Profile(),Zone(),Today);
+        Assert.Single(alerts);Assert.Equal("INSPECTION_REQUIRED",alerts[0].Code);
+    }
+    [Theory][InlineData(null,"OK")][InlineData(40.0,"")]
+    public void Missing_inspection_fields_do_not_become_fabricated_measurements(double? soc,string auxiliary)
+    {
+        using var f=new StoreFixture();var service=new YardService(f.Store,new FixedClock());
+        var error=Assert.Throws<DomainException>(()=>service.Execute("inspect",new(){Vin="1HGCM82633A004352",Soc=soc,TwelveV=auxiliary,Confirm=true},"operator"));
+        Assert.Equal(400,error.Status);Assert.Equal(0,f.Store.Read(d=>d.Revision));Assert.Single(f.Store.Read(d=>d.Vehicles[0].History));
     }
     private sealed class FixedClock:TimeProvider {public override DateTimeOffset GetUtcNow()=>new(2026,9,28,12,0,0,TimeSpan.Zero);}
     private sealed class StoreFixture:IDisposable

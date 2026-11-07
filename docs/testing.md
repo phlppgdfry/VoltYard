@@ -39,10 +39,16 @@ No real chargers, camera hardware, field staff timing study, load benchmark, Pos
 
 ## Verified local run — 7 November 2026
 
-The final local regression run passed 29 xUnit cases and 59 HTTP assertions. Browser checks at 1440×1000 and 390×844 verified sign-in, search, inspection submission, persistence after reload, handover content and mobile overflow. There were no JavaScript page errors; an initial unauthenticated state request produced the expected HTTP 401 before sign-in. A publish build also succeeded. Docker execution and real external integrations were not tested.
+The initial local regression run passed 29 xUnit cases and 59 HTTP assertions. Browser checks at 1440×1000 and 390×844 verified sign-in, search, inspection submission, persistence after reload, handover content and mobile overflow. There were no JavaScript page errors; an initial unauthenticated state request produced the expected HTTP 401 before sign-in. A publish build also succeeded. Docker execution and real external integrations were not tested.
 
 ## Public GitHub Pages edition
 
-Run `node --test tests/public-sandbox.test.mjs` for ten public-adapter regression tests, then `python3 tools/build_pages.py` and `python3 tools/check_pages.py`. Node 24 is used in the Pages pipeline; the .NET application itself still requires no Node build.
+Run `node --test tests/public-sandbox.test.mjs` for fourteen public-adapter regression tests, then `python3 tools/build_pages.py` and `python3 tools/check_pages.py`. Node 24 is used in the Pages pipeline; the .NET application itself still requires no Node build.
 
 Browser verification covered the public case study, zone selection, guided navigation, SOC/12V entry, approve/start/stop charging, metered energy, profile versioning, persistence after reload, CSV upload, zone links and responsive layouts. The browser made no /api requests. The manifest imports 40 records into the 40 free arrival-zone spaces; the other rows receive explicit validation/capacity errors. Fixture VIN errors remain at logical lines 139 and 290.
+
+## Operational review follow-up — 7 November 2026
+
+The reviewed release passes 33 xUnit cases in Release mode, 14 public-adapter tests and 70 HTTP assertions. New checks cover recent charging readings versus old manual inspections, unobserved arrivals, omitted API measurement fields, repeated quarantine and spreadsheet-formula escaping. The HTTP suite also verifies the second quarantine cycle and an imported vehicle's explicit inspection requirement.
+
+A fresh browser context at 390×844 verified that an imported vehicle shows Not measured / Not recorded, has INSPECTION_REQUIRED rather than a false critical-SOC alert, and opens an arrival form with blank required observations. It produced no JavaScript errors or horizontal overflow. The review section is linked from the showcase and repository. These results do not constitute field acceptance, exhaustive security testing or a production benchmark.

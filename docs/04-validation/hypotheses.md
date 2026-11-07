@@ -23,3 +23,7 @@ For each finding record anonymous interview ID, date, role, question, observed b
 ## Decision gate
 
 Proceed to a supervised pilot only when a workflow owner, a profile approver and a data owner are identified. Revisit scope if operators already have a suitable tool or cannot reliably observe the required fields.
+
+## Follow-up after the operational review
+
+The initial discovery target is an automotive terminal/compound operator, not a port authority in general. Test the overlap with incumbent TOS and charging systems explicitly. Observe data acquisition, keys/access, physical travel, exact parking positions and repeat visits for the same VIN. Use the [shadow-mode pilot plan](pilot-plan.md) only after a sponsor, instructions and data permissions are agreed.

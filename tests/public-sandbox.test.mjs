@@ -15,7 +15,7 @@ function app(){
   document:{getElementById:()=>({insertAdjacentHTML(){},textContent:''}),createElement:()=>({}),body:{prepend(){}},addEventListener(){}},
   window:{scrollTo(){}},setTimeout,clearTimeout,confirm:()=>true});
  vm.runInContext(ui+'\nrender=()=>{};',context);vm.runInContext(sandbox,context);
- return {get:()=>vm.runInContext('D',context),command:(action,body={})=>context.command(action,body)};
+ return {get:()=>vm.runInContext('D',context),run:code=>vm.runInContext(code,context),command:(action,body={})=>context.command(action,body)};
 }
 const target=d=>d.vehicles.find(v=>v.zone==='C-EV-3'&&v.soc<20&&v.twelveV==='OK');
 test('invalid inspection rolls back every state change',async()=>{
@@ -68,4 +68,24 @@ test('manifest preserves invalid line numbers and respects arrival capacity',asy
  const a=app(),csv=readFileSync(new URL('demo/vessel-voltara-400.csv',root),'utf8'),r=await a.command('import',{csv});
  assert.equal(r.accepted,40);assert.equal(r.rejected,360);assert.match(r.errors.find(e=>e.line===139).error,/VIN/);assert.match(r.errors.find(e=>e.line===290).error,/VIN/);
  assert.equal(a.get().zones.find(z=>z.code==='B-EV-1').count,520);
+});
+test('a second quarantine requires a new release decision',async()=>{
+ const a=app(),vin=target(a.get()).vin;
+ await a.command('move',{vin,zone:'Q-QUAR'});
+ await a.command('decide',{vin,decision:'Released',justification:'Initial fictional concern reviewed'});
+ await a.command('move',{vin,zone:'Q-QUAR'});
+ assert.equal(a.get().vehicles.find(v=>v.vin===vin).dossier.decision,'Open');
+ await assert.rejects(a.command('move',{vin,zone:'B-EV-1'}),/HSE must release/);
+});
+test('forecast uses the SOC observation date rather than the last manual inspection',()=>{
+ const a=app(),codes=a.run(`(()=>{const v=structuredClone(D.vehicles.find(v=>v.profile==='VLT-BEV'));v.soc=32;v.lastInspection='2026-09-01';v.departure=null;v.zone='B-EV-1';v.history=[{t:'2026-09-01',soc:10,source:'Manual'},{t:'2026-09-28',soc:32,source:'Charging'}];return evaluate(v).map(a=>a.code);})()`);
+ assert.equal(codes.includes('SOC_PREDICTED_LOW'),false);assert.equal(codes.includes('INSPECTION_OVERDUE'),true);
+});
+test('unobserved arrival creates an inspection requirement, not a false zero-SOC measurement',()=>{
+ const a=app(),codes=a.run(`(()=>{const v=structuredClone(D.vehicles.find(v=>v.zone==='C-EV-3'));v.soc=0;v.history=[];return evaluate(v).map(a=>a.code);})()`);
+ assert.equal(codes.length,1);assert.equal(codes[0],'INSPECTION_REQUIRED');
+});
+test('spreadsheet exports escape formula prefixes and quoted fields',()=>{
+ const a=app();assert.equal(a.run(`csvCell('=1+1')`),`"'=1+1"`);assert.equal(a.run(`csvCell('@SUM(1)')`),`"'@SUM(1)"`);
+ assert.equal(a.run(`csvCell('Voltara "Demo"')`),'"Voltara ""Demo"""');assert.equal(a.run(`csvCell(42)`),'"42"');assert.equal(a.run(`csvCell('  =1+1')`),`"'  =1+1"`);
 });

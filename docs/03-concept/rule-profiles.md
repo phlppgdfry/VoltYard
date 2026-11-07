@@ -25,6 +25,7 @@ Choose matching manufacturer + powertrain + model pattern first, with the longes
 
 | Code | Trigger | Severity |
 |---|---|---|
+| `INSPECTION_REQUIRED` | No recorded battery observation | High; no invented zero-SOC warning |
 | `SOC_CRITICAL` | Latest SOC below critical threshold | Critical |
 | `SOC_BELOW_MIN` | Below storage minimum, unless critical | High |
 | `SOC_PREDICTED_LOW` | Forecast below minimum, unless latest SOC is already low | Medium |
@@ -45,7 +46,7 @@ rate = (previous SOC - latest SOC) / elapsed days
        when the last two observations decline over positive elapsed time;
        otherwise profile.defaultDischargePerDay
 horizon = min(14 days, max(0, days until departure)), or 14 without a departure
-forecast = max(0, latest SOC - rate × (age of latest observation + horizon))
+forecast = max(0, latest SOC - rate × (age of latest SOC observation + horizon))
 ```
 
 Charging appends an observation, so subsequent declining segments start after the charge. Multiple same-day records use the fallback rate. This simple estimate has no confidence interval or thermal model and is never presented as live telemetry.
@@ -57,3 +58,5 @@ Start with `min(targetStorageSoc, maxChargeSoc)`. Inside the departure window, r
 ## Version provenance and evaluation
 
 Threshold edits preserve the previous profile in `profileHistory`; new measurements reference the active version. Current alerts are recomputed on state reads and after commands. There are no stored alert acknowledgements, scheduled jobs or immutable historical alert snapshots yet. Reports show current alerts and recorded observations. See [test cases](../../demo/rule-engine-cases.md).
+
+The latest SOC observation date and the last manual inspection date are separate. A charging reading refreshes the forecast input, while the manual inspection can remain overdue. Uninspected vehicles require a real arrival observation before charging or departure; internal legacy defaults are not displayed as measurements.

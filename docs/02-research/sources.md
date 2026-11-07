@@ -64,3 +64,13 @@ The links below were collected during the September 2026 concept phase. They are
 ## Missing evidence
 
 No completed customer interviews, live operational dataset, regulatory approval, partnership or paid pilot is recorded. Record new evidence in the validation dossier before updating product claims.
+
+## Sources checked during operational fit review — 7 November 2026
+
+- [Wallenius Wilhelmsen: Zeebrugge terminal services](https://www.walleniuswilhelmsen.com/terminal/zeebrugge).
+- [Smappee: ICO Terminals energy/charging case study](https://www.smappee.com/eu/cases/ico-terminals-from-standalone-charge-points-to-one-controlled-energy-system).
+- [INFORM: Vehicle Yard Management](https://www.inform-software.com/en/solutions/vehiclelogistics/vehicle-yard-management).
+- [ECG: EV State of Charge requirements](https://www.ecgassociation.eu/publications-and-reports/ev-soc-requirements/).
+- [ECG: October 2025 BEV maritime handling manual announcement](https://ecgassociation.eu/article/?id=3ee64ddb-fac9-4a8a-a9e9-72bc1492fb94).
+
+Interpretation and source limitations are recorded in the [operational review](../09-review/operational-readiness.md). No customer interview is implied by this desk research.

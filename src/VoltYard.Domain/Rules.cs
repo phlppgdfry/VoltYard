@@ -52,9 +52,17 @@ public static class Rules
         if (v.Departed) return [];
         List<RuleAlert> result=[];
         void Add(string code,string severity,string msg,string action) => result.Add(new(code,severity,msg,action));
+        if(v.History.Count==0)
+        {
+            Add("INSPECTION_REQUIRED","High","No battery observation has been recorded","Record an arrival inspection before charging or departure");
+            if(v.QuarantineRequired && zone.Type!="Quarantine") Add("QUARANTINE_REQUIRED","Critical","Unresolved concern without an inspection","Follow site HSE procedure");
+            if(zone.Type=="Standard") Add("WRONG_ZONE","Medium","EV in standard storage zone","Move to approved EV zone");
+            return result.OrderByDescending(a=>a.Severity=="Critical"?4:a.Severity=="High"?3:2).ToList();
+        }
         var age=today.DayNumber-DateOnly.Parse(v.LastInspection).DayNumber;
+        var socAge=today.DayNumber-DateOnly.Parse(v.History[^1].T).DayNumber;
         var horizon=v.Departure is null ? 14 : Math.Min(14,Math.Max(0,DateOnly.Parse(v.Departure).DayNumber-today.DayNumber));
-        var predicted=Math.Max(0,v.Soc-Discharge(v,p)*(Math.Max(0,age)+horizon));
+        var predicted=Math.Max(0,v.Soc-Discharge(v,p)*(Math.Max(0,socAge)+horizon));
         if (v.Soc<p.CriticalSoc) Add("SOC_CRITICAL","Critical",$"SOC {v.Soc}% below critical {p.CriticalSoc}%","Inspect and arrange urgent charging if safe");
         else if (v.Soc<p.MinStorageSoc) Add("SOC_BELOW_MIN","High",$"SOC {v.Soc}% below storage minimum {p.MinStorageSoc}%","Review charging task");
         else if (predicted<p.MinStorageSoc) Add("SOC_PREDICTED_LOW","Medium",$"Estimated SOC {predicted:F1}% in {horizon} days","Schedule an inspection or charging");

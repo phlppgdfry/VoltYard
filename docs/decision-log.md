@@ -15,3 +15,7 @@ The repository established a Dutch problem/research dossier, product concept, pr
 - Recorded the local implementation trade-offs in ADR-0008. PostgreSQL, individual identity, tenant isolation and hardware/cloud integrations remain future work.
 
 For executable verification, use [testing](testing.md). For outstanding decisions, see [open questions](open-questions.md). This log records repository work, not customer endorsements or live terminal results.
+
+## 7 November 2026 — operational fit review
+
+Reviewed executable behaviour and primary operator/vendor/industry sources. Recorded material incumbent-system overlap and defined a proposed operator discovery/shadow-mode study. Corrected SOC forecast freshness, unknown-arrival presentation, omitted API observation fields, public quarantine re-entry and spreadsheet exports. Test coverage now includes 33 backend cases, 14 public-adapter cases and 70 HTTP assertions. No operator was contacted or pilot approved. The readiness report distinguishes portfolio usefulness from operational and commercial validation.

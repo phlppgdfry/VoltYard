@@ -37,7 +37,7 @@ The single quarantineCase property describes the latest case. Earlier reopen/dec
 
 ## Missing data
 
-New imports have no inspection history and show Not measured. The internal zero SOC and deliberately stale inspection date are conservative placeholders, not actual observations. Require an arrival inspection before operational decisions that depend on SOC. The schema should move these fields to nullable observations during the relational migration.
+New imports have no inspection history and show Not measured. The internal zero SOC and deliberately stale inspection date are conservative placeholders, not actual observations. Current evaluation emits INSPECTION_REQUIRED instead of interpreting these defaults as a measured flat battery. The interface and emergency export display unknown/unmeasured values. Require an arrival inspection before operational decisions that depend on SOC. The schema should move these fields to nullable observations during the relational migration.
 
 ## Persistence invariants
 

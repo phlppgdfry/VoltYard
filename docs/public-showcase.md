@@ -27,7 +27,7 @@ The checked-in 60-vehicle standalone prototype remains available separately. The
 | demo/application-data.json | Deterministic full-inventory fixture |
 | tools/build_pages.py | Creates only the intended public files in _site/ |
 | tools/check_pages.py | Checks artifact completeness and local asset links |
-| tests/public-sandbox.test.mjs | Ten adapter regression tests |
+| tests/public-sandbox.test.mjs | Fourteen adapter regression tests |
 | .github/workflows/pages.yml | Build, test and publish using GitHub Pages Actions |
 
 ```bash

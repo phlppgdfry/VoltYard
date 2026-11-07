@@ -93,7 +93,7 @@
       if((v.quarantineRequired||v.zone==='Q-QUAR')&&z.type!=='Quarantine'&&v.dossier?.decision!=='Released')fail('HSE must release this vehicle before it leaves quarantine.');
       if(count(code)>=Math.min(z.capacity,z.maxEvs))fail('Destination zone is at its EV capacity.');
       D.zones.find(z=>z.code===v.zone).count--;z.count++;v.zone=code;
-      if(z.type==='Quarantine'){v.quarantineRequired=false;v.dossier??={reason:'Moved into quarantine for HSE review',opened:today(),decision:'Open'};}
+      if(z.type==='Quarantine'){v.quarantineRequired=false;if(!v.dossier||v.dossier.decision==='Released')v.dossier={reason:'Moved into quarantine for HSE review',opened:today(),decision:'Open'};}
     }
     function chargeTarget(){const t=target(v),r=p.departureRules.find(r=>r.destinationType===v.destination);if(r&&within(v)&&t<r.minSoc)fail('Profile and departure limits conflict. Review the profile.');return t;}
     if(action==='inspect'){

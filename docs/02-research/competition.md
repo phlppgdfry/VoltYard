@@ -26,3 +26,9 @@ A focused EV operations layer can complement an existing TOS. The integration op
 ## Decision gate
 
 If existing tools meet the workflow at lower total cost, prefer an integration or change focus. Interview operators about unmet work rather than asking them to endorse the proposed product. Relevant starting links are in [sources](sources.md).
+
+## Named overlap verified in the operational review
+
+[Smappee's ICO case study](https://www.smappee.com/eu/cases/ico-terminals-from-standalone-charge-points-to-one-controlled-energy-system) describes API-based per-vehicle energy targets and integrated charging. [INFORM](https://www.inform-software.com/en/solutions/vehiclelogistics/vehicle-yard-management) advertises yard location/condition visibility, planning and interfaces. These are direct reasons to test a complementary evidence/exception workflow before claiming differentiation. Vendor claims are not independent performance verification.
+
+See the [operational readiness review](../09-review/operational-readiness.md) for the assessed opportunity and evidence limits.

@@ -38,6 +38,8 @@ assert sum(z['count'] for z in d['zones'])==2000
 v=next(v for v in d['vehicles'] if v['zone'] not in ('Q-QUAR','A-STD') and v['soc']<40 and v['twelveV']=='OK')
 vin=v['vin'];initial=len(v['history']);revision=d['revision']
 request(admin,'/api/commands/inspect',{'revision':revision,'vin':vin,'soc':-1},400)
+request(admin,'/api/commands/inspect',{'revision':revision,'vin':vin,'twelveV':'OK','confirm':True},400)
+request(admin,'/api/commands/inspect',{'revision':revision,'vin':vin,'soc':40},400)
 assert state(admin)['revision']==revision
 command(admin,'inspect',{'vin':vin,'soc':18,'twelveV':'Weak','confirm':True,'note':'HTTP smoke inspection'})
 request(admin,'/api/commands/inspect',{'revision':revision,'vin':vin,'soc':40},409)
@@ -48,7 +50,7 @@ command(admin,'charge-approve',{'vin':vin})
 command(admin,'charge-start',{'vin':vin})
 command(admin,'charge-start',{'vin':vin},409)
 command(admin,'move',{'vin':vin,'zone':'B-EV-2'},409)
-command(admin,'inspect',{'vin':vin,'soc':40},409)
+command(admin,'inspect',{'vin':vin,'soc':40,'twelveV':'OK'},409)
 command(admin,'charge-stop',{'vin':vin,'soc':40,'kwh':15.3})
 command(admin,'charge-stop',{'vin':vin,'soc':40},409)
 after=state(admin);session=after['chargingSessions'][-1]
@@ -65,6 +67,9 @@ hse=login('hse')
 command(hse,'decide',{'vin':vin,'decision':'Released','justification':'short'},400)
 # B-EV-1 has room in a fresh fixture for this release.
 command(hse,'decide',{'vin':vin,'decision':'Released','justification':'Fictional test concern reviewed and cleared'})
+command(operator,'move',{'vin':vin,'zone':'Q-QUAR'})
+command(operator,'move',{'vin':vin,'zone':'B-EV-1'},409)
+command(hse,'decide',{'vin':vin,'decision':'Released','justification':'Second fictional concern reviewed independently'})
 profile=next(p for p in state(admin)['profiles'] if p['id']=='VLT-BEV');old=profile['version'];profile['minStorageSoc']=profile['targetStorageSoc']+1
 command(admin,'profile',{'profile':profile},400)
 profile['minStorageSoc']=30;command(admin,'profile',{'profile':profile})
@@ -72,6 +77,10 @@ after=state(admin);assert next(p for p in after['profiles'] if p['id']=='VLT-BEV
 manifest='vin,brand,model,powertrain,kwh,manufacturerCode\n'+make_vin('LVX',900001)+',"Voltara, Demo",Voltara V5,BEV,60,VLT\nINVALID,Voltara,Voltara V5,BEV,60,VLT\n'
 result=command(admin,'import',{'csv':manifest});assert result['accepted']==1 and result['rejected']==1 and result['errors'][0]['line']==3
 result=command(admin,'import',{'csv':manifest});assert result['accepted']==0 and result['rejected']==2
+arrival_vin=make_vin('LVX',900001)
+snapshot=request(admin,'/api/state')
+assert [a['code'] for a in snapshot['alerts'][arrival_vin]]==['INSPECTION_REQUIRED']
+command(admin,'charge-approve',{'vin':arrival_vin},409)
 report=request(admin,'/api/reports/'+vin);assert report['vehicle']['vin']==vin and report['audit'] and report['id']
 # Origin rejection is independent of role and revision.
 req=urllib.request.Request(base+'/api/commands/inspect',data=b'{}',headers={'Content-Type':'application/json','X-VoltYard-Client':'web','Origin':'https://untrusted.example'})

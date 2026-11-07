@@ -73,6 +73,12 @@ docs/                        Research, product, delivery and assessment dossier
 .github/workflows/           Automated repository checks, build and tests
 ```
 
+## Review of operational fit
+
+**[Operational readiness review](docs/09-review/operational-readiness.md)** · **[Proposed shadow-mode pilot](docs/04-validation/pilot-plan.md)**
+
+The industry workflow is real, but demand for VoltYard is not yet validated. Current research identifies material overlap with existing terminal and charging systems. The review records corrected defects, remaining operational blockers, integration questions and a concrete discovery plan. This is a portfolio/discovery instrument, not a production acceptance claim.
+
 ## Read the dossier
 
 | Topic | Start here |
