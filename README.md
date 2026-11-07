@@ -6,6 +6,16 @@ VoltYard follows each vehicle by VIN, records battery inspections, evaluates con
 
 **Status:** working local development application with a C#/.NET 10 backend and an English web interface. The repository also contains a product, research, validation and architecture dossier. This is a single-terminal demonstration, not an approved terminal safety system.
 
+## Public showcase
+
+**[Explore VoltYard on GitHub Pages](https://phlppgdfry.github.io/VoltYard/)** · **[Open the interactive demo](https://phlppgdfry.github.io/VoltYard/demo/)** · **[Take the guided tour](https://phlppgdfry.github.io/VoltYard/demo/?tour=1)**
+
+The public site is open to everyone without a login. It includes the portfolio case study and a browser-only sandbox with all 2,000 fictional vehicles, a six-step walkthrough, tab-local saved changes, reset, CSV import, charging, quarantine and printable handover records. It makes no backend requests. The .NET application below provides the separately runnable server implementation.
+
+![VoltYard dashboard](showcase/assets/dashboard.png)
+
+Build the static site with `python3 tools/build_pages.py`; verify it with `python3 tools/check_pages.py` and `node --test tests/public-sandbox.test.mjs` (Node 24 for sandbox tests). GitHub Actions publishes `_site/` to Pages on pushes to `main`. See [public showcase](docs/public-showcase.md).
+
 ## Run locally
 
 Install the .NET 10 SDK and Python 3. No Node.js build step, database service or paid API is required.
@@ -57,7 +67,8 @@ src/VoltYard.Api/             ASP.NET Core host, authentication and HTTP endpoin
 tests/VoltYard.Tests/         Domain, workflow and persistence regression tests
 prototype/                   English UI template and standalone generated preview
 demo/                        Deterministic fictional fixtures
-tools/                       Data generation, verification and GitHub board helper
+showcase/                    Portfolio page, static assets and public sandbox adapter
+tools/                       Data generation, verification, Pages build and GitHub board helper
 docs/                        Research, product, delivery and assessment dossier
 .github/workflows/           Automated repository checks, build and tests
 ```

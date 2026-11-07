@@ -40,3 +40,9 @@ No real chargers, camera hardware, field staff timing study, load benchmark, Pos
 ## Verified local run — 7 November 2026
 
 The final local regression run passed 29 xUnit cases and 59 HTTP assertions. Browser checks at 1440×1000 and 390×844 verified sign-in, search, inspection submission, persistence after reload, handover content and mobile overflow. There were no JavaScript page errors; an initial unauthenticated state request produced the expected HTTP 401 before sign-in. A publish build also succeeded. Docker execution and real external integrations were not tested.
+
+## Public GitHub Pages edition
+
+Run `node --test tests/public-sandbox.test.mjs` for ten public-adapter regression tests, then `python3 tools/build_pages.py` and `python3 tools/check_pages.py`. Node 24 is used in the Pages pipeline; the .NET application itself still requires no Node build.
+
+Browser verification covered the public case study, zone selection, guided navigation, SOC/12V entry, approve/start/stop charging, metered energy, profile versioning, persistence after reload, CSV upload, zone links and responsive layouts. The browser made no /api requests. The manifest imports 40 records into the 40 free arrival-zone spaces; the other rows receive explicit validation/capacity errors. Fixture VIN errors remain at logical lines 139 and 290.

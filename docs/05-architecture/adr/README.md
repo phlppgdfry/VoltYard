@@ -13,4 +13,6 @@ Status distinguishes proposed technology direction from the implemented local re
 | [0007](0007-background-jobs.md) | Background evaluation | Deferred; current alerts evaluated on request |
 | [0008](0008-local-executable-slice.md) | Executable local slice with atomic file storage | Accepted for development demo |
 
+| [0009](0009-public-pages-showcase.md) | Public GitHub Pages showcase and isolated browser sandbox | Accepted and implemented |
+
 Use the [template](template.md). Preserve superseded decisions and explain their replacement rather than rewriting history as if every proposal shipped.

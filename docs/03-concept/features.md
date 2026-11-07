@@ -32,6 +32,10 @@
 | Engineering | Build, tests, CI, atomic local storage and concurrency | Must | Implemented |
 | Engineering | PostgreSQL, durable jobs, cloud deployment and monitoring | Must for production | Planned |
 
+## Public portfolio edition
+
+The GitHub Pages site includes a public case study and an isolated browser simulation using all 2,000 fictional records. The sandbox supports inspections, charging, quarantine, profile versions, CSV import, reports, tab-local persistence and reset. A guided walkthrough introduces six workflows. No backend authentication, real role enforcement, shared server storage or physical equipment connection is provided by the public edition. The .NET capability statuses above refer to the separate application.
+
 ## Acceptance boundary
 
 The local demo is complete when its documented flows run, failed commands do not mutate data, records survive restart, English content and links pass repository checks, and domain plus HTTP smoke tests pass. This does not establish operational safety, legal compliance, scalability or production readiness.
