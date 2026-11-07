@@ -1,0 +1,200 @@
+[
+  {
+    "code": "L1",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L2",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L3",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L4",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L5",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L6",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L7",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L8",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L9",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L10",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L11",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L12",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L13",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L14",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L15",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L16",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L17",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Faulted",
+    "occupiedBy": null
+  },
+  {
+    "code": "L18",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L19",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "L20",
+    "type": "Fixed",
+    "powerKw": 22,
+    "zone": "L-CHARGE",
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "M1",
+    "type": "Mobile",
+    "powerKw": 50,
+    "zone": null,
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  },
+  {
+    "code": "M2",
+    "type": "Mobile",
+    "powerKw": 50,
+    "zone": null,
+    "connectors": 1,
+    "status": "Available",
+    "occupiedBy": null
+  }
+]

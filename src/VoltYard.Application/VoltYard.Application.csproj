@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="../VoltYard.Domain/VoltYard.Domain.csproj" /></ItemGroup></Project>

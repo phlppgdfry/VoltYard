@@ -1,44 +1,51 @@
 [
   {
     "code": "A-STD",
-    "type": "Standaard",
-    "capaciteit": 2500,
-    "maxEvs": 0
+    "type": "Standard",
+    "capacity": 2500,
+    "maxEvs": 0,
+    "count": 25
   },
   {
     "code": "B-EV-1",
     "type": "EV",
-    "capaciteit": 700,
-    "maxEvs": 520
+    "capacity": 700,
+    "maxEvs": 520,
+    "count": 480
   },
   {
     "code": "B-EV-2",
     "type": "EV",
-    "capaciteit": 700,
-    "maxEvs": 520
+    "capacity": 700,
+    "maxEvs": 520,
+    "count": 486
   },
   {
     "code": "C-EV-3",
     "type": "EV",
-    "capaciteit": 600,
-    "maxEvs": 480
+    "capacity": 600,
+    "maxEvs": 480,
+    "count": 516
   },
   {
     "code": "D-EV-4",
     "type": "EV",
-    "capaciteit": 600,
-    "maxEvs": 500
+    "capacity": 600,
+    "maxEvs": 500,
+    "count": 481
   },
   {
-    "code": "L-LAAD",
-    "type": "Laden",
-    "capaciteit": 60,
-    "maxEvs": 60
+    "code": "L-CHARGE",
+    "type": "Charging",
+    "capacity": 60,
+    "maxEvs": 60,
+    "count": 0
   },
   {
     "code": "Q-QUAR",
-    "type": "Quarantaine",
-    "capaciteit": 20,
-    "maxEvs": 20
+    "type": "Quarantine",
+    "capacity": 20,
+    "maxEvs": 20,
+    "count": 12
   }
 ]

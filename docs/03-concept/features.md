@@ -1,99 +1,39 @@
-# Features (MoSCoW)
+# Feature scope and implementation status
 
-**M** = Must (zonder dit geen finalisatie) · **S** = Should (hoort erbij als het haalbaar is) · **C** = Could (extra) · **W** = Won't (niet in de finalisatie, wel roadmap)
+**Implemented** means present in the local application. **Partial** identifies an explicit functional limit. **Planned** means no implementation is claimed. MoSCoW remains a delivery priority, not a completion claim.
 
-## 1. Basis en toegang
-| # | Feature | Prio |
-|---|---|---|
-| 1.1 | Inloggen (e-mail + wachtwoord), JWT | M |
-| 1.2 | Rollen: Admin, Planner, Terreinmedewerker, HSE, Account manager, Fabrikant (lezer) | M |
-| 1.3 | Gebruikersbeheer door de admin | M |
-| 1.4 | Multi-tenant: meerdere terminals in één installatie | S |
-| 1.5 | Auditlog van alle wijzigingen | S |
-| 1.6 | Tweestapsverificatie | C |
-| 1.7 | SSO (Entra ID) | W |
+| Module | Capability | Priority | Status |
+|---|---|---|---|
+| Access | Sign-in, cookie session, role checks and login rate limiting | Must | Implemented for five shared demo accounts |
+| Access | Individual user administration, recovery and OIDC | Must for production | Planned |
+| Access | Tenant and manufacturer data isolation | Must for hosted multi-customer use | Planned |
+| Vehicles | CSV arrival import, VIN and duplicate validation | Must | Implemented |
+| Vehicles | Search, filters, paginated list, detail and history | Must | Implemented |
+| Vehicles | Departure planning and readiness enforcement | Must | Implemented; no override workflow |
+| Inspections | SOC, 12V, damage, concern and note entry | Must | Implemented |
+| Inspections | Append-only history, actor and profile version | Must | Implemented |
+| Inspections | Camera scanning and photo evidence | Should | Planned |
+| Inspections | Offline queue and conflict reconciliation | Could | Planned |
+| Rules | Versioned data profiles and model precedence | Must | Implemented |
+| Rules | Storage, stale inspection, forecast and departure evaluation | Must | Implemented |
+| Rules | Profile source attachments and approval workflow | Must for real operation | Planned |
+| Alerts | Current deterministic dashboard alerts | Must | Implemented |
+| Alerts | Acknowledge/resolve history and scheduled escalation | Should | Planned |
+| Alerts | SignalR and notifications | Should | Planned |
+| Yard | Movement validation and occupancy counts | Must | Implemented |
+| Yard | Quarantine with HSE decision and justification | Must | Implemented |
+| Yard | Emergency CSV and density warning | Should | Implemented |
+| Yard | Zone CRUD and graphical map | Should / Could | Planned; seeded zones only |
+| Charging | Approval, start/stop, exclusive charger assignment | Should | Implemented |
+| Charging | Actual SOC, metered/estimated kWh and CSV summary | Should | Implemented |
+| Charging | Charger CRUD, OCPP and power optimisation | Should / Could | Planned; seeded chargers only |
+| Reports | VIN handover snapshot and PDF export | Must | Partial: browser Print / Save as PDF |
+| Reports | Batch/monthly reports and OEM portal | Should / Could | Planned |
+| Engineering | Build, tests, CI, atomic local storage and concurrency | Must | Implemented |
+| Engineering | PostgreSQL, durable jobs, cloud deployment and monitoring | Must for production | Planned |
 
-## 2. Voertuigen
-| # | Feature | Prio |
-|---|---|---|
-| 2.1 | Voertuig aanmaken (VIN, merk, model, aandrijving, batterijcapaciteit, fabrikant) | M |
-| 2.2 | **VIN valideren** (17 tekens, geen I/O/Q, controlecijfer waar van toepassing) | M |
-| 2.3 | CSV-import van de lijst van het schip | M |
-| 2.4 | Lijst met zoeken, filters (status, zone, fabrikant, waarschuwingen) en paginering | M |
-| 2.5 | Detailpagina: tijdlijn met metingen, laadbeurten, waarschuwingen, verplaatsingen en een grafiek van de laadtoestand | M |
-| 2.6 | Statusmachine (zie [user journeys](user-journeys.md)) | M |
-| 2.7 | Vertrekplanning per voertuig (datum + bestemmingstype) | M |
-| 2.8 | Bulkacties (bv. 50 wagens tegelijk naar zone C) | S |
+## Acceptance boundary
 
-## 3. Batterijcontroles (mobiel)
-| # | Feature | Prio |
-|---|---|---|
-| 3.1 | Controle registreren: laadtoestand, 12V OK / niet OK / spanning, visuele schade, opmerking | M |
-| 3.2 | Mobielvriendelijke interface met grote knoppen | M |
-| 3.3 | **VIN-barcode scannen** met de camera | S |
-| 3.4 | Foto toevoegen bij schade | S |
-| 3.5 | Takenlijst per medewerker of zone | S |
-| 3.6 | Offline werken met synchronisatie achteraf (PWA) | C |
-| 3.7 | Laadtoestand automatisch via telematica | W |
+The local demo is complete when its documented flows run, failed commands do not mutate data, records survive restart, English content and links pass repository checks, and domain plus HTTP smoke tests pass. This does not establish operational safety, legal compliance, scalability or production readiness.
 
-## 4. Regelprofielen en regelmotor
-| # | Feature | Prio |
-|---|---|---|
-| 4.1 | Regelprofielen beheren (CRUD) per fabrikant, model en aandrijving | M |
-| 4.2 | Automatisch het juiste profiel kiezen (het meest specifieke wint) | M |
-| 4.3 | Regelmotor bij elke meting | M |
-| 4.4 | Nachtelijke controle als achtergrondtaak | M |
-| 4.5 | Vertrekregels per bestemmingstype | M |
-| 4.6 | Voorspelling van de laadtoestand (lineaire ontlading) | S |
-| 4.7 | Profielen met versies (metingen verwijzen naar de versie die toen gold) | S |
-| 4.8 | Regels importeren/exporteren (JSON) | C |
-
-## 5. Waarschuwingen
-| # | Feature | Prio |
-|---|---|---|
-| 5.1 | Waarschuwingen aanmaken met type, ernst en voorgestelde actie | M |
-| 5.2 | Levenscyclus: Open → Bevestigd → Opgelost (automatisch of handmatig) | M |
-| 5.3 | Dashboard: "Wat vraagt vandaag aandacht?" | M |
-| 5.4 | Live updates (SignalR) | S |
-| 5.5 | E-mailmelding bij kritieke waarschuwingen | C |
-| 5.6 | Pushmeldingen op de gsm | W |
-
-## 6. Terrein en veiligheid
-| # | Feature | Prio |
-|---|---|---|
-| 6.1 | Zones beheren: type (Standaard, EV, Laden, Quarantaine), capaciteit, maximaal aantal EV's | M |
-| 6.2 | Voertuig verplaatsen naar een zone (met historiek) | M |
-| 6.3 | Quarantaineworkflow met een verplichte beslissing door HSE | M |
-| 6.4 | Waarschuwingen voor dichtheid en verkeerde zone | S |
-| 6.5 | **Noodoverzicht** per zone (EV's, laadtoestand, rijvaardig?), af te drukken of te exporteren | S |
-| 6.6 | Visuele kaart van het terrein (zones op een plattegrond, kleuren volgens risico) | C |
-| 6.7 | Plaatsen van brandkranen en brandgangen als kaartlaag | C |
-| 6.8 | Koppeling met thermische camera's | W |
-
-## 7. Laadmodule (zie [laadmodule.md](laadmodule.md))
-| # | Feature | Prio |
-|---|---|---|
-| 7.1 | Laders beheren (vast / mobiel, kW, zone, status) | S |
-| 7.2 | Laadopdrachten: automatisch voorgesteld en handmatig | S |
-| 7.3 | Laadsessie starten en stoppen, met kWh (gemeten of geschat) | S |
-| 7.4 | Maximale doellaadtoestand afgedwongen volgens het profiel en de bestemming | S |
-| 7.5 | Overzicht voor facturatie per fabrikant (CSV) | S |
-| 7.6 | Laadplanner (greedy) met piekbeheer | C |
-| 7.7 | Route voor de mobiele laadunit | C |
-| 7.8 | OCPP-koppeling | W |
-
-## 8. Rapporten en portaal
-| # | Feature | Prio |
-|---|---|---|
-| 8.1 | **Overdrachtsrapport** per voertuig (PDF) | M |
-| 8.2 | Batchrapport (bv. alle wagens van één transport) | S |
-| 8.3 | Maandrapport per fabrikant | S |
-| 8.4 | KPI's: aantal dode wagens, gemiddelde wachttijd, % controles op tijd, kWh | S |
-| 8.5 | Portaal voor fabrikanten (alleen lezen, alleen de eigen wagens) | C |
-| 8.6 | Publieke API voor fabrikanten en terreinsoftware | W |
-
-## Samenvatting van de scope
-
-- **Minimale versie (M):** voertuigen, controles, regelprofielen, regelmotor, waarschuwingen, zones, quarantaine, overdrachtsrapport, rollen. **Dit volstaat voor een sterke finalisatie.**
-- **Doel (M + S):** met de laadmodule, live updates, VIN-scan, het noodoverzicht en KPI's. **Dit maakt het uitzonderlijk.**
-- **Extra (C):** kaart, laadplanner, portaal voor fabrikanten, offline werken.
+See [backlog](../06-delivery/backlog.md) for the next deliverables and [testing](../testing.md) for executable verification.

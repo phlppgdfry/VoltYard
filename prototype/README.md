@@ -1,27 +1,22 @@
-# Klikbaar prototype
+# English interface and standalone preview
 
-**Online (privé link):** https://claude.ai/artifact/9FzRFJfQecUib1gaK1AeXj
-**Lokaal:** open `prototype/index.html` in je browser (één zelfstandig bestand).
+The connected application serves `index.template.html` and loads all 2,000 fictional vehicles from the .NET API. Start it with the root README instructions for persistent storage, authentication and authoritative server validation.
 
-Een prototype in HTML en JavaScript, **geen productiecode**. Het dient voor:
-- de **validatiegesprekken** ("Wat zie je hier?"), zie de [contactlijst](../docs/04-validatie/contactlijst.md);
-- een **houvast bij het bouwen** van de echte Next.js-frontend;
-- **screenshots** voor het verslag.
+For a standalone demonstration, open [index.html](index.html) directly in a browser. It embeds 60 vehicles and uses simplified session-only commands. Reloading resets preview changes. It does not provide authentication, full inventory exports or CSV import. Zone totals represent the full fixture; preview lists represent the sample.
 
-## Wat werkt
-| Scherm | Wat je kan doen |
-|---|---|
-| Dashboard | Waarschuwingen op ernst, zones met EV-dichtheid (C-EV-3 zit erboven), laders |
-| Voertuigen | Zoeken, filteren, en doorklikken naar het detail met de grafiek van de laadtoestand + voorspelling, tijdlijn, overdrachtsrapport |
-| Terrein | Gsm-weergave: takenlijst → controle registreren (laadtoestand, 12V, schade) → nieuwe waarschuwingen. Getypte VIN's worden gevalideerd (lengte, I/O/Q, controlecijfer) |
-| Laden | Laadopdrachten goedkeuren → starten op een vrije lader → stoppen (kWh gaat naar de facturatie van de fabrikant) |
-| Veiligheid | Quarantaine met een verplichte beslissing en motivering, noodoverzicht per zone (kopiëren als CSV) |
-| Regelprofielen | Waarden aanpassen en meteen zien hoeveel voertuigen een waarschuwing krijgen (simulatie), opslaan als nieuwe versie |
+## Editing
 
-De regelmotor in het prototype is een vereenvoudigde JavaScript-versie van [regelprofielen.md](../docs/03-concept/regelprofielen.md). Wijzigingen gelden alleen voor je huidige sessie. Na het herladen begint alles opnieuw.
+Edit `index.template.html`, then run:
 
-## Aanpassen
-Bewerk `index.template.html` (niet `index.html`) en draai daarna:
 ```bash
-python3 tools/generate_demo_data.py   # genereert de data en bouwt index.html opnieuw
+python3 tools/generate_demo_data.py
+python3 tools/check_repository.py
 ```
+
+Never hand-edit generated `index.html` or sample-data.json. The template has no external JS or font dependency. Its English UI covers dashboard, vehicles, field inspections, charging, safety, profile simulation, import and audit. Backend-only functions explain their connection requirement in the standalone preview.
+
+## Verification
+
+Check desktop and narrow viewports, keyboard form entry, server errors, dialog focus, actual state after reload and report printing. The live server is authoritative for role checks and workflow conflicts. Browser-native charts and client simulation are presentation helpers.
+
+The old private hosted artifact is not the canonical source. Use the checked-in preview or connected application for review.

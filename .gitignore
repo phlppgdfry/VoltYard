@@ -26,3 +26,10 @@ appsettings.Development.local.json
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+
+# Local runtime, verification and Python
+var/
+__pycache__/
+*.pyc
+.playwright-mcp/
+*.log

@@ -1,110 +1,93 @@
 # VoltYard
 
-> **Veilig en aantoonbaar beheer van elektrische voertuigen op car terminals en compounds.**
-> Per voertuig een batterijlogboek, automatische waarschuwingen volgens de regels van elke autofabrikant, brandveilig parkeren en slim laden, met een sluitend bewijs bij de overdracht.
+**EV battery care, charging coordination and traceable yard operations for automotive terminals.**
 
-**Status:** concept- en voorbereidingsfase. Er is nog geen code, bewust: eerst valideren, dan bouwen.
-**Context:** finalisatieproject Full Stack Developer (C# / .NET), opgezet zodat het ook kan doorgroeien tot een echt product.
-**Laatste update:** 27 september 2026
+VoltYard follows each vehicle by VIN, records battery inspections, evaluates configurable manufacturer profiles and brings charging and quarantine work into one operational view.
 
----
+**Status:** working local development application with a C#/.NET 10 backend and an English web interface. The repository also contains a product, research, validation and architecture dossier. This is a single-terminal demonstration, not an approved terminal safety system.
 
-## In één minuut
+## Run locally
 
-Zeebrugge is de grootste autohaven van Europa. Elk jaar gaan er miljoenen nieuwe wagens door de terminals, en een snel groeiend deel daarvan is elektrisch. Die EV's staan soms **weken tot maanden** op de terminal. In 2024 stonden onverkochte Chinese EV's tot 18 maanden in Belgische havens.
+Install the .NET 10 SDK and Python 3. No Node.js build step, database service or paid API is required.
 
-Dat zorgt voor drie problemen die de sector vandaag grotendeels op papier en met losse Excel-bestanden oplost:
+```bash
+git clone https://github.com/phlppgdfry/VoltYard.git
+cd VoltYard
+python3 tools/generate_demo_data.py
+dotnet run --project src/VoltYard.Api --launch-profile local
+```
 
-1. **Batterijen lopen leeg.** Een lege EV kan niet meer rijden, blokkeert de terreinwerking en komt leeg aan bij de dealer.
-2. **Brandrisico.** EV's vragen aparte parkeerzones, controles en een quarantaine voor verdachte wagens. De sector vraagt uitdrukkelijk om *"specialized handling procedures"*.
-3. **Elke autofabrikant heeft andere regels.** Minimale en maximale laadtoestand, controlefrequentie, laadlimieten... Terminals die met meerdere merken werken, hebben daar geen standaard voor. Richtlijnen zoals AIAG M-26 vragen dat logistieke partners *kunnen aantonen* hoe ze de laadtoestand beheren.
+Open **http://127.0.0.1:5080**. Development accounts: `admin`, `planner`, `operator`, `hse`, `account`. Password: `VoltYard-demo-2026`. All data and manufacturer profiles are fictional. Set `Demo__Password` to override the development password. These shared demonstration accounts are not a production identity system.
 
-**VoltYard** vertaalt die regels naar software:
+Changes survive refreshes and server restarts in `var/yard.json`. To start an independent demo, set `Data__Path` to a new file path before launching. Existing stores are never overwritten by the generator. Back up the store with the server stopped; keep the file outside version control.
 
-| Module | Wat het doet |
+```bash
+dotnet test
+python3 tools/check_repository.py
+python3 tools/smoke_test.py  # with the application running on port 5080
+```
+
+The smoke test creates and changes fictional records. Run it against a disposable data store, as described in [testing](docs/testing.md).
+
+## What works
+
+| Area | Implemented behaviour |
 |---|---|
-| 🔋 **Batterijlogboek** | Per VIN: laadtoestand, 12V-spanning en visuele controle, ingevoerd via een gsm-app op het terrein |
-| 📐 **Regelprofielen** | De regels van elke autofabrikant en elk model als configureerbare data, niet vastgelegd in de code |
-| 🚨 **Waarschuwingen** | "Laden nodig", "controle te laat", "niet klaar voor verscheping", "quarantaine vereist" en een voorspelling van wanneer een wagen onder de grens zakt |
-| 🔥 **Brandveilig parkeren** | Zones (EV, quarantaine, laden), maximale EV-dichtheid en waarschuwingen bij een verkeerde plaatsing |
-| ⚡ **Laadmodule** | Laadopdrachten met prioriteit, beheer van laders (vast en mobiel), kWh-registratie en facturatie per fabrikant |
-| 📄 **Overdrachtsrapport** | Een PDF-bewijs per voertuig of batch voor de autofabrikant, de verzekeraar of de rederij |
+| Access | Cookie sessions, five demo roles, server-side command permissions, login rate limiting |
+| Dashboard | Prioritised alerts, vehicle counts, zone occupancy and charger availability |
+| Vehicles | Search, manufacturer/zone/status filters, pagination, detail, history and SOC chart |
+| Inspections | SOC and 12V observations, damage/concern reporting, outlier confirmation, append-only records |
+| Rules | Manufacturer/model selection, boundary rules, stale-reading forecast, versioned threshold edits and simulation |
+| Charging | Approve → start → stop; charger exclusivity; quarantine guards; actual end SOC; metered or estimated energy |
+| Safety | Quarantine request, zone transfer, HSE decision with justification, emergency CSV |
+| Departure | Destination/date planning and server-enforced readiness checks |
+| Import | Quoted CSV parsing, VIN/check-digit validation, duplicate detection, per-row errors and capacity checks |
+| Evidence | Handover snapshot, inspection/profile provenance, charging sessions, audit events and browser Print / Save as PDF |
+| Storage | Atomic file replacement, transaction rollback on failure, optimistic concurrency |
 
----
+The connected application loads all **2,000 vehicles**, **11,714 inspections**, **667 historical charging sessions**, seven profiles, seven zones and 22 chargers. [Fixtures](demo/README.md) are deterministic. The standalone [HTML prototype](prototype/index.html) uses 60 vehicles and simplified session-only commands.
 
-## Snel naar
+## Repository map
 
-| | |
+```text
+src/VoltYard.Domain/          Entities, VIN validation and pure rules
+src/VoltYard.Application/     Commands, workflow guards and import handling
+src/VoltYard.Infrastructure/  Transactional single-process JSON file store
+src/VoltYard.Api/             ASP.NET Core host, authentication and HTTP endpoints
+tests/VoltYard.Tests/         Domain, workflow and persistence regression tests
+prototype/                   English UI template and standalone generated preview
+demo/                        Deterministic fictional fixtures
+tools/                       Data generation, verification and GitHub board helper
+docs/                        Research, product, delivery and assessment dossier
+.github/workflows/           Automated repository checks, build and tests
+```
+
+## Read the dossier
+
+| Topic | Start here |
 |---|---|
-| 🖱️ **Klikbaar prototype** | [Online bekijken](https://claude.ai/artifact/9FzRFJfQecUib1gaK1AeXj) (privé link) · [uitleg](prototype/README.md) |
-| 📋 **Backlog** | [47 issues in 8 mijlpalen](https://github.com/phlppgdfry/VoltYard/milestones) · het projectbord maak je aan met `tools/setup-projectbord.sh` |
-| 🧪 **Demodata** | [demo/](demo/README.md): regelprofielen, scheepslijst, 2.000 voertuigen, testgevallen voor de regelmotor |
-| 📚 **Leerplan C#** | [docs/leerplan-csharp.md](docs/leerplan-csharp.md) |
-| 🤝 **Contacten voor gesprekken** | [docs/04-validatie/contactlijst.md](docs/04-validatie/contactlijst.md) |
+| Problem and context | [Problem statement](docs/01-problem/problem-statement.md), [market context](docs/02-research/market-context.md) |
+| Research evidence | [Sources](docs/02-research/sources.md), [competition](docs/02-research/competition.md), [standards and guidance](docs/02-research/standards-and-guidance.md) |
+| Product | [Vision](docs/03-concept/vision.md), [personas](docs/03-concept/personas.md), [journeys](docs/03-concept/user-journeys.md), [scope](docs/03-concept/features.md) |
+| Core logic | [Rule profiles](docs/03-concept/rule-profiles.md), [charging](docs/03-concept/charging.md), [test scenarios](demo/rule-engine-cases.md) |
+| Validation | [Hypotheses](docs/04-validation/hypotheses.md), [interviews](docs/04-validation/interview-guide.md), [outreach](docs/04-validation/outreach.md) |
+| Engineering | [Architecture](docs/05-architecture/architecture.md), [data model](docs/05-architecture/data-model.md), [API](docs/05-architecture/api-design.md), [security](docs/05-architecture/security-and-privacy.md), [ADRs](docs/05-architecture/adr/README.md) |
+| Delivery | [Plan](docs/06-delivery/delivery-plan.md), [backlog](docs/06-delivery/backlog.md), [risks](docs/06-delivery/risks.md), [done criteria](docs/06-delivery/definition-of-done.md) |
+| Demonstration | [Demo script](docs/07-assessment/demo-script.md), [assessment evidence](docs/07-assessment/assessment.md), [testing](docs/testing.md) |
+| Commercial | [Business model](docs/08-business/business-model.md) |
+| Supporting material | [Open questions](docs/open-questions.md), [decision log](docs/decision-log.md), [glossary](docs/glossary.md), [C# learning plan](docs/csharp-learning-plan.md), [operations](docs/operations.md) |
 
----
+## Deliberate limits and next release
 
-## Documentatie
+The current persistence adapter is an atomic JSON file owned by one process. PostgreSQL/EF Core, tenant isolation, individual user administration, OIDC/SSO, background alert lifecycle, SignalR, OCPP, photos, barcode scanning, offline sync, external integrations and automated cloud deployment remain on the roadmap. Browser printing produces the PDF; there is no server-side PDF engine.
 
-| # | Onderdeel | Inhoud |
-|---|---|---|
-| 01 | [Probleemstelling](docs/01-probleem/probleemstelling.md) | Het probleem, voor wie en waarom nu |
-| 02 | [Markt en context](docs/02-onderzoek/markt-en-context.md) | Zeebrugge, volumes, de "dwell economy" |
-| 02 | [Concurrentieanalyse](docs/02-onderzoek/concurrentie.md) | Wat bestaat er al, en waar zit het gat? |
-| 02 | [Regelgeving en richtlijnen](docs/02-onderzoek/regelgeving-en-richtlijnen.md) | IMO, EMSA, AIAG M-26, batterijpaspoort, OCPP |
-| 02 | [Bronnen](docs/02-onderzoek/bronnen.md) | Alle gebruikte bronnen |
-| 03 | [Visie en waardepropositie](docs/03-concept/visie-en-waardepropositie.md) | Wat VoltYard is, en wat niet |
-| 03 | [Persona's](docs/03-concept/personas.md) | Voor wie we bouwen |
-| 03 | [User journeys](docs/03-concept/user-journeys.md) | Van aankomst van het schip tot vertrek |
-| 03 | [Features (MoSCoW)](docs/03-concept/features.md) | Alle functies met prioriteit |
-| 03 | [Regelprofielen](docs/03-concept/regelprofielen.md) | Het hart van het systeem: de regels per fabrikant |
-| 03 | [Laadmodule](docs/03-concept/laadmodule.md) | Laden als functie en als betaalde dienst |
-| 04 | [Hypotheses](docs/04-validatie/hypotheses.md) | Wat we aannemen en moeten bewijzen |
-| 04 | [Interviewgids](docs/04-validatie/interviewgids.md) | Vragen voor terminalmedewerkers |
-| 04 | [Contactlijst en berichten](docs/04-validatie/contactlijst.md) | Wie contacteren, berichten in NL en EN |
-| 05 | [Architectuur](docs/05-architectuur/architectuur.md) | C4-diagrammen en technologie |
-| 05 | [Datamodel](docs/05-architectuur/datamodel.md) | Entiteiten en relaties (ERD) |
-| 05 | [API-ontwerp](docs/05-architectuur/api-ontwerp.md) | Endpoints en conventies |
-| 05 | [Security en privacy](docs/05-architectuur/security-en-privacy.md) | Rollen, rechten, GDPR |
-| 05 | [ADR's](docs/05-architectuur/adr/README.md) | Architectuurbeslissingen |
-| 06 | [Plan van aanpak](docs/06-plan-van-aanpak/plan-van-aanpak.md) | Fasen, planning, opleveringen |
-| 06 | [Backlog](docs/06-plan-van-aanpak/backlog.md) | Epics en user stories met acceptatiecriteria |
-| 06 | [Risico's](docs/06-plan-van-aanpak/risicos.md) | Risico's en maatregelen |
-| 06 | [Definition of Done](docs/06-plan-van-aanpak/definition-of-done.md) | Wanneer iets "af" is |
-| 07 | [Finalisatie](docs/07-finalisatie/finalisatie.md) | Hoe dit project de eisen van de opleiding dekt |
-| 07 | [Demoscript](docs/07-finalisatie/demoscript.md) | Het verhaal voor de jury |
-| 08 | [Businessmodel](docs/08-business/businessmodel.md) | Lean Canvas, prijshypotheses, markttoegang |
-| – | [Open vragen](docs/open-vragen.md) | Wat nog beslist of uitgezocht moet worden |
-| – | [Logboek](docs/logboek.md) | Wekelijks: beslissingen, problemen, voortgang |
-| – | [Leerplan C#](docs/leerplan-csharp.md) | TypeScript → C#, Microsoft Learn per blok, mini-oefeningen |
-| – | [Woordenlijst](docs/woordenlijst.md) | SOC, PDI, PCTC, OCPP... |
+The software records observations and workflow decisions. It does not detect thermal runaway, control physical chargers, certify battery health or replace site emergency procedures. Configure real OEM/carrier profiles only after approval by the responsible operators.
 
----
+## Container option
 
-## Technologie (gepland)
+```bash
+export Demo__Password='choose-a-long-local-demo-password'
+docker compose up --build
+```
 
-- **Backend:** C# / .NET 10, ASP.NET Core Web API, EF Core, PostgreSQL
-- **Realtime:** SignalR (live waarschuwingen)
-- **Frontend:** Next.js (React, TypeScript): een dashboard voor planners en een mobielvriendelijke app voor het terrein
-- **Rapporten:** PDF-generatie aan de serverkant
-- **Tests:** xUnit, Testcontainers (PostgreSQL)
-- **DevOps:** Docker, GitHub Actions, Azure (Container Apps + PostgreSQL Flexible Server), infrastructuur via Bicep
-
-De motivering per keuze staat in de [ADR's](docs/05-architectuur/adr/README.md).
-
----
-
-## Mac klaar?
-
-| Tool | Status (27-09-2026) |
-|---|---|
-| .NET 10 SDK, Node 24, VS Code + C# Dev Kit (+ Docker, Bicep, Playwright, REST Client...), Rider | ✅ |
-| Docker Desktop | ⚠️ De app start, maar de engine antwoordt niet (500-fout). Open Docker Desktop en kijk of er een melding, update of "Restart" nodig is. Test daarna met `docker run --rm hello-world` |
-
-## Volgende stappen
-
-1. [ ] De eisen van de opleiding naast [finalisatie.md](docs/07-finalisatie/finalisatie.md) leggen
-2. [ ] 3 à 5 validatiegesprekken voeren met de [interviewgids](docs/04-validatie/interviewgids.md), de [contactlijst](docs/04-validatie/contactlijst.md) en het prototype
-3. [ ] Blok 1–2 van het [leerplan](docs/leerplan-csharp.md) (VIN-validator + eerste regel, test-first)
-4. [ ] De [hypotheses](docs/04-validatie/hypotheses.md) bijwerken en de scope vastleggen
-5. [ ] Fase 1 starten: het fundament (zie het [plan van aanpak](docs/06-plan-van-aanpak/plan-van-aanpak.md))
+This compose setup is explicitly a local Development demo bound to loopback. See [operations](docs/operations.md) before any hosted deployment.

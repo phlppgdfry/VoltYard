@@ -1,0 +1,13 @@
+services:
+  voltyard:
+    build: .
+    ports:
+      - '127.0.0.1:5080:8080'
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Demo__Password: ${Demo__Password:?Set Demo__Password before starting the local demo}
+      Data__Path: /data/yard.json
+    volumes:
+      - yard-data:/data
+volumes:
+  yard-data:

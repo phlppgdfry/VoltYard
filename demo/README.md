@@ -1,31 +1,34 @@
-# Demodata
+# Fictional demo fixtures
 
-Alle merken, modellen, WMI-codes en VIN's zijn **fictief**. De VIN's hebben wel een geldig formaat (17 tekens, geen I/O/Q, geldig controlecijfer op positie 9), zodat de VIN-validatie in de app ermee werkt.
-
-Opnieuw genereren (deterministisch, altijd dezelfde uitvoer):
+All brands, WMI codes, vehicles and profile thresholds are invented for software testing. They are not real OEM instructions. Generated VINs follow the demo check-digit policy; a valid format does not imply a real vehicle.
 
 ```bash
 python3 tools/generate_demo_data.py
+python3 tools/check_repository.py
 ```
 
-**Referentiedatum:** 2026-09-28. De seed in de applicatie verschuift alle datums later relatief ten opzichte van "nu", zodat de demo altijd actueel oogt.
+Seed: 42. Reference date: 28 September 2026. A newly created application store rebases relative dates once to the current UTC date. Existing runtime stores are not changed by regeneration.
 
-## Bestanden
+| File | Contents |
+|---|---|
+| [application-data.json](application-data.json) | Complete connected application seed |
+| [rule-profiles.json](rule-profiles.json) | Four fictional manufacturers and seven profiles, including V7-specific and terminal fallback |
+| [zones.json](zones.json) | Seven zones and derived fixture occupancy |
+| [chargers.json](chargers.json) | Twenty fixed 22kW chargers, L17 faulted, and two mobile 50kW chargers |
+| [vessel-voltara-400.csv](vessel-voltara-400.csv) | 400 arrivals; CSV lines 139 and 290 intentionally have invalid VINs |
+| [seed-vehicles.csv](seed-vehicles.csv) | 2,000 vehicle inventory rows |
+| [seed-inspections.csv](seed-inspections.csv) | 11,714 historical observations |
+| [seed-charging-sessions.csv](seed-charging-sessions.csv) | 667 synthetic historical energy sessions |
+| [rule-engine-cases.md](rule-engine-cases.md) | Behaviour and boundary test matrix |
 
-| Bestand | Inhoud | Gebruikt voor |
-|---|---|---|
-| [regelprofielen.json](regelprofielen.json) | 4 fictieve fabrikanten (Voltara, Kestrel Motors, Nordhavn EV, Sunlei) met modellen en batterijcapaciteit, 7 regelprofielen (waaronder een modelspecifiek profiel en een standaardprofiel van de terminal) | Seed, testen van de profielkeuze |
-| [zones.json](zones.json) | 7 zones: standaard, 4 EV-zones, laadzone, quarantaine | Seed |
-| [laders.json](laders.json) | 20 vaste laders van 22 kW (L17 defect) + 2 mobiele laders van 50 kW | Seed laadmodule |
-| [schip-voltara-400.csv](schip-voltara-400.csv) | Lijst van een schip met 400 Voltara's. **Rij 139 en 290 zijn bewust ongeldig** (letter "O" in de VIN, VIN van 16 tekens) | Demo van de CSV-import (stap 1 in het [demoscript](../docs/07-finalisatie/demoscript.md)) |
-| [seed-voertuigen.csv](seed-voertuigen.csv) | 2.000 voertuigen op het terrein | Seed dashboard |
-| [seed-controles.csv](seed-controles.csv) | ~14.000 controles (geschiedenis met realistische ontlading en vergeten controles) | Seed tijdlijnen en grafieken |
-| [seed-laadsessies.csv](seed-laadsessies.csv) | ~800 laadsessies | Seed facturatieoverzicht |
-| [regelmotor-testgevallen.md](regelmotor-testgevallen.md) | Verwacht gedrag van de regelmotor, inclusief grensgevallen | Later xUnit-tests |
+## Deliberate scenarios
 
-## Ingebouwde "problemen" voor een realistische demo
-- ~140 voertuigen met een laadtoestand onder het minimum, ~115 met een zwakke of dode 12V-batterij
-- ~12% van de controles is te laat uitgevoerd
-- 12 voertuigen in quarantaine, 25 EV's in de standaardzone (verkeerde zone)
-- Zone **C-EV-3** zit boven de maximale EV-dichtheid (516 / 480)
-- Lader L17 is defect
+Twelve vehicles start in quarantine, 25 EVs in Standard storage, and C-EV-3 contains 516 EVs against a 480 EV limit. Some inspections are overdue; SOC and 12V conditions vary. Charger L17 is faulted. V7-specific profiles override generic Voltara rules. Nordhavn's fictional shipping maximum is 45%.
+
+Historical energy sessions demonstrate reconciliation tables and are synthetic ledger entries; they are not a physically simulated reconstruction of each seeded SOC trajectory. New sessions append accurate entered/estimated provenance.
+
+The standalone prototype loads 60 vehicles from the same fixtures. Its zone totals describe the full synthetic yard, while vehicle lists and exports contain only the preview sample. The connected application uses all 2,000 records.
+
+## CSV contract
+
+Use `vin,brand,model,powertrain,kwh,manufacturerCode` and optionally `destination,departure`. Invalid or duplicate rows are rejected individually. The arrival zone may impose additional capacity rejections. Do not edit generated outputs; edit the generator and regenerate.

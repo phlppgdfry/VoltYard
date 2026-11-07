@@ -1,0 +1,375 @@
+{
+  "manufacturers": [
+    {
+      "code": "VLT",
+      "name": "Voltara",
+      "wmi": "LVX",
+      "models": [
+        [
+          "Voltara V5",
+          "BEV",
+          60
+        ],
+        [
+          "Voltara V7 Long Range",
+          "BEV",
+          82
+        ]
+      ]
+    },
+    {
+      "code": "KST",
+      "name": "Kestrel Motors",
+      "wmi": "WKM",
+      "models": [
+        [
+          "Kestrel K3",
+          "BEV",
+          77
+        ],
+        [
+          "Kestrel K5 Hybrid",
+          "PHEV",
+          19.7
+        ]
+      ]
+    },
+    {
+      "code": "NHV",
+      "name": "Nordhavn EV",
+      "wmi": "YNH",
+      "models": [
+        [
+          "Nordhavn N2",
+          "BEV",
+          69
+        ],
+        [
+          "Nordhavn N4",
+          "BEV",
+          107
+        ]
+      ]
+    },
+    {
+      "code": "SNL",
+      "name": "Sunlei",
+      "wmi": "LSN",
+      "models": [
+        [
+          "Sunlei S1",
+          "BEV",
+          45
+        ],
+        [
+          "Sunlei S3",
+          "BEV",
+          72
+        ]
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "id": "TERMINAL-DEFAULT",
+      "manufacturerCode": null,
+      "name": "Terminal default",
+      "powertrain": "BEV",
+      "minStorageSoc": 35,
+      "targetStorageSoc": 50,
+      "maxChargeSoc": 60,
+      "criticalSoc": 20,
+      "inspectionIntervalDays": 7,
+      "twelveVoltIntervalDays": 14,
+      "defaultDischargePerDay": 0.15,
+      "modelPattern": null,
+      "version": 1,
+      "effectiveFrom": "2026-06-01",
+      "departureRules": [
+        {
+          "destinationType": "Shipping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "destinationType": "Ferry",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "destinationType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Rail",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "VLT-BEV",
+      "manufacturerCode": "VLT",
+      "name": "Voltara BEV",
+      "powertrain": "BEV",
+      "minStorageSoc": 30,
+      "targetStorageSoc": 50,
+      "maxChargeSoc": 60,
+      "criticalSoc": 15,
+      "inspectionIntervalDays": 14,
+      "twelveVoltIntervalDays": 14,
+      "defaultDischargePerDay": 0.1,
+      "modelPattern": null,
+      "version": 1,
+      "effectiveFrom": "2026-06-01",
+      "departureRules": [
+        {
+          "destinationType": "Shipping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "destinationType": "Ferry",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "destinationType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Rail",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "VLT-V7",
+      "manufacturerCode": "VLT",
+      "name": "Voltara V7 Long Range",
+      "powertrain": "BEV",
+      "minStorageSoc": 30,
+      "targetStorageSoc": 50,
+      "maxChargeSoc": 60,
+      "criticalSoc": 15,
+      "inspectionIntervalDays": 10,
+      "twelveVoltIntervalDays": 14,
+      "defaultDischargePerDay": 0.12,
+      "modelPattern": "Voltara V7*",
+      "version": 1,
+      "effectiveFrom": "2026-06-01",
+      "departureRules": [
+        {
+          "destinationType": "Shipping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "destinationType": "Ferry",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "destinationType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Rail",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "KST-BEV",
+      "manufacturerCode": "KST",
+      "name": "Kestrel BEV",
+      "powertrain": "BEV",
+      "minStorageSoc": 25,
+      "targetStorageSoc": 50,
+      "maxChargeSoc": 70,
+      "criticalSoc": 12,
+      "inspectionIntervalDays": 21,
+      "twelveVoltIntervalDays": 14,
+      "defaultDischargePerDay": 0.08,
+      "modelPattern": null,
+      "version": 1,
+      "effectiveFrom": "2026-06-01",
+      "departureRules": [
+        {
+          "destinationType": "Shipping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "destinationType": "Ferry",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "destinationType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Rail",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "KST-PHEV",
+      "manufacturerCode": "KST",
+      "name": "Kestrel PHEV",
+      "powertrain": "PHEV",
+      "minStorageSoc": 20,
+      "targetStorageSoc": 40,
+      "maxChargeSoc": 60,
+      "criticalSoc": 10,
+      "inspectionIntervalDays": 21,
+      "twelveVoltIntervalDays": 14,
+      "defaultDischargePerDay": 0.2,
+      "modelPattern": null,
+      "version": 1,
+      "effectiveFrom": "2026-06-01",
+      "departureRules": [
+        {
+          "destinationType": "Shipping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "destinationType": "Ferry",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "destinationType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Rail",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "NHV-BEV",
+      "manufacturerCode": "NHV",
+      "name": "Nordhavn BEV",
+      "powertrain": "BEV",
+      "minStorageSoc": 30,
+      "targetStorageSoc": 55,
+      "maxChargeSoc": 60,
+      "criticalSoc": 15,
+      "inspectionIntervalDays": 14,
+      "twelveVoltIntervalDays": 14,
+      "defaultDischargePerDay": 0.09,
+      "modelPattern": null,
+      "version": 1,
+      "effectiveFrom": "2026-06-01",
+      "departureRules": [
+        {
+          "destinationType": "Shipping",
+          "minSoc": 20,
+          "maxSoc": 45
+        },
+        {
+          "destinationType": "Ferry",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "destinationType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Rail",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    },
+    {
+      "id": "SNL-BEV",
+      "manufacturerCode": "SNL",
+      "name": "Sunlei BEV",
+      "powertrain": "BEV",
+      "minStorageSoc": 35,
+      "targetStorageSoc": 50,
+      "maxChargeSoc": 55,
+      "criticalSoc": 20,
+      "inspectionIntervalDays": 7,
+      "twelveVoltIntervalDays": 14,
+      "defaultDischargePerDay": 0.25,
+      "modelPattern": null,
+      "version": 1,
+      "effectiveFrom": "2026-06-01",
+      "departureRules": [
+        {
+          "destinationType": "Shipping",
+          "minSoc": 20,
+          "maxSoc": 50
+        },
+        {
+          "destinationType": "Ferry",
+          "minSoc": 20,
+          "maxSoc": 40
+        },
+        {
+          "destinationType": "Truck",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Rail",
+          "minSoc": 30,
+          "maxSoc": 80
+        },
+        {
+          "destinationType": "Dealer",
+          "minSoc": 50,
+          "maxSoc": 80
+        }
+      ]
+    }
+  ]
+}

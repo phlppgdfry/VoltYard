@@ -1,0 +1,38 @@
+name: Verify VoltYard
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify repository and deterministic generation
+        run: |
+          python3 tools/check_repository.py
+          python3 tools/generate_demo_data.py
+          git diff --exit-code -- demo prototype/index.html prototype/sample-data.json
+      - run: dotnet test --configuration Release --nologo
+      - run: dotnet publish src/VoltYard.Api --configuration Release --output /tmp/voltyard-publish
+      - name: HTTP workflow smoke test
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          Data__Path: /tmp/voltyard-ci.json
+          ASPNETCORE_URLS: http://127.0.0.1:5080
+        run: |
+          dotnet /tmp/voltyard-publish/VoltYard.Api.dll > /tmp/voltyard-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:5080/health; then break; fi
+            sleep 1
+          done
+          python3 tools/smoke_test.py
