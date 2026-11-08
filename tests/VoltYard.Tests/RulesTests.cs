@@ -87,8 +87,10 @@ public class RulesTests
         Assert.Throws<DomainException>(()=>store.Write(0,"test","stale","vin",d=>true));
         Assert.Throws<DomainException>(()=>store.Write<bool>(1,"test","failure","vin",d=>{d.Vehicles[0].Soc=1;throw new DomainException("fail");}));
         Assert.Equal(42,store.Read(d=>d.Vehicles[0].Soc));
-        Assert.Equal(42,new FileYardStore(fixture.Path,fixture.Seed,new FixedClock()).Read(d=>d.Vehicles[0].Soc));
         Assert.Single(store.Read(d=>d.Audit));
+        store.Dispose();
+        using var reopened=new FileYardStore(fixture.Path,fixture.Seed,new FixedClock());
+        Assert.Equal(42,reopened.Read(d=>d.Vehicles[0].Soc));
     }
     [Fact] public void Charging_is_blocked_in_quarantine_and_requires_approval()
     {
@@ -141,6 +143,30 @@ public class RulesTests
         var error=Assert.Throws<DomainException>(()=>service.Execute("inspect",new(){Vin="1HGCM82633A004352",Soc=soc,TwelveV=auxiliary,Confirm=true},"operator"));
         Assert.Equal(400,error.Status);Assert.Equal(0,f.Store.Read(d=>d.Revision));Assert.Single(f.Store.Read(d=>d.Vehicles[0].History));
     }
+    [Fact] public void A_store_has_one_exclusive_owner_and_releases_ownership_on_disposal()
+    {
+        using var f=new StoreFixture();
+        Assert.Throws<IOException>(()=>new FileYardStore(f.Path,f.Seed,new FixedClock()));
+        f.Store.Dispose();
+        using var next=new FileYardStore(f.Path,f.Seed,new FixedClock());
+        Assert.Equal(1,next.Read(d=>d.Vehicles.Count));
+    }
+    [Fact] public void Corrupt_store_is_not_replaced_by_fixtures_and_releases_its_lock()
+    {
+        using var f=new StoreFixture();f.Store.Dispose();File.WriteAllText(f.Path,"invalid-json");
+        Assert.Throws<JsonException>(()=>new FileYardStore(f.Path,f.Seed,new FixedClock()));
+        Assert.Equal("invalid-json",File.ReadAllText(f.Path));
+        File.WriteAllText(f.Path,File.ReadAllText(f.Seed));
+        using var recovered=new FileYardStore(f.Path,f.Seed,new FixedClock());
+        Assert.Equal(1,recovered.Read(d=>d.Vehicles.Count));
+    }
+    [Fact] public void Duplicate_or_unknown_destination_rules_are_rejected()
+    {
+        var p=Profile();p.DepartureRules.Add(new("Shipping",20,50));
+        Assert.Throws<DomainException>(()=>Rules.Validate(p));
+        p=Profile();p.DepartureRules.Add(new("Unapproved",20,50));
+        Assert.Throws<DomainException>(()=>Rules.Validate(p));
+    }
     private sealed class FixedClock:TimeProvider {public override DateTimeOffset GetUtcNow()=>new(2026,9,28,12,0,0,TimeSpan.Zero);}
     private sealed class StoreFixture:IDisposable
     {
@@ -154,6 +180,6 @@ public class RulesTests
             var data=new YardData{ReferenceDate="2026-09-28",Profiles=[p],Vehicles=[Vehicle(20)],Zones=[Zone(),new(){Code="Q-QUAR",Type="Quarantine",Capacity=20,MaxEvs=20}]};
             File.WriteAllText(Seed,JsonSerializer.Serialize(data,FileYardStore.Json));Store=new(Path,Seed,new FixedClock());
         }
-        public void Dispose()=>Directory.Delete(directory,true);
+        public void Dispose(){Store.Dispose();Directory.Delete(directory,true);}
     }
 }

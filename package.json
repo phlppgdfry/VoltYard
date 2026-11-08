@@ -1,0 +1,16 @@
+{
+  "name": "voltyard-verification",
+  "version": "0.3.0-demo.1",
+  "private": true,
+  "description": "Dependency-locked browser verification for the VoltYard portfolio release",
+  "scripts": {
+    "test": "node --test tests/public-sandbox.test.mjs",
+    "build:pages": "python3 tools/build_pages.py",
+    "test:e2e": "playwright test",
+    "test:e2e:live": "VOLTYARD_BASE_URL=https://phlppgdfry.github.io/VoltYard/ playwright test",
+    "test:backend-browser": "node tools/check_backend_browser.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.0"
+  }
+}

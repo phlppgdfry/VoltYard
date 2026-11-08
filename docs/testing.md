@@ -43,7 +43,7 @@ The initial local regression run passed 29 xUnit cases and 59 HTTP assertions. B
 
 ## Public GitHub Pages edition
 
-Run `node --test tests/public-sandbox.test.mjs` for fourteen public-adapter regression tests, then `python3 tools/build_pages.py` and `python3 tools/check_pages.py`. Node 24 is used in the Pages pipeline; the .NET application itself still requires no Node build.
+Run `node --test tests/public-sandbox.test.mjs` for sixteen public-adapter regression tests, then `python3 tools/build_pages.py` and `python3 tools/check_pages.py`. Node 24 is used in the Pages pipeline; the .NET application itself still requires no Node build.
 
 Browser verification covered the public case study, zone selection, guided navigation, SOC/12V entry, approve/start/stop charging, metered energy, profile versioning, persistence after reload, CSV upload, zone links and responsive layouts. The browser made no /api requests. The manifest imports 40 records into the 40 free arrival-zone spaces; the other rows receive explicit validation/capacity errors. Fixture VIN errors remain at logical lines 139 and 290.
 
@@ -52,3 +52,13 @@ Browser verification covered the public case study, zone selection, guided navig
 The reviewed release passes 33 xUnit cases in Release mode, 14 public-adapter tests and 70 HTTP assertions. New checks cover recent charging readings versus old manual inspections, unobserved arrivals, omitted API measurement fields, repeated quarantine and spreadsheet-formula escaping. The HTTP suite also verifies the second quarantine cycle and an imported vehicle's explicit inspection requirement.
 
 A fresh browser context at 390×844 verified that an imported vehicle shows Not measured / Not recorded, has INSPECTION_REQUIRED rather than a false critical-SOC alert, and opens an arrival form with blank required observations. It produced no JavaScript errors or horizontal overflow. The review section is linked from the showcase and repository. These results do not constitute field acceptance, exhaustive security testing or a production benchmark.
+
+## Portfolio prerelease — 8 November 2026
+
+The release adds ten reproducible Playwright journeys for Chromium at 1440×1000 and 390×844. They assert page identity, internal anchors, asset responses, no JavaScript page errors or backend requests in the public sandbox, viewport overflow, inspection submission, tab persistence, deep links, browser history, reports, reset, walkthrough exit, CSV import/download, charging completion, rejected/accepted HSE release and recovery from malformed session state. Screenshots and navigation/resource measurements are attached to the browser report; they are observations in the test environment, not production performance guarantees.
+
+The backend suite now has 36 cases and the public adapter 16. The HTTP suite has 74 assertions, including published asset delivery/CSP and a malformed JSON problem response. New store tests cover exclusive ownership, lock release and preserving corrupt data on startup failure. CI also builds the container, executes the disposable HTTP suite and compares the data file before/after restart. Docker was unavailable on the authoring machine; the hosted job is the execution evidence.
+
+Run browser checks with the dependency-locked commands in the README. No formal WCAG conformance, penetration test, terminal field pilot or commercial acceptance is claimed. Existing readiness and pilot documents remain release constraints.
+
+The separately published backend UI is also exercised at both viewports by `npm run test:backend-browser` after `dotnet publish src/VoltYard.Api -c Release -o /tmp/voltyard-publish`. It owns a disposable temporary store/server on an OS-assigned loopback port and verifies sign-in, inspection, deep-link reload, report, overflow, logout and HTTP 401 after logout. This catches empty-body HTTP success responses as well as UI regressions.

@@ -19,9 +19,11 @@ for path in ROOT.rglob('*.html'):
 page=(ROOT/'demo/index.html').read_text()
 assert '__DATA__' not in page
 assert 'data-edition="public"' in page
-assert 'Start the .NET application to import a manifest.' not in page
+assert (ROOT/'demo/app.js').is_file()
+assert (ROOT/'demo/app.css').is_file()
 assert '60-vehicle preview' not in page
-assert '<script src="sandbox.js"></script>' in page
+assert '<script src="sandbox.js?v=' in page and ' defer></script>' in page
+assert (ROOT/'build-info.json').is_file()
 assert (ROOT/'assets/dashboard.png').stat().st_size>10000
 assert not any((ROOT/p).exists() for p in ('var','.git','.env','src'))
 print('PASS: Pages artifact, local links, public sandbox, screenshot, English metadata and deployment boundaries.')

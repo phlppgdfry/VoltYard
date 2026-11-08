@@ -36,3 +36,7 @@ __pycache__/
 
 # Generated GitHub Pages artifact
 _site/
+
+# Browser verification artifacts
+test-results/
+playwright-report/

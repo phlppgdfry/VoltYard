@@ -23,7 +23,7 @@ flowchart LR
 | Application | Inspection, charging, quarantine, movement, departure, import and profile commands; persistence contract | Domain |
 | Infrastructure | Seed loading/rebasing, snapshots, transaction lock, copy-on-write and atomic disk replacement | Application/Domain |
 | Api | HTTP, cookies, role permissions, rate limiting, same-origin write protection and frontend delivery | Application/Infrastructure |
-| Prototype template | Rendered UI, forms, search, charts, reports and illustrative offline preview | Browser APIs only |
+| Shared browser UI | Rendered UI, forms, search, charts, reports and illustrative offline preview | Browser APIs only |
 
 There is no Node build or Next.js runtime in this release. There is no PostgreSQL, EF Core, SignalR hub or Azure deployment currently running. Earlier technology choices remain documented as proposed direction; [ADR-0008](adr/0008-local-executable-slice.md) records the implemented local slice.
 
@@ -66,3 +66,9 @@ The seeded inventory is a demonstration workload, not a capacity benchmark. Full
 Retain Domain and Application. Replace IYardStore with a PostgreSQL/EF Core adapter, introduce per-aggregate concurrency and tenant-scoped queries, move identity to OIDC and add background alert lifecycle processing. Integrate hardware only through an explicit adapter. Measure before introducing separate services.
 
 See [operations](../operations.md), [data model](data-model.md), [API](api-design.md) and [security](security-and-privacy.md).
+
+## Release hardening
+
+The API and Pages sandbox share the same UI shell, `app.js` and `app.css`. An inert JSON element carries seed data; executable scripts are external in hosted editions. The API restricts scripts to the same origin with CSP, disables framing, limits request bodies and returns safe problem responses for malformed input and unexpected failures. Inline styles remain allowed for dynamic presentation. These controls are practical hardening, not a formal security audit.
+
+The file adapter holds a process-lifetime exclusive local file lock, validates optimistic revisions, clones before mutation and atomically replaces committed data. Disposal releases ownership, including after startup failure. It is still a single-process development store with no transactional database, immutable audit or distributed failover. See [ADR-0010](adr/0010-demo-release-hardening.md).

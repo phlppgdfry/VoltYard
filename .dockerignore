@@ -6,3 +6,7 @@ var
 node_modules
 TestResults
 .playwright-mcp
+
+_site
+playwright-report
+test-results

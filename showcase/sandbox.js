@@ -15,7 +15,8 @@
     ['Keep safety decisions explicit','A concern requires isolation and a reasoned HSE decision. Try releasing a case with a short justification to see validation.','safety'],
     ['Leave an evidence trail','Open the handover report to review inspections, charging records, current alerts and audit events. Print or save the report as PDF.','detail']
   ];
-  try {const saved=JSON.parse(sessionStorage.getItem(key));if(saved?.vehicles?.length&&saved.sandboxVersion===1)D=saved;}catch{}
+  function validSaved(s){return s?.sandboxVersion===1&&Array.isArray(s.vehicles)&&s.vehicles.length>0&&['zones','profiles','manufacturers','chargers','audit','chargingSessions'].every(k=>Array.isArray(s[k]))&&s.billing&&s.orders&&s.vehicles.every(v=>Array.isArray(v.history)&&s.profiles.some(p=>p.id===v.profile)&&s.zones.some(z=>z.code===v.zone));}
+  try {const saved=JSON.parse(sessionStorage.getItem(key));if(validSaved(saved))D=saved;}catch{}
   D.orders??={};D.audit??=[];D.profileHistory??=[];D.chargingSessions??=[];
   const originalRender=render;
   render=()=>{
@@ -26,9 +27,11 @@
   function viewStep(){
     page=steps[tourIndex][2];
     if(page==='field')mobileVin=tourVin;
+    if(page==='charging')chargingQuery=tourVin;
     if(page==='detail')selected=tourVin;
-    location.hash=page;render();window.scrollTo(0,0);
+    history.replaceState(null,'','#'+page+((page==='detail'||page==='field')?'/'+tourVin:''));render();window.scrollTo(0,0);
   }
+  function clearTour(){const url=new URL(location.href);url.searchParams.delete('tour');history.replaceState(null,'',url);}
   function save(){try{D.sandboxVersion=1;sessionStorage.setItem(key,JSON.stringify(D));}catch{toast('Your browser could not save this tab. You can keep exploring; reloading will reset changes.');}}
   const fail=message=>{throw new Error(message);};
   const allowed12=['OK','Weak','Dead'];
@@ -36,8 +39,9 @@
   function validateProfile(p){
     if(!p||![p.criticalSoc,p.minStorageSoc,p.targetStorageSoc,p.maxChargeSoc,p.defaultDischargePerDay].every(Number.isFinite)||
       !(0<=p.criticalSoc&&p.criticalSoc<=p.minStorageSoc&&p.minStorageSoc<=p.targetStorageSoc&&p.targetStorageSoc<=p.maxChargeSoc&&p.maxChargeSoc<=100)||
-      !Number.isInteger(p.inspectionIntervalDays)||p.inspectionIntervalDays<1||p.inspectionIntervalDays>365)fail('Use 0 ≤ critical ≤ minimum ≤ target ≤ maximum ≤ 100 and an inspection interval of 1–365 days.');
+      !Number.isInteger(p.inspectionIntervalDays)||p.inspectionIntervalDays<1||p.inspectionIntervalDays>365||!Number.isInteger(p.twelveVoltIntervalDays)||p.twelveVoltIntervalDays<1||p.twelveVoltIntervalDays>365||p.defaultDischargePerDay<0||p.defaultDischargePerDay>100||!Array.isArray(p.departureRules)||!p.departureRules.length||new Set(p.departureRules.map(r=>r.destinationType)).size!==p.departureRules.length||p.departureRules.some(r=>!['Shipping','Ferry','Truck','Rail','Dealer'].includes(r.destinationType)||!Number.isFinite(r.minSoc+r.maxSoc)||r.minSoc<0||r.maxSoc>100||r.minSoc>r.maxSoc))fail('Use 0 ≤ critical ≤ minimum ≤ target ≤ maximum ≤ 100 and an inspection interval of 1–365 days.');
   }
+  function validDate(value){return /^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString().slice(0,10)===value;}
   function validVin(vin){
     if(!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin))return false;
     const chars='0123456789ABCDEFGHJKLMNPRSTUVWXYZ',values=[0,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,1,2,3,4,5,7,9,2,3,4,5,6,7,8,9],weights=[8,7,6,5,4,3,2,10,0,9,8,7,6,5,4,3,2];
@@ -71,7 +75,7 @@
       else if(!Number.isFinite(+r.kwh)||+r.kwh<=0||+r.kwh>300)error='Invalid battery capacity.';
       else if(!D.manufacturers.some(f=>f.code===r.manufacturerCode))error='Unknown manufacturer code.';
       else if(count(zone.code)>=Math.min(zone.capacity,zone.maxEvs))error='Arrival zone is full.';
-      else if(r.departure&&(!/^\d{4}-\d{2}-\d{2}$/.test(r.departure)||!Number.isFinite(day(r.departure))||!['Shipping','Ferry','Truck','Rail','Dealer'].includes(r.destination)))error='Invalid departure date or destination.';
+      else if(r.departure&&(!validDate(r.departure)||!['Shipping','Ferry','Truck','Rail','Dealer'].includes(r.destination)))error='Invalid departure date or destination.';
       if(error){errors.push({line:i+2,vin,error});return;}
       const candidates=D.profiles.filter(p=>p.manufacturerCode===r.manufacturerCode&&p.powertrain===r.powertrain);
       const p=candidates.filter(p=>p.modelPattern&&r.model.startsWith(p.modelPattern.replace(/\*$/,''))).sort((a,b)=>b.modelPattern.length-a.modelPattern.length)[0]||candidates.find(p=>!p.modelPattern)||D.profiles.find(p=>p.id==='TERMINAL-DEFAULT');
@@ -124,7 +128,7 @@
       D.chargingSessions.push({vin:v.vin,manufacturerCode:v.fab,charger:order.charger,start:order.startedAt,end:new Date().toISOString(),startSoc:order.startSoc,endSoc:c.soc,kwh:energy,estimatedKwh:c.kwh==null});
       D.chargers.find(l=>l.code===order.charger).occupiedBy=null;D.billing[v.fab].sessions++;D.billing[v.fab].kwh+=energy;record(c.soc,'Charging');delete D.orders[v.vin];
     }else if(action==='plan'){
-      if(!/^\d{4}-\d{2}-\d{2}$/.test(c.departure)||!Number.isFinite(day(c.departure))||c.departure<today()||!p.departureRules.some(r=>r.destinationType===c.destination))fail('Choose a valid destination and date from today onwards.');
+      if(!validDate(c.departure)||c.departure<today()||!p.departureRules.some(r=>r.destinationType===c.destination))fail('Choose a valid destination and date from today onwards.');
       if(order?.status==='Running')fail('Stop charging before changing departure limits.');v.departure=c.departure;v.destination=c.destination;
     }else if(action==='depart'){
       safe(v);if(!v.departure)fail('Plan a departure first.');const r=p.departureRules.find(r=>r.destinationType===v.destination);
@@ -138,17 +142,17 @@
       const result=apply(action,body);D.revision=(D.revision||0)+1;
       D.audit.push({id:crypto.randomUUID(),at:new Date().toISOString(),actor:'Demo visitor',action,subject:body.vin||body.profile?.id||'CSV import',detail:'Browser-only sandbox command'});
       save();render();return result;
-    }catch(error){D=before;render();throw error;}finally{busy=false;}
+    }catch(error){D=before;throw error;}finally{busy=false;}
   };
   const bar=document.createElement('div');bar.className='public-bar';bar.innerHTML='<a href="../" class="public-back">VoltYard <span> / Case study</span></a><span class="public-note">Interactive sandbox · fictional data · no account needed</span><div><button class="btn sm" data-sandbox="tour">Guided tour</button><button class="btn sm" data-sandbox="reset">Reset demo</button></div>';
   document.body.prepend(bar);
   document.addEventListener('click',e=>{
     const action=e.target.closest('[data-sandbox]')?.dataset.sandbox;if(!action)return;
-    if(action==='reset'){if(!confirm('Reset all changes in this demo tab?'))return;D=structuredClone(initial);D.orders={};D.audit=[];D.profileHistory=[];draft=null;importResult=null;filter={q:'',fab:'',zone:'',status:''};offset=0;selected=null;mobileVin=null;tourIndex=null;save();go('dashboard');toast('Demo reset. You have a fresh yard to explore.');}
+    if(action==='reset'){if(!confirm('Reset all changes in this demo tab?'))return;D=structuredClone(initial);D.orders={};D.audit=[];D.profileHistory=[];draft=null;importResult=null;chargingQuery='';filter={q:'',fab:'',zone:'',status:''};offset=0;selected=null;mobileVin=null;tourIndex=null;clearTour();save();go('dashboard');toast('Demo reset. You have a fresh yard to explore.');}
     if(action==='tour'){tourIndex=0;viewStep();}
-    if(action==='tour-close'){tourIndex=null;render();}
+    if(action==='tour-close'){tourIndex=null;clearTour();render();}
     if(action==='tour-back'){tourIndex=Math.max(0,tourIndex-1);viewStep();}
-    if(action==='tour-next'){if(tourIndex===steps.length-1){tourIndex=null;render();toast('Tour complete. Explore any workflow or open the case study.');}else{tourIndex++;viewStep();}}
+    if(action==='tour-next'){if(tourIndex===steps.length-1){tourIndex=null;clearTour();render();toast('Tour complete. Explore any workflow or open the case study.');}else{tourIndex++;viewStep();}}
   });
-  if(tourIndex!==null)viewStep();else render();
+  if(tourIndex!==null)viewStep();else {route();render();}
 })();

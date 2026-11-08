@@ -5,15 +5,15 @@ import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 const root=new URL('../',import.meta.url);
 const seed=JSON.parse(readFileSync(new URL('demo/application-data.json',root),'utf8'));
-const template=readFileSync(new URL('prototype/index.template.html',root),'utf8');
-const ui=template.slice(template.indexOf('<script>')+8,template.indexOf("document.addEventListener('click'" )).replace('__DATA__','globalThis.seed');
+const source=readFileSync(new URL('prototype/app.js',root),'utf8');
+const ui=source.slice(0,source.indexOf("document.addEventListener('click'")).replace(/const seedElement[\s\S]*?const publicDemo[^;]+;/,'const EMBEDDED=globalThis.seed; const publicDemo=true;');
 const sandbox=readFileSync(new URL('showcase/sandbox.js',root),'utf8');
 function app(){
  const storage=new Map();
  const context=vm.createContext({seed:structuredClone(seed),structuredClone,URLSearchParams,crypto:{randomUUID},
   location:{search:'',hash:''},sessionStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},
   document:{getElementById:()=>({insertAdjacentHTML(){},textContent:''}),createElement:()=>({}),body:{prepend(){}},addEventListener(){}},
-  window:{scrollTo(){}},setTimeout,clearTimeout,confirm:()=>true});
+  window:{scrollTo(){},addEventListener(){}},history:{replaceState(){}},setTimeout,clearTimeout,confirm:()=>true});
  vm.runInContext(ui+'\nrender=()=>{};',context);vm.runInContext(sandbox,context);
  return {get:()=>vm.runInContext('D',context),run:code=>vm.runInContext(code,context),command:(action,body={})=>context.command(action,body)};
 }
@@ -88,4 +88,16 @@ test('unobserved arrival creates an inspection requirement, not a false zero-SOC
 test('spreadsheet exports escape formula prefixes and quoted fields',()=>{
  const a=app();assert.equal(a.run(`csvCell('=1+1')`),`"'=1+1"`);assert.equal(a.run(`csvCell('@SUM(1)')`),`"'@SUM(1)"`);
  assert.equal(a.run(`csvCell('Voltara "Demo"')`),'"Voltara ""Demo"""');assert.equal(a.run(`csvCell(42)`),'"42"');assert.equal(a.run(`csvCell('  =1+1')`),`"'  =1+1"`);
+});
+test('calendar-invalid departure dates are rejected rather than normalised',async()=>{
+ const a=app(),vin=target(a.get()).vin,before=JSON.stringify(a.get());
+ await assert.rejects(a.command('plan',{vin,departure:'2027-02-30',destination:'Truck'}),/valid/);
+ assert.equal(JSON.stringify(a.get()),before);
+});
+
+test('profile rejects duplicate destination rules and negative discharge',async()=>{
+ const a=app(),p=structuredClone(a.get().profiles[0]);p.departureRules.push({...p.departureRules[0]});
+ await assert.rejects(a.command('profile',{profile:p}),/threshold|interval/);
+ const next=structuredClone(a.get().profiles[0]);next.defaultDischargePerDay=-1;
+ await assert.rejects(a.command('profile',{profile:next}),/threshold|interval/);
 });

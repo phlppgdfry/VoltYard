@@ -87,6 +87,8 @@ public static class Rules
             p.CriticalSoc<0 || p.CriticalSoc>p.MinStorageSoc || p.MinStorageSoc>p.TargetStorageSoc ||
             p.TargetStorageSoc>p.MaxChargeSoc || p.MaxChargeSoc>100 || p.InspectionIntervalDays is <1 or >365 ||
             p.TwelveVoltIntervalDays is <1 or >365 || p.DefaultDischargePerDay is <0 or >100 ||
+            p.DepartureRules.GroupBy(r=>r.DestinationType,StringComparer.OrdinalIgnoreCase).Any(g=>g.Count()>1) ||
+            p.DepartureRules.Any(r=>!new[]{"Shipping","Ferry","Truck","Rail","Dealer"}.Contains(r.DestinationType)) ||
             p.DepartureRules.Any(r=>!double.IsFinite(r.MinSoc+r.MaxSoc) || r.MinSoc<0 || r.MaxSoc>100 || r.MinSoc>r.MaxSoc))
             throw new DomainException("Use 0 ≤ critical ≤ minimum ≤ target ≤ maximum ≤ 100, valid departure ranges and positive inspection intervals.");
     }

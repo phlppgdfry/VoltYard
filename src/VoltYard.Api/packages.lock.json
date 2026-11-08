@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "voltyard.application": {
+        "type": "Project",
+        "dependencies": {
+          "VoltYard.Domain": "[1.0.0, )"
+        }
+      },
+      "voltyard.domain": {
+        "type": "Project"
+      },
+      "voltyard.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "VoltYard.Application": "[1.0.0, )"
+        }
+      }
+    }
+  }
+}

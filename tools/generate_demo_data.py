@@ -78,6 +78,8 @@ def main():
     preview={**data,'vehicles':vehicles[:37]+vehicles[553:576],'chargingSessions':[]}
     write_json(ROOT/'prototype/sample-data.json',preview)
     template=(ROOT/'prototype/index.template.html').read_text()
+    template=template.replace('<link rel="stylesheet" href="app.css">','<style>'+(ROOT/'prototype/app.css').read_text()+'</style>')
+    template=template.replace('<script src="app.js" defer></script>','<script>'+(ROOT/'prototype/app.js').read_text()+'</script>')
     (ROOT/'prototype/index.html').write_text(template.replace('__DATA__',json.dumps(preview,separators=(',',':'))))
     print(f'Generated {len(vehicles)} vehicles, {len(inspections)} inspections, {len(sessions)} charging sessions; prototype: {len(preview["vehicles"])} vehicles.')
 if __name__=='__main__':main()

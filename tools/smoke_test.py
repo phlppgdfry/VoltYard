@@ -32,6 +32,19 @@ def command(c,action,body=None,status=200):
     d=state(c);return request(c,'/api/commands/'+action,{'revision':d['revision'],**(body or {})},status)
 
 anonymous=client();request(anonymous,'/api/state',status=401)
+# Exercise the published UI assets and request-binding error boundary, not just domain commands.
+for asset,mime in (('/','text/html'),('/app.js','text/javascript'),('/app.css','text/css')):
+    with anonymous.open(base+asset) as response:
+        assert mime in response.headers['Content-Type']
+        assert "script-src 'self'" in response.headers['Content-Security-Policy']
+        assert response.read()
+    checks+=1
+malformed=urllib.request.Request(base+'/api/login',data=b'{invalid',headers={'Content-Type':'application/json','X-VoltYard-Client':'web'})
+try:anonymous.open(malformed);raise AssertionError('Malformed JSON accepted')
+except urllib.error.HTTPError as response:
+    problem=json.loads(response.read());assert response.code==400 and problem['title']=='Invalid HTTP request.'
+    assert 'stack' not in json.dumps(problem).lower()
+checks+=1
 admin=login('admin');d=state(admin)
 assert len(d['vehicles'])==2000,'Use a fresh disposable seed for this test.'
 assert sum(z['count'] for z in d['zones'])==2000

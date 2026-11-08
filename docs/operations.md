@@ -9,7 +9,7 @@ python3 tools/generate_demo_data.py
 dotnet run --project src/VoltYard.Api --launch-profile local
 ```
 
-Default URL: http://127.0.0.1:5080. Default runtime file: var/yard.json. The local launch profile sets Development and does not open a browser. The application serves its own UI; there is no second frontend server.
+Default URL: http://127.0.0.1:5080. Default runtime file: var/yard.json. The source project defaults to the repository-relative data path. The local launch profile sets Development and does not open a browser. The application serves its own UI; there is no second frontend server.
 
 ## Independent instance
 
@@ -23,7 +23,7 @@ Choose a new file path to start a fresh seed. Do not point two processes at the 
 
 Stop the server, copy the runtime JSON to a protected backup path, and restart. To restore, stop the server and point Data__Path at a verified copy. Startup fails on invalid JSON; it must never silently replace a corrupt store with fixtures. Back up authentication data-protection keys if persistent sessions are required; otherwise users can sign in again.
 
-The file is a development persistence adapter. Atomic replacement protects the committed document from partial writes, but it is not a database backup strategy, immutable audit store or multi-process locking system.
+The file is a development persistence adapter. Atomic replacement protects the committed document from partial writes, but it is not a database backup strategy, immutable audit store or a distributed persistence system. A held file lock rejects a second process using the same local file; it does not enable multiple writers.
 
 ## Health and troubleshooting
 
@@ -38,3 +38,13 @@ If port 5080 is occupied, use an alternate URL and independent store. If .NET re
 ## Hosted release gates
 
 Use a database, individual identity provider, tenant isolation, HTTPS, key/secret management, structured monitoring, backup/restore tests and approved profile/HSE procedures. No cloud resources are provisioned by this repository. Review [security](05-architecture/security-and-privacy.md) and the [backlog](06-delivery/backlog.md).
+
+## Published executable
+
+```bash
+dotnet restore --locked-mode
+dotnet publish src/VoltYard.Api -c Release -o /tmp/voltyard-publish
+ASPNETCORE_ENVIRONMENT=Development Data__Path=/tmp/voltyard-independent.json ASPNETCORE_URLS=http://127.0.0.1:5081 dotnet /tmp/voltyard-publish/VoltYard.Api.dll
+```
+
+Use an absolute `Data__Path` for independent instances. Without configuration, the published application uses `var/yard.json` under its content root. No backend is publicly deployed by the Pages workflow. Changing `Demo__Password` does not create individual user identities or make this development deployment production-ready.

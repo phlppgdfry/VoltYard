@@ -15,4 +15,6 @@ Status distinguishes proposed technology direction from the implemented local re
 
 | [0009](0009-public-pages-showcase.md) | Public GitHub Pages showcase and isolated browser sandbox | Accepted and implemented |
 
+| [0010](0010-demo-release-hardening.md) | Shared UI assets, locked dependencies and browser-gated demo release | Accepted and implemented |
+
 Use the [template](template.md). Preserve superseded decisions and explain their replacement rather than rewriting history as if every proposal shipped.

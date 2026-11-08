@@ -44,3 +44,7 @@ New measurements identify the actor and timestamp. Even a demonstration of staff
 ## Reporting a vulnerability
 
 See [SECURITY.md](../../SECURITY.md). Do not publish production credentials, personal information or a working exploit containing customer data in an issue.
+
+## Demo release controls
+
+Hosted API assets use a same-origin script CSP, frame blocking, MIME sniffing protection and same-origin referrers. Request bodies are bounded; malformed request binding returns HTTP 400 and unexpected errors return a generic problem with a trace identifier while details are logged server-side. File ownership is exclusive for the local process. npm and NuGet locks support reviewed restores. These checks do not certify the application for an internet-facing operational backend. Public Pages contains only synthetic data and a tab-local adapter.

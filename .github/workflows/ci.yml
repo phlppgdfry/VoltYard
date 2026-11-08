@@ -8,20 +8,32 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
           dotnet-version: '10.0.x'
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.12'
       - name: Verify repository and deterministic generation
         run: |
           python3 tools/check_repository.py
+          python3 tools/check_security.py
           python3 tools/generate_demo_data.py
           git diff --exit-code -- demo prototype/index.html prototype/sample-data.json
-      - run: dotnet test --configuration Release --nologo
+      - run: dotnet restore --locked-mode
+      - name: Audit NuGet dependencies
+        run: |
+          dotnet list package --vulnerable --include-transitive --format json > /tmp/nuget-audit.json
+          python3 -c "import json; d=json.load(open('/tmp/nuget-audit.json')); assert not any(f.get('topLevelPackages') or f.get('transitivePackages') for p in d['projects'] for f in p.get('frameworks',[])), 'Vulnerable NuGet packages found'"
+      - run: dotnet test --configuration Release --no-restore --nologo
       - run: dotnet publish src/VoltYard.Api --configuration Release --output /tmp/voltyard-publish
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:backend-browser
       - name: HTTP workflow smoke test
         env:
           ASPNETCORE_ENVIRONMENT: Development
@@ -36,3 +48,32 @@ jobs:
             sleep 1
           done
           python3 tools/smoke_test.py
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Build and exercise isolated container
+        env:
+          VOLTYARD_TEST_PASSWORD: VoltYard-ci-test-only-2026
+        run: |
+          docker build -t voltyard-ci .
+          docker run -d --name voltyard-ci -p 127.0.0.1:5080:8080 -e ASPNETCORE_ENVIRONMENT=Development -e Demo__Password="$VOLTYARD_TEST_PASSWORD" voltyard-ci
+          trap 'docker logs voltyard-ci; docker rm -f voltyard-ci' EXIT
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:5080/health; then break; fi
+            sleep 1
+          done
+          python3 tools/smoke_test.py
+          docker exec voltyard-ci sha256sum /data/yard.json > /tmp/before-restart
+          docker restart voltyard-ci
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5080/health; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5080/health
+          docker exec voltyard-ci sha256sum /data/yard.json > /tmp/after-restart
+          diff /tmp/before-restart /tmp/after-restart

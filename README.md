@@ -4,6 +4,8 @@
 
 VoltYard follows each vehicle by VIN, records battery inspections, evaluates configurable manufacturer profiles and brings charging and quarantine work into one operational view.
 
+**Release:** `v0.3.0-demo.1` — portfolio/demo prerelease. See [release notes](RELEASE_NOTES.md).
+
 **Status:** working local development application with a C#/.NET 10 backend and an English web interface. The repository also contains a product, research, validation and architecture dossier. This is a single-terminal demonstration, not an approved terminal safety system.
 
 ## Public showcase
@@ -108,3 +110,15 @@ docker compose up --build
 ```
 
 This compose setup is explicitly a local Development demo bound to loopback. See [operations](docs/operations.md) before any hosted deployment.
+
+## Reproducible verification
+
+.NET dependencies have committed NuGet lock files. Run `dotnet restore --locked-mode`, `dotnet build -c Release --no-restore`, and `dotnet test -c Release --no-build`. The backend and static site do not need npm at runtime.
+
+For browser verification, install Node 24 and run `npm ci --ignore-scripts`, `npx playwright install chromium`, `npm run build:pages`, then `npm run test:e2e`. Run `npm run test:e2e:live` after deployment. After publishing the backend to `/tmp/voltyard-publish`, run `npm run test:backend-browser` for its two disposable-server UI journeys. Chromium checks both desktop and mobile viewports; reports, screenshots and measurements are written to ignored `test-results/` and `playwright-report/` directories. CI retains browser evidence for 14 days.
+
+The public deployment exposes `build-info.json` with the release version and exact source commit. Its workflows verify the generated artifact and real browser interactions before deploying. The separate backend workflow builds, tests and exercises a disposable HTTP server and container.
+
+## License and contact
+
+The repository is public for review and portfolio demonstration. No open-source license has been granted; copyright remains with the author. Third-party dependencies retain their respective licenses. Contact [Philippe Godfroy on GitHub](https://github.com/phlppgdfry) for reuse or project discussions.

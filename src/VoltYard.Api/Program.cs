@@ -5,11 +5,14 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Routing;
 using VoltYard.Application;
 using VoltYard.Domain;
 using VoltYard.Infrastructure;
 
 var builder=WebApplication.CreateBuilder(args);
+builder.Services.Configure<RouteHandlerOptions>(o=>o.ThrowOnBadRequest=true);
+builder.WebHost.ConfigureKestrel(o=>o.Limits.MaxRequestBodySize=3_000_000);
 var password=builder.Configuration["Demo:Password"];
 if(string.IsNullOrEmpty(password))
 {
@@ -20,7 +23,9 @@ if(password.Length<12)throw new InvalidOperationException("Demo__Password must h
 var secretHash=SHA256.HashData(Encoding.UTF8.GetBytes(password));
 var accounts=new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase) { ["admin"]="Admin",["planner"]="Planner",["operator"]="Operator",["hse"]="HSE",["account"]="Account" };
 builder.Services.AddSingleton(TimeProvider.System);
-builder.Services.AddSingleton<IYardStore>(sp=>new FileYardStore(builder.Configuration["Data:Path"] ?? Path.Combine(builder.Environment.ContentRootPath,"../../var/yard.json"),
+var defaultDataPath=Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath,
+    File.Exists(Path.Combine(builder.Environment.ContentRootPath,"VoltYard.Api.csproj"))?"../../var/yard.json":"var/yard.json"));
+builder.Services.AddSingleton<IYardStore>(sp=>new FileYardStore(builder.Configuration["Data:Path"] ?? defaultDataPath,
     Path.Combine(AppContext.BaseDirectory,"Assets/application-data.json"),sp.GetRequiredService<TimeProvider>()));
 builder.Services.AddSingleton<YardService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o=>
@@ -41,6 +46,8 @@ app.Use(async (ctx,next)=>
 {
     ctx.Response.Headers["X-Content-Type-Options"]="nosniff";
     ctx.Response.Headers["X-Frame-Options"]="DENY";
+    ctx.Response.Headers["Referrer-Policy"]="same-origin";
+    ctx.Response.Headers["Content-Security-Policy"]="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'";
     ctx.Response.Headers.CacheControl="no-store";
     if(HttpMethods.IsPost(ctx.Request.Method))
     {
@@ -50,11 +57,19 @@ app.Use(async (ctx,next)=>
     }
     try {await next();}
     catch(DomainException ex) {await Results.Problem(statusCode:ex.Status,title:ex.Message).ExecuteAsync(ctx);}
+    catch(BadHttpRequestException ex) {await Results.Problem(statusCode:ex.StatusCode,title:"Invalid HTTP request.").ExecuteAsync(ctx);}
     catch(Microsoft.VisualBasic.FileIO.MalformedLineException) {await Results.Problem(statusCode:400,title:"Malformed CSV quoting.").ExecuteAsync(ctx);}
+    catch(Exception ex) {app.Logger.LogError(ex,"Request failed: {TraceId}",ctx.TraceIdentifier);await Results.Problem(statusCode:500,title:"The request could not be completed.",extensions:new Dictionary<string,object?>{{"traceId",ctx.TraceIdentifier}}).ExecuteAsync(ctx);}
 });
 app.UseRateLimiter();app.UseAuthentication();app.UseAuthorization();
 app.MapGet("/health",()=>new {status="ok",service="VoltYard"});
 app.MapGet("/",()=>Results.Content(File.ReadAllText(Path.Combine(AppContext.BaseDirectory,"Assets/index.template.html")).Replace("__DATA__","null"),"text/html"));
+foreach(var asset in new[]{"app.js","app.css"})
+{
+    var content=File.ReadAllText(Path.Combine(AppContext.BaseDirectory,"Assets",asset));
+    var contentType=asset.EndsWith(".js")?"text/javascript":"text/css";
+    app.MapGet("/"+asset,()=>Results.Content(content,contentType));
+}
 app.MapGet("/favicon.ico",()=>Results.NoContent());
 app.MapPost("/api/login",async (Login request,HttpContext ctx)=>
 {

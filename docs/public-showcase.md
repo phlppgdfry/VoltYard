@@ -14,7 +14,7 @@ The public sandbox needs no login or backend service. All 2,000 vehicles and the
 
 The Pages simulation mirrors the main workflows in JavaScript. It does not provide server authentication, role enforcement, shared records, physical charger control or a certified safety system. The separately runnable .NET application retains its own role checks, command validation and persistent store. Public sandbox tests and backend tests cover their respective implementations; one does not prove the other.
 
-The checked-in 60-vehicle standalone prototype remains available separately. The Pages builder embeds the complete fictional seed in the same UI template and loads the public adapter from showcase/sandbox.js.
+The checked-in 60-vehicle standalone prototype remains available separately. The Pages builder embeds the complete fictional seed in the shared UI shell, JavaScript and CSS assets and loads the public adapter from showcase/sandbox.js.
 
 ## Source and build
 
@@ -46,3 +46,7 @@ The repository is public so visitors can inspect the code and portfolio evidence
 ## Review checklist
 
 Check the public URL in an anonymous context; desktop and narrow layouts; zone selection and deep links; tour entry/exit; inspection and session records after reload; invalid input rollback; import errors; report/print; reset; and absence of backend requests or JavaScript errors. The map is illustrative rather than a real geospatial plan.
+
+## Release traceability and browser checks
+
+`VERSION` defines the demo release. `build-info.json` and HTML metadata identify the source commit. Shared operational UI source lives in `prototype/app.js`, `prototype/app.css` and `prototype/index.template.html`; generated standalone HTML inlines those assets, while the API and Pages edition serve them separately. Pages deployment requires the Chromium desktop/mobile suite in `tests/e2e/` to pass. Assets carry source-commit query strings. Session data is tab-local and resettable; malformed saved state falls back to fixtures.
