@@ -62,3 +62,7 @@ The backend suite now has 36 cases and the public adapter 16. The HTTP suite has
 Run browser checks with the dependency-locked commands in the README. No formal WCAG conformance, penetration test, terminal field pilot or commercial acceptance is claimed. Existing readiness and pilot documents remain release constraints.
 
 The separately published backend UI is also exercised at both viewports by `npm run test:backend-browser` after `dotnet publish src/VoltYard.Api -c Release -o /tmp/voltyard-publish`. It owns a disposable temporary store/server on an OS-assigned loopback port and verifies sign-in, inspection, deep-link reload, report, overflow, logout and HTTP 401 after logout. This catches empty-body HTTP success responses as well as UI regressions.
+
+## UI/UX refinement — 16 November 2026
+
+The demo.2 public suite has twelve Chromium cases across desktop/mobile. Two additional cases check all eight navigation destinations in the mobile viewport, the six-entry priority summary, direct entry into the full alerts-filtered vehicle list, and disabled first/last pagination controls. Priorities retain vehicle links and explicit severity/next-action text. This is a presentation change; domain thresholds and operational readiness limits remain unchanged.

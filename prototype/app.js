@@ -15,7 +15,7 @@ const profile=v=>D.profiles.find(p=>p.id===v.profile);
 const active=()=>D.vehicles.filter(v=>!v.departed);
 const severity={Critical:4,High:3,Medium:2,Low:1};
 const pill=(text,kind='neutral')=>`<span class="pill p-${kind}">${esc(text)}</span>`;
-const button=(text,action,vin='',kind='')=>`<button class="btn ${kind}" data-action="${action}" data-vin="${vin}">${text}</button>`;
+const button=(text,action,vin='',kind='',disabled=false)=>`<button ${disabled?'disabled':''} class="btn ${kind}" data-action="${action}" data-vin="${vin}">${text}</button>`;
 const head=(title,sub,actions='')=>`<div class="pagehead"><div><div class="eyebrow">${esc(sub)}</div><h1>${esc(title)}</h1></div><div class="filters">${actions}</div></div>`;
 const table=(headers,rows)=>`<div class="tablewrap"><table><thead><tr>${headers.map(h=>`<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}" class="muted">No matching records.</td></tr>`}</tbody></table></div>`;
 function within(v){return v.departure&&day(v.departure)-day(today())<=7;}
@@ -70,7 +70,9 @@ function dashboard(){
     [orders.length,'Charging tasks','Prioritised by severity'],[quarantine.length,'Quarantine cases','HSE review required'],
     [D.chargers.filter(l=>l.occupiedBy).length,'Chargers in use',`${D.chargers.filter(l=>l.status==='Available').length} operational`]
   ].map(([n,label,sub])=>`<div class="kpi"><span class="k">${label}</span><span class="v num">${number(n)}</span><span class="s muted">${sub}</span></div>`).join('')}</section>
-  <div class="grid-2"><section class="panel"><div class="panel-head"><h2>Priority alerts</h2>${button('View vehicles','vehicles')}</div>${table(['Vehicle / zone','Rule','Action'],all.slice(0,12).map(a=>`<tr><td>${a.vin?`<button class="link mono" data-action="detail" data-vin="${a.vin}">${a.vin}</button>`:'Yard safety'}</td><td>${pill(a.severity,a.severity)}<div>${esc(a.msg)}</div></td><td>${esc(a.action)}</td></tr>`).join(''))}</section>
+  <div class="grid-2"><section class="panel priority-panel"><div class="panel-head"><h2>Priority alerts</h2>${button('View all vehicle alerts','alert-vehicles')}</div>
+  <p class="muted priority-caption">${all.length?'The '+Math.min(6,all.length)+' highest-priority alerts. Open the vehicle to review its recorded evidence.':'No open alerts in the current scenario.'}</p>
+  <ul class="priority-list">${all.slice(0,6).map(a=>`<li><div class="priority-vehicle">${a.vin?`<button class="link mono" data-action="detail" data-vin="${a.vin}">${a.vin}</button><span class="muted">${esc(vehicle(a.vin).zone)}</span>`:button('Yard safety','safety')}</div><div class="priority-rule">${pill(a.severity,a.severity)}<p>${esc(a.msg)}</p></div><p class="priority-action"><span>Next action</span>${esc(a.action)}</p></li>`).join('')}</ul></section>
   <div class="stack"><section class="panel"><h2>Zone occupancy</h2><div class="zones">${D.zones.map(z=>`<div class="zone"><span class="zc">${z.code}</span><div class="bar"><i class="${count(z.code)>z.maxEvs?'over':''}" style="width:${Math.min(100,count(z.code)/z.capacity*100)}%"></i></div><span class="num">${count(z.code)} / ${z.maxEvs}</span></div>`).join('')}</div><span class="muted">Occupancy / configured EV limit. Standard storage permits no EVs.</span></section><section class="panel"><h2>Charging infrastructure</h2>${chargerGrid()}</section></div></div>`;
 }
 function vehicles(){
@@ -81,7 +83,7 @@ function vehicles(){
   <select class="input" id="manufacturer" aria-label="Manufacturer"><option value="">All manufacturers</option>${D.manufacturers.map(f=>`<option value="${f.code}" ${filter.fab===f.code?'selected':''}>${esc(f.name)}</option>`).join('')}</select>
   <select class="input" id="zone" aria-label="Zone"><option value="">All zones</option>${D.zones.map(z=>`<option ${filter.zone===z.code?'selected':''}>${z.code}</option>`).join('')}</select>
   <select class="input" id="status" aria-label="Status"><option value="">All statuses</option>${['alerts','Stored','Needs attention','Charging','In quarantine','Quarantine required','Ready for departure','Departed'].map(s=>`<option value="${s}" ${filter.status===s?'selected':''}>${s==='alerts'?'With alerts':s}</option>`).join('')}</select></div>
-  <div class="panel-head"><span class="muted">${number(list.length)} results · ${list.length?offset+1:0}–${Math.min(offset+50,list.length)}</span><div>${button('Previous','previous')}${button('Next','next')}</div></div>
+  <div class="panel-head"><span class="muted">${number(list.length)} results · ${list.length?offset+1:0}–${Math.min(offset+50,list.length)}</span><div>${button('Previous','previous','','',offset===0)}${button('Next','next','','',offset+50>=list.length)}</div></div>
   ${table(['VIN / model','Zone','SOC','12V','Status','Departure'],list.slice(offset,offset+50).map(v=>`<tr><td><button class="link mono" data-action="detail" data-vin="${v.vin}">${v.vin}</button><div class="muted">${esc(v.model)}</div></td><td>${v.zone}</td><td>${v.history.length?v.soc+'%':'Not measured'}</td><td>${v.history.length?v.twelveV:'Not recorded'}</td><td>${pill(status(v),statusKind(status(v)))}</td><td>${date(v.departure)}<div class="muted">${v.destination||''}</div></td></tr>`).join(''))}</section>`;
 }
 function chart(v){
@@ -205,6 +207,7 @@ document.addEventListener('click',async e=>{
     if(a==='logout'){await api('/api/logout',{});user=null;D=null;alerts={};login();return;}
     if(a==='detail'){selected=vin;go('detail');return;}
     if(a==='inspect'){mobileVin=vin;page='field';history.pushState(null,'','#field/'+vin);render();return;}
+    if(a==='alert-vehicles'){filter={q:'',fab:'',zone:'',status:'alerts'};offset=0;go('vehicles');return;}
     if(views[a]){go(a);return;}
     if(a==='previous'||a==='next'){offset=Math.max(0,offset+(a==='next'?50:-50));render();return;}
     if(a==='select-profile'){profileId=el.dataset.profile;draft=null;render();return;}

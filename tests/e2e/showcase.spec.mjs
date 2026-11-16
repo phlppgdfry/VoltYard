@@ -69,3 +69,22 @@ test('charging and quarantine complete through visible user controls',async({pag
  await row.locator('textarea').fill('Synthetic review completed for demo release test');await row.locator('[data-action="decide"]').click();
  await expect(page.locator('.toast')).toContainText('Changes saved');expect(await page.evaluate(vin=>vehicle(vin).zone,vin)).toBe('B-EV-1');
 });
+
+test('priority work, full mobile navigation and pagination boundaries are clear',async({page},info)=>{
+ await page.goto('./demo/');
+ await expect(page.locator('.priority-list>li')).toHaveCount(6);
+ if(info.project.name==='mobile'){
+  for(const action of ['dashboard','vehicles','field','charging','safety','rules','import','audit'])
+   await expect(page.locator('#nav [data-action="'+action+'"]')).toBeInViewport();
+ }
+ await page.getByRole('button',{name:'View all vehicle alerts'}).click();
+ await expect(page.locator('#status')).toHaveValue('alerts');
+ await expect(page.locator('[data-action="previous"]')).toBeDisabled();
+ const vin=await page.evaluate(()=>D.vehicles.find(v=>evaluate(v).length).vin);
+ await page.locator('#search').fill(vin);
+ await expect(page.locator('[data-action="next"]')).toBeDisabled();
+ await expect(page.locator('[data-action="previous"]')).toBeDisabled();
+ await page.locator('#search').fill('');await page.locator('[data-action="next"]').click();
+ await expect(page.locator('[data-action="previous"]')).toBeEnabled();
+ await page.locator('[data-action="previous"]').click();await expect(page.locator('[data-action="previous"]')).toBeDisabled();
+});

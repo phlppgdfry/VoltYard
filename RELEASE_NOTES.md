@@ -1,10 +1,18 @@
-# VoltYard v0.3.0-demo.1
+# VoltYard v0.3.0-demo.2
 
-Portfolio/demo prerelease — 8 November 2026.
+Portfolio/demo prerelease — 16 November 2026.
 
 [Public case study](https://phlppgdfry.github.io/VoltYard/) · [Interactive sandbox](https://phlppgdfry.github.io/VoltYard/demo/) · [Guided walkthrough](https://phlppgdfry.github.io/VoltYard/demo/?tour=1)
 
 VoltYard demonstrates an operational coordination and evidence layer connecting inspections, EV readiness, exceptions and handover for automotive/RoRo terminals. This is a finished demonstration release, not approved operational terminal software.
+
+## UI/UX refinement
+
+- All eight navigation destinations are visible on mobile/tablet without sideways scrolling.
+- Dashboard priorities use readable VIN, severity and next-action rows, showing the top six with a direct link to the full filtered vehicle list.
+- The fifth mobile metric fills the row; pagination clearly disables unavailable actions.
+- The showcase identifies the terminal operations domain immediately and uses an updated application screenshot.
+- Two additional viewport checks cover navigation visibility, filtered-alert entry and pagination boundaries.
 
 ## Delivered
 
@@ -17,7 +25,7 @@ VoltYard demonstrates an operational coordination and evidence layer connecting 
 
 ## Verification
 
-Release validation commands and the historical/current evidence are documented in [testing](docs/testing.md). The final verification set includes 36 backend tests, 16 public-adapter tests, 74 disposable-store HTTP assertions and ten public Chromium desktop/mobile journeys and two published-backend UI journeys. Release build and publish are checked, and dependencies are audited for known vulnerabilities. Hosted CI builds and exercises a non-root container and compares persisted data across restart. Browser screenshots and measurements are retained in the workflow artifacts for 14 days.
+Release validation commands and the historical/current evidence are documented in [testing](docs/testing.md). The final verification set includes 36 backend tests, 16 public-adapter tests, 74 disposable-store HTTP assertions and twelve public Chromium desktop/mobile journeys and two published-backend UI journeys. Release build and publish are checked, and dependencies are audited for known vulnerabilities. Hosted CI builds and exercises a non-root container and compares persisted data across restart. Browser screenshots and measurements are retained in the workflow artifacts for 14 days.
 
 The deployed `build-info.json` identifies the exact source commit. A successful backend build is separate from a public backend deployment; the release does not provision a backend host.
 

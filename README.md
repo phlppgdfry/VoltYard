@@ -4,7 +4,7 @@
 
 VoltYard follows each vehicle by VIN, records battery inspections, evaluates configurable manufacturer profiles and brings charging and quarantine work into one operational view.
 
-**Release:** `v0.3.0-demo.1` — portfolio/demo prerelease. See [release notes](RELEASE_NOTES.md).
+**Release:** `v0.3.0-demo.2` — portfolio/demo prerelease. See [release notes](RELEASE_NOTES.md).
 
 **Status:** working local development application with a C#/.NET 10 backend and an English web interface. The repository also contains a product, research, validation and architecture dossier. This is a single-terminal demonstration, not an approved terminal safety system.
 
