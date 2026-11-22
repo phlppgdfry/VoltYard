@@ -53,11 +53,11 @@ These are corrections to the demonstrator. They do not close the production bloc
 | P1 | Auxiliary battery model | A three-value 12V field is not a general diagnostic model | Approved battery type/nominal voltage/test method and a separately observed mobility state |
 | P1 | Charging feasibility | First-free assignment ignores connector, AC/DC support, power, staff and site constraints | Equipment/vehicle compatibility, reservations, power budget, cancellations and fault handling |
 | P1 | Energy accounting | SOC change and nominal capacity do not establish billing-grade energy or an exact target | Meter identifiers/readings, estimate provenance, contract units, periods and reconciliation |
-| P1 | Task usability at scale | A first-50 charging table, no assignment and weak deadline handling leave work hidden | Search/pagination, staff/zone assignment, departure deadlines, shift capacity and field navigation |
+| P1 | Task usability at scale | Charging search now reaches all tasks; staff assignment and deadline handling remain limited | Staff/zone assignment, departure deadlines, shift capacity and field navigation |
 | P1 | Connectivity and duplicate entry | Repeated walking, unlocking vehicles and typing may cost more than the proposed saving | Observe real work, scan/device trial and measured offline/conflict requirements |
 | P1 | Notification ownership | Calculating current alerts is not durable acknowledgement/escalation | Alert owner, due time, acknowledge/resolve/reopen history and idempotent scheduled evaluation |
 | P1 | Readiness versus approval | No current alert does not prove carrier acceptance, condition, legal/customs release or safe loading | Separate statuses for missing evidence, work completion and authorised transport release |
-| P2 | Maintainability and independent verification | Dense inline UI and duplicated JavaScript/C# logic increase drift risk | Shared behavioural fixtures, independent end-to-end checks and a frontend module/refactor plan |
+| P2 | Maintainability and independent verification | Shared UI assets have been extracted and browser checks run in CI; separate JavaScript/C# command logic still risks drift | Shared behavioural fixtures and continued parity verification |
 
 P0 means a gate before real operational reliance, not a feature that must be added to a public portfolio demo. Some P1 items become P0 for a particular site's procedure. The operator must determine that applicability.
 
@@ -93,3 +93,11 @@ Then agree a bounded, supervised **shadow-mode** study: the established process 
 ## Limits of this review
 
 The review does not exercise every browser, fixture permutation, failure mode or adversarial payload. Tests demonstrate selected invariants, not exhaustiveness. No terminal operator, OEM, carrier, insurer or HSE authority was contacted as part of this review. Nothing here is evidence that one of the named organisations endorses or needs VoltYard.
+
+## Follow-up status — 22 November 2026
+
+The original review and its test totals above are historical evidence from 7 November. The current portfolio release is `v0.3.0-demo.2`. Its recorded verification includes 36 backend cases, 16 public-adapter cases, 74 HTTP assertions per disposable environment, twelve public browser journeys and two backend UI journeys. See [testing](../testing.md) and the [release evidence](https://github.com/phlppgdfry/VoltYard/releases/tag/v0.3.0-demo.2). These checks are not claimed to have all been rerun on this follow-up date.
+
+Subsequent releases added charging search, extracted shared UI assets, browser-gated deployment, file ownership locking, safer HTTP errors, full mobile navigation and a clearer priority summary. The P1/P2 descriptions now reflect those changes. The operational P0 gates remain open: no operator pilot, approved source instructions, individual production identity, TOS reconciliation, complete durable evidence model or production recovery environment has been validated.
+
+No additional feature is required to present the declared portfolio scope. Better task assignment, explicit yard visits, connector-aware scheduling or decision assistance should follow operator discovery and measured needs. Adding AI alone would not resolve these gates.
