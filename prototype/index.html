@@ -495,9 +495,10 @@ window.addEventListener('popstate',()=>{if(D){route();render();}});
 window.addEventListener('hashchange',()=>{if(D){route();render();}});
 let toastTimer;
 function toast(message){clearTimeout(toastTimer);document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=message;document.body.append(t);toastTimer=setTimeout(()=>t.remove(),6000);}
+function clearSession(){user=null;D=null;alerts={};serverWorkItems=[];shiftNow=null;}
 async function api(path,body){
   const response=await fetch(path,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','X-VoltYard-Client':'web'},body:body===undefined?undefined:JSON.stringify(body)});
-  if(!response.ok){let message=response.status===403?'Your role cannot perform this action.':response.status===401?'Sign in to continue.':response.status===429?'Too many sign-in attempts. Try again in 15 minutes.':'Request failed.';try{const problem=await response.json();message=problem.title||message;}catch{}throw Object.assign(new Error(message),{status:response.status});}
+  if(!response.ok){if(response.status===401&&path!=='/api/login'){clearSession();login();}let message=response.status===403?'Your role cannot perform this action.':response.status===401?'Sign in to continue.':response.status===429?'Too many sign-in attempts. Try again in 15 minutes.':'Request failed.';try{const problem=await response.json();message=problem.title||message;}catch{}throw Object.assign(new Error(message),{status:response.status});}
   const text=await response.text();return text?JSON.parse(text):null;
 }
 async function load(){const snapshot=await api('/api/state');D=snapshot.data;serverWorkItems=snapshot.workItems||[];shiftNow=snapshot.shiftNow;alerts=snapshot.alerts;user=snapshot.user;role=snapshot.role;}
@@ -555,7 +556,7 @@ document.addEventListener('click',async e=>{
     if(a==='task-prev'||a==='task-next'){taskOffset=Math.max(0,taskOffset+(a==='task-next'?20:-20));render();return;}
     if(a==='refresh-shift'){if(!offline)await load();render();return;}
     if(a==='close'){closeModal();return;}if(a==='print'){window.print();return;}
-    if(a==='logout'){await api('/api/logout',{});user=null;D=null;alerts={};login();return;}
+    if(a==='logout'){await api('/api/logout',{});clearSession();login();return;}
     if(a==='detail'){selected=vin;go('detail');return;}
     if(a==='inspect'){mobileVin=vin;page='field';history.pushState(null,'','#field/'+vin);render();return;}
     if(a==='alert-vehicles'){filter={q:'',fab:'',zone:'',status:'alerts'};offset=0;go('vehicles');return;}

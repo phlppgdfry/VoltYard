@@ -39,7 +39,7 @@ try{
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   mkdirSync('test-results/backend',{recursive:true});await page.screenshot({path:`test-results/backend/${viewport.width}.png`,fullPage:true});
   await page.locator('[data-action="logout"]').first().click();await page.locator('#login-form').waitFor();
-  assert.equal(await page.evaluate(()=>D),null);assert.equal((await context.request.get(base+'/api/state')).status(),401);
+  assert.equal(await page.evaluate(()=>D),null);assert.equal(await page.evaluate(()=>serverWorkItems.length),0);assert.equal((await context.request.get(base+'/api/state')).status(),401);
   assert.deepEqual(errors,[]);console.log(`PASS backend browser ${viewport.width}: login, inspection, deep-link reload, report, overflow, logout and denied session.`);
   await context.close();
  }
