@@ -141,17 +141,19 @@ function computeWork(data,now){
   for(const v of active()){
     const list=evaluate(v),has=code=>list.some(a=>a.code===code);
     const add=(kind,rank,reason)=>open.set(v.vin+':'+kind,{v,kind,rank,reason});
+    const departureRule=profile(v).departureRules.find(r=>r.destinationType===v.destination),conflict=!!departureRule&&within(v)&&target(v)<departureRule.minSoc;
+    if(conflict)add('rules',300,'Charging target conflicts with the departure minimum; an administrator must review the rule profile.');
     if(v.quarantineRequired||v.zone==='Q-QUAR')add('safety',400,'Unresolved quarantine workflow; HSE review takes precedence.');
     else{
       if(['INSPECTION_REQUIRED','INSPECTION_OVERDUE','TWELVE_VOLT_WEAK','NOT_DRIVEABLE'].some(has)||has('SOC_PREDICTED_LOW')&&target(v)<=v.soc)add('inspection',has('NOT_DRIVEABLE')||has('INSPECTION_REQUIRED')?300:200,'Observation or forecast exception needs review: '+list.filter(a=>['INSPECTION_REQUIRED','INSPECTION_OVERDUE','TWELVE_VOLT_WEAK','NOT_DRIVEABLE','SOC_PREDICTED_LOW'].includes(a.code)).map(a=>a.msg).join('; ')+'.');
-      if(data.orders?.[v.vin]||target(v)>v.soc&&['SOC_CRITICAL','SOC_BELOW_MIN','SOC_PREDICTED_LOW','DEPARTURE_SOC_LOW'].some(has))add('charging',has('SOC_CRITICAL')?300:200,'Charging follow-up: '+(data.orders?.[v.vin]?.status||list.filter(a=>['SOC_CRITICAL','SOC_BELOW_MIN','SOC_PREDICTED_LOW','DEPARTURE_SOC_LOW'].includes(a.code)).map(a=>a.msg).join('; '))+'. Charging remains subject to safety and target checks.');
+      if(data.orders?.[v.vin]||!conflict&&target(v)>v.soc&&['SOC_CRITICAL','SOC_BELOW_MIN','SOC_PREDICTED_LOW','DEPARTURE_SOC_LOW'].some(has))add('charging',has('SOC_CRITICAL')?300:200,'Charging follow-up: '+(data.orders?.[v.vin]?.status||list.filter(a=>['SOC_CRITICAL','SOC_BELOW_MIN','SOC_PREDICTED_LOW','DEPARTURE_SOC_LOW'].includes(a.code)).map(a=>a.msg).join('; '))+'. Charging remains subject to safety and target checks.');
     }
     if(v.departure)add('handover',100,list.length||v.quarantineRequired||v.zone==='Q-QUAR'?'Departure is planned but current exceptions must be resolved first.':'Departure is planned; review evidence and record handover.');
   }
   return [...new Set([...open.keys(),...Object.keys(assignments)])].map(id=>{
     const item=open.get(id),a=assignments[id],kind=item?.kind||a.kind,vin=item?.v.vin||a.vin;
     const overdue=!!item&&!!a&&Date.parse(a.dueAt)<nowMs,soon=!!item&&!!item.v.departure&&day(item.v.departure)<=day(shiftDay)+1;
-    return {id,vin,kind,title:{inspection:'Inspect vehicle',charging:'Coordinate charging',safety:'Review quarantine',handover:'Prepare handover'}[kind],owner:a?.owner||null,dueAt:a?.dueAt||null,completed:!item,overdue,priority:item?item.rank+(overdue?50:0)+(soon?25:0):0,
+    return {id,vin,kind,title:{inspection:'Inspect vehicle',charging:'Coordinate charging',safety:'Review quarantine',rules:'Review rule profile',handover:'Prepare handover'}[kind],owner:a?.owner||null,dueAt:a?.dueAt||null,completed:!item,overdue,priority:item?item.rank+(overdue?50:0)+(soon?25:0):0,
       explanation:item?item.reason+(overdue?' Assigned deadline is overdue (+50).':'')+(soon?' Departure within one day (+25).':'')+' Base priority '+item.rank+'.':'The triggering condition is no longer present. New observations can reopen this task.'};
   }).sort((a,b)=>Number(a.completed)-Number(b.completed)||b.priority-a.priority||(Date.parse(a.dueAt||'9999-01-01')-Date.parse(b.dueAt||'9999-01-01'))||a.id.localeCompare(b.id));
 }
@@ -173,7 +175,7 @@ function shift(){
   return head('My shift','Owners, deadlines and explainable priorities',button('Refresh shift','refresh-shift'))+`<p class="muted">${offline?'Fictional demo shift, fixed at 12:00 UTC on '+today()+'. The account selector changes your view, not permissions.':'As of '+esc(shiftNow)+'. Your signed-in account: '+esc(user)+'.'} Completion follows vehicle evidence; a new concern can reopen work.</p>
   <section class="panel"><div class="filters">${offline?`<label class="f">My demo account<select class="input" id="task-account">${workOwners.map(o=>`<option ${o===taskAccount?'selected':''}>${o}</option>`).join('')}</select></label>`:''}<label class="f">Work view<select class="input" id="task-view">${[['mine','Assigned to me'],['unassigned','Unassigned'],['all','All open work'],['completed','Completed assignments']].map(([value,label])=>`<option value="${value}" ${taskView===value?'selected':''}>${label}</option>`).join('')}</select></label><label class="f grow">Find vehicle<input class="input" id="task-query" type="search" value="${esc(taskQuery)}" placeholder="VIN or model"></label></div><p role="status">${tasks.length} ${tasks.length===1?'task':'tasks'} · ${taskOffset+1>tasks.length?0:taskOffset+1}–${Math.min(taskOffset+20,tasks.length)} shown · ${tasks.filter(t=>t.overdue).length} overdue</p>
   ${tasks.length?`<ul class="work-list">${tasks.slice(taskOffset,taskOffset+20).map(t=>`<li class="work-card" data-task-id="${esc(t.id)}"><div class="panel-head"><div><h2>${esc(t.title)}</h2><button class="link mono" data-action="detail" data-vin="${t.vin}">${t.vin}</button></div>${pill(t.completed?'Completed':t.overdue?'Overdue · '+t.priority:'Priority '+t.priority,t.completed?'ok':t.overdue?'High':'neutral')}</div><p>${esc(t.explanation)}</p><dl class="dl"><div><dt>Owner</dt><dd>${esc(t.owner||'Unassigned')}</dd></div><div><dt>Deadline (UTC)</dt><dd>${t.dueAt?esc(t.dueAt.replace('T',' ').replace(/\.\d+Z$/,'Z')):'Not assigned'}</dd></div></dl><details><summary>Assignment history</summary><ul>${(D.workAssignmentChanges||[]).filter(c=>c.vin===t.vin&&c.kind===t.kind).slice(-5).reverse().map(c=>`<li>${esc(c.at)} · ${esc(c.actor)} · ${esc(c.owner||'Unassigned')}${c.dueAt?' · due '+esc(c.dueAt):''}</li>`).join('')||'<li>No assignment changes recorded.</li>'}</ul></details><div class="filters">${!t.completed?button('Open workflow','task-open',t.vin,'primary').replace('data-vin=',`data-kind="${t.kind}" data-vin=`):''}${!t.completed&&(offline||['Admin','Planner'].includes(role))?button('Assign / reschedule','task-edit',t.vin).replace('data-vin=',`data-kind="${t.kind}" data-vin=`):''}</div></li>`).join('')}</ul>`:`<div class="work-empty"><h2>No tasks in this view</h2><p>Choose Unassigned to dispatch work, or All open work to review the team backlog.</p>${button('Open unassigned work','task-unassigned')}</div>`}
-  <div class="filters">${button('Previous tasks','task-prev','','',taskOffset===0)}${button('Next tasks','task-next','','',taskOffset+20>=tasks.length)}</div></section><p class="muted">Priority: safety 400; critical SOC / missing inspection / immobility 300; other observations / charging 200; handover 100. Overdue adds 50; departure by tomorrow adds 25. Higher scores appear first, then earlier assigned deadlines. Demo accounts are shared identities, not individual staff accounts.</p>`;
+  <div class="filters">${button('Previous tasks','task-prev','','',taskOffset===0)}${button('Next tasks','task-next','','',taskOffset+20>=tasks.length)}</div></section><p class="muted">Priority: safety 400; critical SOC / missing inspection / immobility / profile conflict 300; other observations / charging 200; handover 100. Overdue adds 50; departure by tomorrow adds 25. Higher scores appear first, then earlier assigned deadlines. Demo accounts are shared identities, not individual staff accounts.</p>`;
 }
 function taskEditor(vin,kind){
   const task=workList().find(t=>t.vin===vin&&t.kind===kind&&!t.completed);
@@ -181,7 +183,7 @@ function taskEditor(vin,kind){
   modal('Assign shift work',`<form id="task-form" data-vin="${vin}" data-kind="${kind}" class="stack"><p>${esc(task.title)} · <span class="mono">${vin}</span></p><label class="f">Owner<select class="input" name="owner" required>${workOwners.filter(o=>workEligible(kind,o)).map(o=>`<option ${o===task.owner?'selected':''}>${o}</option>`).join('')}</select></label><label class="f">Deadline (UTC)<input class="input" name="dueAt" type="datetime-local" required value="${(task.dueAt||today()+'T16:00:00Z').slice(0,16)}"></label><p class="muted">A past deadline intentionally marks the task overdue. Assignment does not grant permission to approve charging, release quarantine or depart.</p><button class="btn primary" type="submit">Save assignment</button>${task.owner?button('Return to unassigned','task-unassign',vin).replace('data-vin=',`data-kind="${kind}" data-vin=`):''}</form>`);
 }
 
-let saveSandbox=()=>{};
+let saveSandbox=()=>{},stopDemoTour=()=>{};
 const scenarioCatalog=[
  {id:'departure',title:'Prepare a vehicle for departure',description:'Dispatch work, inspect a low-SOC vehicle, plan truck departure, complete charging and review its handover record before recording departure.',goal:'A departed vehicle with a new inspection, a completed charging session and a reviewed report.'},
  {id:'exception',title:'Resolve a quarantine exception',description:'Assign HSE follow-up, confirm isolation, record a justified review decision and inspect the resulting evidence.',goal:'A documented demo HSE release, a vehicle outside quarantine and a reviewed report.'}
@@ -213,7 +215,7 @@ function scenarios(){
 function startScenario(id){
  if(!publicDemo||!scenarioCatalog.some(s=>s.id===id))throw new Error('Unknown public demo scenario.');
  if(!confirm('Start this scenario with a fresh fictional yard? This resets changes in this demo tab.'))return;
- D=structuredClone(EMBEDDED);D.orders={};D.audit=[];D.profileHistory=[];D.workAssignments={};D.workAssignmentChanges=[];D.revision=0;
+ stopDemoTour();D=structuredClone(EMBEDDED);D.orders={};D.audit=[];D.profileHistory=[];D.workAssignments={};D.workAssignmentChanges=[];D.revision=0;
  const v=id==='departure'?D.vehicles.find(v=>v.zone==='B-EV-1'&&!v.quarantineRequired&&v.soc<profile(v).minStorageSoc&&profile(v).departureRules.some(r=>r.destinationType==='Truck'&&r.maxSoc>=profile(v).targetStorageSoc&&r.minSoc<=profile(v).targetStorageSoc)):
   D.vehicles.find(v=>v.quarantineRequired&&v.zone!=='Q-QUAR')||D.vehicles.find(v=>v.zone==='Q-QUAR');
  if(!v)throw new Error('Scenario fixture is unavailable.');
@@ -310,7 +312,7 @@ document.addEventListener('click',async e=>{
     if(a==='scenario-end'){delete D.scenario;saveSandbox();render();return;}
     if(a==='task-unassign'){await command('task-unassign',{vin,kind:el.dataset.kind});closeModal();toast('Task returned to the unassigned backlog.');return;}
     if(a==='task-edit'){taskEditor(vin,el.dataset.kind);return;}
-    if(a==='task-open'){if(el.dataset.kind==='inspection'){mobileVin=vin;page='field';history.pushState(null,'','#field/'+vin);render();}else if(el.dataset.kind==='charging'){chargingQuery=vin;go('charging');}else if(el.dataset.kind==='safety'){go('safety');}else{selected=vin;go('detail');}return;}
+    if(a==='task-open'){if(el.dataset.kind==='inspection'){mobileVin=vin;page='field';history.pushState(null,'','#field/'+vin);render();}else if(el.dataset.kind==='charging'){chargingQuery=vin;go('charging');}else if(el.dataset.kind==='rules'){profileId=vehicle(vin).profile;draft=null;go('rules');}else if(el.dataset.kind==='safety'){go('safety');}else{selected=vin;go('detail');}return;}
     if(a==='task-unassigned'){taskView='unassigned';taskOffset=0;render();return;}
     if(a==='task-prev'||a==='task-next'){taskOffset=Math.max(0,taskOffset+(a==='task-next'?20:-20));render();return;}
     if(a==='refresh-shift'){if(!offline)await load();render();return;}

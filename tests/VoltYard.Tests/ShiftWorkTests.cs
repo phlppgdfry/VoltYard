@@ -19,6 +19,12 @@ public class ShiftWorkTests
         var d=Seed();d.Vehicles[0].Departure=null;d.Vehicles[0].Soc=60;d.Profiles[0].DefaultDischargePerDay=5;
         var tasks=ShiftWork.Build(d,Now);Assert.Contains(tasks,t=>t.Kind=="inspection");Assert.DoesNotContain(tasks,t=>t.Kind=="charging");
     }
+    [Fact] public void A_conflicting_target_creates_admin_review_without_breaking_the_state_projection()
+    {
+        var d=Seed();d.Profiles[0].DepartureRules=[new("Truck",70,80)];
+        var task=ShiftWork.Build(d,Now).Single(t=>t.Kind=="rules");Assert.Equal(325,task.Priority);Assert.True(ShiftWork.Eligible("rules","admin"));Assert.False(ShiftWork.Eligible("rules","operator"));
+        Assert.DoesNotContain(ShiftWork.Build(d,Now),t=>t.Kind=="charging");
+    }
     [Fact] public void Completion_is_derived_and_a_new_trigger_reopens_the_assignment()
     {
         var d=Seed();d.WorkAssignments["VIN:charging"]=new(){Vin="VIN",Kind="charging",Owner="operator",DueAt=Now};

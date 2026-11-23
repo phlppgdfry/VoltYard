@@ -17,6 +17,7 @@
   ];
   function validSaved(s){return s?.sandboxVersion===1&&Array.isArray(s.vehicles)&&s.vehicles.length>0&&['zones','profiles','manufacturers','chargers','audit','chargingSessions'].every(k=>Array.isArray(s[k]))&&s.billing&&s.orders&&(!s.workAssignments||typeof s.workAssignments==='object'&&!Array.isArray(s.workAssignments)&&Object.values(s.workAssignments).every(a=>a&&workEligible(a.kind,a.owner)&&Number.isFinite(Date.parse(a.dueAt))&&s.vehicles.some(v=>v.vin===a.vin)))&&(!s.workAssignmentChanges||Array.isArray(s.workAssignmentChanges))&&(!s.scenario||scenarioCatalog.some(c=>c.id===s.scenario.id)&&s.vehicles.some(v=>v.vin===s.scenario.vin)&&Number.isInteger(s.scenario.historyCount)&&Number.isInteger(s.scenario.sessionCount))&&s.vehicles.every(v=>Array.isArray(v.history)&&s.profiles.some(p=>p.id===v.profile)&&s.zones.some(z=>z.code===v.zone));}
   try {const saved=JSON.parse(sessionStorage.getItem(key));if(validSaved(saved))D=saved;}catch{}
+  stopDemoTour=()=>{tourIndex=null;clearTour();};
   saveSandbox=save;taskAccount=D.demoAccount||'operator';
   D.orders??={};D.audit??=[];D.profileHistory??=[];D.chargingSessions??=[];
   const originalRender=render;

@@ -1,8 +1,9 @@
 import {test,expect} from '@playwright/test';
 async function start(page,index){
- page.on('dialog',dialog=>dialog.accept());await page.goto('./demo/#scenarios');
+ page.on('dialog',dialog=>dialog.accept());
+ if(index===0){await page.goto('./demo/?tour=1');await page.locator('#nav [data-action="scenarios"]').click();}else await page.goto('./demo/#scenarios');
  await page.locator('[data-action="scenario-start"]').nth(index).click();
- await expect(page.getByLabel('Scenario progress')).toBeVisible();
+ await expect(page.getByLabel('Scenario progress')).toBeVisible();await expect(page.getByLabel('Guided walkthrough')).toHaveCount(0);
  const vin=await page.evaluate(()=>D.scenario.vin);
  await page.locator('.work-card [data-action="task-edit"]').first().click();
  const kind=await page.locator('#task-form').getAttribute('data-kind');

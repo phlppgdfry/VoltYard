@@ -131,3 +131,9 @@ test('new vehicle evidence invalidates an earlier scenario report review',async(
  const a=app(),vin=target(a.get()).vin;a.get().scenario={id:'departure',vin,historyCount:0,sessionCount:0,reportViewed:true};
  await a.command('inspect',{vin,soc:18,twelveV:'OK',confirm:true});assert.equal(a.get().scenario.reportViewed,false);
 });
+
+test('conflicting charge targets create an explicit admin-only profile review task',()=>{
+ const a=app(),v=target(a.get());v.departure=a.get().referenceDate;v.destination='Truck';a.get().profiles.find(p=>p.id===v.profile).departureRules=[{destinationType:'Truck',minSoc:99,maxSoc:100}];
+ const tasks=a.run(`workList().filter(t=>t.vin==='${v.vin}')`);assert.ok(tasks.some(t=>t.kind==='rules'));assert.ok(!tasks.some(t=>t.kind==='charging'));
+ assert.equal(a.run("workEligible('rules','operator')"),false);
+});
