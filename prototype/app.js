@@ -15,7 +15,7 @@ const profile=v=>D.profiles.find(p=>p.id===v.profile);
 const active=()=>D.vehicles.filter(v=>!v.departed);
 const severity={Critical:4,High:3,Medium:2,Low:1};
 const pill=(text,kind='neutral')=>`<span class="pill p-${kind}">${esc(text)}</span>`;
-const button=(text,action,vin='',kind='',disabled=false)=>`<button ${disabled?'disabled':''} class="btn ${kind}" data-action="${action}" data-vin="${vin}">${text}</button>`;
+const button=(text,action,vin='',kind='',disabled=false)=>`<button type="button" ${disabled?'disabled':''} class="btn ${kind}" data-action="${action}" data-vin="${vin}">${text}</button>`;
 const head=(title,sub,actions='')=>`<div class="pagehead"><div><div class="eyebrow">${esc(sub)}</div><h1>${esc(title)}</h1></div><div class="filters">${actions}</div></div>`;
 const table=(headers,rows)=>`<div class="tablewrap"><table><thead><tr>${headers.map(h=>`<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}" class="muted">No matching records.</td></tr>`}</tbody></table></div>`;
 function within(v){return v.departure&&day(v.departure)-day(today())<=7;}
@@ -132,12 +132,111 @@ function rules(){
 }
 function importPage(){return head('Import vehicles','Vessel manifest · per-row validation')+`<section class="panel"><h2>Upload a CSV manifest</h2><p>Required columns: <code>vin,brand,model,powertrain,kwh,manufacturerCode</code>. Optional: <code>destination,departure</code>. Use comma-separated UTF-8 with quoted fields where needed. Imported vehicles require an arrival inspection.</p><form id="import-form" class="stack"><label class="f">CSV file<input id="csv-file" class="input" type="file" accept=".csv,text/csv" required></label><button type="submit" class="btn primary">Validate and import</button></form><p class="muted">Maximum 2 MB / 10,000 rows. Existing VINs and invalid rows are skipped with a reason. Vehicles enter B-EV-1 while capacity permits.</p>${importResult?`<div class="notice" role="status">${importResult.accepted} imported · ${importResult.rejected} rejected</div>${table(['CSV line','VIN','Reason'],importResult.errors.map(e=>`<tr><td>${e.line}</td><td class="mono">${esc(e.vin)}</td><td>${esc(e.error)}</td></tr>`).join(''))}`:''}</section>`;}
 function audit(){return head('Audit trail','Server-assigned actor and timestamp')+`<section class="panel"><h2>Latest 100 changes</h2>${table(['Time (UTC)','Actor','Action','Subject'],[...(D.audit||[])].reverse().slice(0,100).map(a=>`<tr><td>${esc(a.at)}</td><td>${esc(a.actor)}</td><td>${esc(a.action)}</td><td class="mono">${esc(a.subject)}</td></tr>`).join(''))}<p class="muted">The local file is not tamper-proof. Production audit storage and retention require a separate design.</p></section>`;}
-const views={dashboard,vehicles,detail,field,charging,safety,rules,import:importPage,audit};
-const nav=[['dashboard','Dashboard','Operations overview'],['vehicles','Vehicles','Search and departure'],['field','Field inspections','Mobile workflow'],['charging','Charging','Orders and energy'],['safety','Safety','Quarantine and emergency'],['rules','Rule profiles','Manufacturer thresholds'],['import','Import','Vessel manifests'],['audit','Audit trail','Recorded changes']];
+const workOwners=['admin','planner','operator','hse'];
+const workEligible=(kind,owner)=>owner==='admin'||({safety:['hse'],inspection:['operator'],charging:['operator','planner'],handover:['planner']}[kind]||[]).includes(owner);
+let serverWorkItems=[],shiftNow=null,taskView='mine',taskAccount='operator',taskQuery='',taskOffset=0;
+const workClock=()=>offline?today()+'T12:00:00Z':shiftNow;
+function computeWork(data,now){
+  const open=new Map(),assignments=data.workAssignments||{},nowMs=Date.parse(now),shiftDay=now.slice(0,10);
+  for(const v of active()){
+    const list=evaluate(v),has=code=>list.some(a=>a.code===code);
+    const add=(kind,rank,reason)=>open.set(v.vin+':'+kind,{v,kind,rank,reason});
+    if(v.quarantineRequired||v.zone==='Q-QUAR')add('safety',400,'Unresolved quarantine workflow; HSE review takes precedence.');
+    else{
+      if(['INSPECTION_REQUIRED','INSPECTION_OVERDUE','TWELVE_VOLT_WEAK','NOT_DRIVEABLE'].some(has)||has('SOC_PREDICTED_LOW')&&target(v)<=v.soc)add('inspection',has('NOT_DRIVEABLE')||has('INSPECTION_REQUIRED')?300:200,'Observation or forecast exception needs review: '+list.filter(a=>['INSPECTION_REQUIRED','INSPECTION_OVERDUE','TWELVE_VOLT_WEAK','NOT_DRIVEABLE','SOC_PREDICTED_LOW'].includes(a.code)).map(a=>a.msg).join('; ')+'.');
+      if(data.orders?.[v.vin]||target(v)>v.soc&&['SOC_CRITICAL','SOC_BELOW_MIN','SOC_PREDICTED_LOW','DEPARTURE_SOC_LOW'].some(has))add('charging',has('SOC_CRITICAL')?300:200,'Charging follow-up: '+(data.orders?.[v.vin]?.status||list.filter(a=>['SOC_CRITICAL','SOC_BELOW_MIN','SOC_PREDICTED_LOW','DEPARTURE_SOC_LOW'].includes(a.code)).map(a=>a.msg).join('; '))+'. Charging remains subject to safety and target checks.');
+    }
+    if(v.departure)add('handover',100,list.length||v.quarantineRequired||v.zone==='Q-QUAR'?'Departure is planned but current exceptions must be resolved first.':'Departure is planned; review evidence and record handover.');
+  }
+  return [...new Set([...open.keys(),...Object.keys(assignments)])].map(id=>{
+    const item=open.get(id),a=assignments[id],kind=item?.kind||a.kind,vin=item?.v.vin||a.vin;
+    const overdue=!!item&&!!a&&Date.parse(a.dueAt)<nowMs,soon=!!item&&!!item.v.departure&&day(item.v.departure)<=day(shiftDay)+1;
+    return {id,vin,kind,title:{inspection:'Inspect vehicle',charging:'Coordinate charging',safety:'Review quarantine',handover:'Prepare handover'}[kind],owner:a?.owner||null,dueAt:a?.dueAt||null,completed:!item,overdue,priority:item?item.rank+(overdue?50:0)+(soon?25:0):0,
+      explanation:item?item.reason+(overdue?' Assigned deadline is overdue (+50).':'')+(soon?' Departure within one day (+25).':'')+' Base priority '+item.rank+'.':'The triggering condition is no longer present. New observations can reopen this task.'};
+  }).sort((a,b)=>Number(a.completed)-Number(b.completed)||b.priority-a.priority||(Date.parse(a.dueAt||'9999-01-01')-Date.parse(b.dueAt||'9999-01-01'))||a.id.localeCompare(b.id));
+}
+function unassignWork(c,actor){const id=c.vin+':'+c.kind;if(!D.workAssignments?.[id])throw new Error('No assignment to remove.');delete D.workAssignments[id];D.workAssignmentChanges??=[];D.workAssignmentChanges.push({vin:c.vin,kind:c.kind,owner:null,dueAt:null,actor,at:workClock()});return {message:'Task returned to the unassigned backlog.'};}
+function workList(){return offline?computeWork(D,workClock()):serverWorkItems;}
+function saveWorkAssignment(c,actor){
+  const now=workClock();
+  if(!workOwners.includes(c.owner)||!workEligible(c.kind,c.owner)||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(c.dueAt||'')||!Number.isFinite(Date.parse(c.dueAt))||new Date(c.dueAt.slice(0,10)).toISOString().slice(0,10)!==c.dueAt.slice(0,10)||Math.abs(Date.parse(c.dueAt)-Date.parse(now))>365*864e5)throw new Error('Choose an eligible demo account and a deadline within one year of the current shift.');
+  const id=c.vin+':'+c.kind;
+  if(!workList().some(t=>t.id===id&&!t.completed))throw new Error('This task is no longer open. Refresh the shift list.');
+  D.workAssignments??={};D.workAssignments[id]={vin:c.vin,kind:c.kind,owner:c.owner,dueAt:new Date(c.dueAt).toISOString(),assignedBy:actor,assignedAt:now};
+  D.workAssignmentChanges??=[];D.workAssignmentChanges.push({vin:c.vin,kind:c.kind,owner:c.owner,dueAt:D.workAssignments[id].dueAt,actor,at:now});
+  return {message:'Task owner and deadline saved.'};
+}
+function shift(){
+  const account=offline?taskAccount:user,all=workList();
+  const tasks=all.filter(t=>(!taskQuery||(t.vin+' '+vehicle(t.vin)?.model).toLowerCase().includes(taskQuery.toLowerCase()))&&(taskView==='completed'?t.completed:!t.completed&&(taskView==='all'||taskView==='mine'&&t.owner===account||taskView==='unassigned'&&!t.owner)));
+  taskOffset=Math.min(taskOffset,Math.max(0,Math.floor((tasks.length-1)/20)*20));
+  return head('My shift','Owners, deadlines and explainable priorities',button('Refresh shift','refresh-shift'))+`<p class="muted">${offline?'Fictional demo shift, fixed at 12:00 UTC on '+today()+'. The account selector changes your view, not permissions.':'As of '+esc(shiftNow)+'. Your signed-in account: '+esc(user)+'.'} Completion follows vehicle evidence; a new concern can reopen work.</p>
+  <section class="panel"><div class="filters">${offline?`<label class="f">My demo account<select class="input" id="task-account">${workOwners.map(o=>`<option ${o===taskAccount?'selected':''}>${o}</option>`).join('')}</select></label>`:''}<label class="f">Work view<select class="input" id="task-view">${[['mine','Assigned to me'],['unassigned','Unassigned'],['all','All open work'],['completed','Completed assignments']].map(([value,label])=>`<option value="${value}" ${taskView===value?'selected':''}>${label}</option>`).join('')}</select></label><label class="f grow">Find vehicle<input class="input" id="task-query" type="search" value="${esc(taskQuery)}" placeholder="VIN or model"></label></div><p role="status">${tasks.length} ${tasks.length===1?'task':'tasks'} · ${taskOffset+1>tasks.length?0:taskOffset+1}–${Math.min(taskOffset+20,tasks.length)} shown · ${tasks.filter(t=>t.overdue).length} overdue</p>
+  ${tasks.length?`<ul class="work-list">${tasks.slice(taskOffset,taskOffset+20).map(t=>`<li class="work-card" data-task-id="${esc(t.id)}"><div class="panel-head"><div><h2>${esc(t.title)}</h2><button class="link mono" data-action="detail" data-vin="${t.vin}">${t.vin}</button></div>${pill(t.completed?'Completed':t.overdue?'Overdue · '+t.priority:'Priority '+t.priority,t.completed?'ok':t.overdue?'High':'neutral')}</div><p>${esc(t.explanation)}</p><dl class="dl"><div><dt>Owner</dt><dd>${esc(t.owner||'Unassigned')}</dd></div><div><dt>Deadline (UTC)</dt><dd>${t.dueAt?esc(t.dueAt.replace('T',' ').replace(/\.\d+Z$/,'Z')):'Not assigned'}</dd></div></dl><details><summary>Assignment history</summary><ul>${(D.workAssignmentChanges||[]).filter(c=>c.vin===t.vin&&c.kind===t.kind).slice(-5).reverse().map(c=>`<li>${esc(c.at)} · ${esc(c.actor)} · ${esc(c.owner||'Unassigned')}${c.dueAt?' · due '+esc(c.dueAt):''}</li>`).join('')||'<li>No assignment changes recorded.</li>'}</ul></details><div class="filters">${!t.completed?button('Open workflow','task-open',t.vin,'primary').replace('data-vin=',`data-kind="${t.kind}" data-vin=`):''}${!t.completed&&(offline||['Admin','Planner'].includes(role))?button('Assign / reschedule','task-edit',t.vin).replace('data-vin=',`data-kind="${t.kind}" data-vin=`):''}</div></li>`).join('')}</ul>`:`<div class="work-empty"><h2>No tasks in this view</h2><p>Choose Unassigned to dispatch work, or All open work to review the team backlog.</p>${button('Open unassigned work','task-unassigned')}</div>`}
+  <div class="filters">${button('Previous tasks','task-prev','','',taskOffset===0)}${button('Next tasks','task-next','','',taskOffset+20>=tasks.length)}</div></section><p class="muted">Priority: safety 400; critical SOC / missing inspection / immobility 300; other observations / charging 200; handover 100. Overdue adds 50; departure by tomorrow adds 25. Higher scores appear first, then earlier assigned deadlines. Demo accounts are shared identities, not individual staff accounts.</p>`;
+}
+function taskEditor(vin,kind){
+  const task=workList().find(t=>t.vin===vin&&t.kind===kind&&!t.completed);
+  if(!task)throw new Error('Task is no longer open.');
+  modal('Assign shift work',`<form id="task-form" data-vin="${vin}" data-kind="${kind}" class="stack"><p>${esc(task.title)} · <span class="mono">${vin}</span></p><label class="f">Owner<select class="input" name="owner" required>${workOwners.filter(o=>workEligible(kind,o)).map(o=>`<option ${o===task.owner?'selected':''}>${o}</option>`).join('')}</select></label><label class="f">Deadline (UTC)<input class="input" name="dueAt" type="datetime-local" required value="${(task.dueAt||today()+'T16:00:00Z').slice(0,16)}"></label><p class="muted">A past deadline intentionally marks the task overdue. Assignment does not grant permission to approve charging, release quarantine or depart.</p><button class="btn primary" type="submit">Save assignment</button>${task.owner?button('Return to unassigned','task-unassign',vin).replace('data-vin=',`data-kind="${kind}" data-vin=`):''}</form>`);
+}
+
+let saveSandbox=()=>{};
+const scenarioCatalog=[
+ {id:'departure',title:'Prepare a vehicle for departure',description:'Dispatch work, inspect a low-SOC vehicle, plan truck departure, complete charging and review its handover record before recording departure.',goal:'A departed vehicle with a new inspection, a completed charging session and a reviewed report.'},
+ {id:'exception',title:'Resolve a quarantine exception',description:'Assign HSE follow-up, confirm isolation, record a justified review decision and inspect the resulting evidence.',goal:'A documented demo HSE release, a vehicle outside quarantine and a reviewed report.'}
+];
+function scenarioSteps(){
+ const s=D.scenario;if(!s)return [];const v=vehicle(s.vin),assignment=Object.values(D.workAssignments||{}).some(a=>a.vin===s.vin);
+ if(s.id==='departure')return [
+  {title:'Assign follow-up in My shift',done:assignment,flow:'assign'},
+  {title:'Record SOC 18% and auxiliary battery OK',done:v.history.length>s.historyCount&&v.history.slice(s.historyCount).some(h=>h.source==='Manual'&&h.soc===18&&h.twelveV==='OK'),flow:'inspect'},
+  {title:'Plan Truck departure for the scenario date',done:v.destination==='Truck'&&v.departure===today(),flow:'plan'},
+  {title:'Approve, start and complete charging at the displayed target',done:D.chargingSessions.filter(c=>c.vin===v.vin).length>s.sessionCount&&v.soc>=target(v),flow:'charge'},
+  {title:'Open and review the handover report',done:!!s.reportViewed,flow:'report'},
+  {title:'Confirm departure through the normal workflow',done:!!v.departed,flow:'depart'}
+ ];
+ const released=v.dossier?.decision==='Released'&&!!v.dossier.justification&&v.zone!=='Q-QUAR'&&!v.quarantineRequired;
+ return [{title:'Assign quarantine review in My shift',done:assignment,flow:'assign'},
+  {title:'Move into quarantine for HSE review',done:v.zone==='Q-QUAR'||released,flow:'safety'},
+  {title:'Record Released with a justified fictional review',done:released,flow:'safety'},
+  {title:'Open and review the handover report',done:!!s.reportViewed,flow:'report'}];
+}
+function scenarioPanel(){
+ const s=D.scenario;if(!publicDemo||!s)return '';const definition=scenarioCatalog.find(c=>c.id===s.id);if(!definition)return '';
+ const steps=scenarioSteps(),complete=steps.every(step=>step.done),count=steps.filter(step=>step.done).length;
+ return `<section class="scenario-progress" aria-label="Scenario progress"><div class="panel-head"><div><span class="muted">Goal-based demo · ${count} / ${steps.length} steps</span><h2>${esc(definition.title)}</h2></div>${pill(complete?'Goal achieved':'In progress',complete?'ok':'neutral')}</div><p>${esc(definition.goal)}</p><p class="mono">${esc(s.vin)}</p><progress value="${count}" max="${steps.length}" aria-label="Scenario steps completed"></progress><p><strong>${complete?'Outcome:':'Next step:'}</strong> ${complete?'All required demo evidence is present.':esc(steps.find(step=>!step.done).title)}</p><details><summary>Steps and evidence</summary><ol>${steps.map(step=>`<li ${step.done?'class="done"':''}>${step.done?'✓ ':''}${step.title}</li>`).join('')}</ol></details><div class="filters">${!complete?button('Continue next step','scenario-next','','primary'):button('Open My shift','shift','','primary')}${button('Choose another scenario','scenarios')}${button('End scenario','scenario-end')}</div><p class="muted">Fictional training data. Completion records a demo workflow, not safety certification or an operational release approval.</p></section>`;
+}
+function scenarios(){
+ return head('Demo scenarios','Choose a goal and complete the real workflow')+(!publicDemo?`<section class="panel"><h2>Use the isolated public sandbox</h2><p>Scenario setup resets fictional tab-local data. It is deliberately unavailable against the persistent backend store.</p><a class="btn primary" href="https://phlppgdfry.github.io/VoltYard/demo/#scenarios">Open public scenarios</a></section>`:`<div class="scenario-grid">${scenarioCatalog.map(s=>`<section class="panel"><h2>${s.title}</h2><p>${s.description}</p><p><strong>End goal:</strong> ${s.goal}</p><p class="muted">Starting a scenario resets this demo tab. Other visitors are unaffected.</p>${button('Start scenario','scenario-start',s.id,'primary')}</section>`).join('')}</div>`);
+}
+function startScenario(id){
+ if(!publicDemo||!scenarioCatalog.some(s=>s.id===id))throw new Error('Unknown public demo scenario.');
+ if(!confirm('Start this scenario with a fresh fictional yard? This resets changes in this demo tab.'))return;
+ D=structuredClone(EMBEDDED);D.orders={};D.audit=[];D.profileHistory=[];D.workAssignments={};D.workAssignmentChanges=[];D.revision=0;
+ const v=id==='departure'?D.vehicles.find(v=>v.zone==='B-EV-1'&&!v.quarantineRequired&&v.soc<profile(v).minStorageSoc&&profile(v).departureRules.some(r=>r.destinationType==='Truck'&&r.maxSoc>=profile(v).targetStorageSoc&&r.minSoc<=profile(v).targetStorageSoc)):
+  D.vehicles.find(v=>v.quarantineRequired&&v.zone!=='Q-QUAR')||D.vehicles.find(v=>v.zone==='Q-QUAR');
+ if(!v)throw new Error('Scenario fixture is unavailable.');
+ D.scenario={id,vin:v.vin,historyCount:v.history.length,sessionCount:D.chargingSessions.filter(c=>c.vin===v.vin).length,reportViewed:false};
+ taskAccount='operator';taskView='all';taskQuery=v.vin;taskOffset=0;draft=null;importResult=null;chargingQuery='';selected=null;mobileVin=null;filter={q:'',fab:'',zone:'',status:''};offset=0;
+ saveSandbox();go('shift');
+}
+async function continueScenario(){
+ const s=D.scenario;if(!s)return;const step=scenarioSteps().find(step=>!step.done);if(!step)return;
+ if(step.flow==='assign'){taskView='all';taskQuery=s.vin;taskOffset=0;go('shift');}
+ else if(step.flow==='inspect'){mobileVin=s.vin;page='field';history.pushState(null,'','#field/'+s.vin);render();}
+ else if(step.flow==='charge'){chargingQuery=s.vin;go('charging');}
+ else if(step.flow==='report')await report(s.vin);
+ else if(step.flow==='safety')go('safety');
+ else{selected=s.vin;go('detail');}
+}
+
+const views={scenarios,shift,dashboard,vehicles,detail,field,charging,safety,rules,import:importPage,audit};
+const nav=[['dashboard','Dashboard','Operations overview'],['shift','My shift','Owners and deadlines'],['scenarios','Scenarios','Goals and progress'],['vehicles','Vehicles','Search and departure'],['field','Field inspections','Mobile workflow'],['charging','Charging','Orders and energy'],['safety','Safety','Quarantine and emergency'],['rules','Rule profiles','Manufacturer thresholds'],['import','Import','Vessel manifests'],['audit','Audit trail','Recorded changes']];
 function render(){
   document.getElementById('nav').innerHTML=nav.map(([key,label,sub])=>`<button data-action="${key}" ${page===key||(page==='detail'&&key==='vehicles')?'aria-current="page"':''}><span class="l1">${label}</span><span class="l2">${sub}</span></button>`).join('')+(!offline?'<button data-action="logout"><span class="l1">Sign out</span><span class="l2">'+esc(role)+'</span></button>':'');
   document.getElementById('session').innerHTML=offline?'Standalone preview · fictional data':`${esc(user)} · ${esc(role)}<br>${button('Sign out','logout')}`;
-  document.getElementById('app').innerHTML=views[page]();
+  document.getElementById('app').innerHTML=scenarioPanel()+views[page]();
 }
 function route(){
   const [name,vin]=location.hash.slice(1).split('/');
@@ -161,7 +260,7 @@ async function api(path,body){
   if(!response.ok){let message=response.status===403?'Your role cannot perform this action.':response.status===401?'Sign in to continue.':response.status===429?'Too many sign-in attempts. Try again in 15 minutes.':'Request failed.';try{const problem=await response.json();message=problem.title||message;}catch{}throw Object.assign(new Error(message),{status:response.status});}
   const text=await response.text();return text?JSON.parse(text):null;
 }
-async function load(){const snapshot=await api('/api/state');D=snapshot.data;alerts=snapshot.alerts;user=snapshot.user;role=snapshot.role;}
+async function load(){const snapshot=await api('/api/state');D=snapshot.data;serverWorkItems=snapshot.workItems||[];shiftNow=snapshot.shiftNow;alerts=snapshot.alerts;user=snapshot.user;role=snapshot.role;}
 async function command(action,body={}){
   if(busy)throw new Error('A request is already in progress.');busy=true;
   try{
@@ -170,6 +269,8 @@ async function command(action,body={}){
   }catch(error){if(error.status===409){await load();render();}else if(error.status===401){login();}throw error;}finally{busy=false;}
 }
 function applyPreview(action,c){
+  if(action==='task-unassign')return unassignWork(c,'preview');
+  if(action==='task-save')return saveWorkAssignment(c,'preview');
   const v=vehicle(c.vin);D.orders??={};
   if(action==='import')throw new Error('CSV import is available in the connected .NET application.');
   if(action==='profile'){const old=D.profiles.find(p=>p.id===c.profile.id);if(!(c.profile.criticalSoc<=c.profile.minStorageSoc&&c.profile.minStorageSoc<=c.profile.targetStorageSoc&&c.profile.targetStorageSoc<=c.profile.maxChargeSoc))throw new Error('Profile thresholds must be ordered.');Object.assign(old,c.profile,{version:old.version+1});return;}
@@ -195,6 +296,7 @@ function modal(title,content){previousFocus=document.activeElement;document.quer
 async function report(vin){
   const r=offline?{id:'PREVIEW-'+vin,generatedAt:new Date().toISOString(),vehicle:vehicle(vin),profile:profile(vehicle(vin)),chargingSessions:publicDemo?D.chargingSessions.filter(s=>s.vin===vin):[],audit:publicDemo?D.audit.filter(a=>a.subject===vin):[],alerts:evaluate(vehicle(vin))}:await api('/api/reports/'+vin),v=r.vehicle;
   modal('Handover report',`<div class="doc-head"><h2>VoltYard · Demo Terminal Zeebrugge</h2><div class="code">Report ${esc(r.id)}<br>Generated ${esc(r.generatedAt)}</div></div><dl class="dl">${[['VIN',vin],['Vehicle',v.model],['Profile',r.profile.id+' v'+r.profile.version],['Arrival',date(v.arrival)],['Departure',date(v.departure)],['Zone',v.zone]].map(([k,x])=>`<div><dt>${k}</dt><dd>${esc(x)}</dd></div>`).join('')}</dl><h3>Inspections</h3>${table(['Date','SOC','12V','Source','Profile','Actor'],v.history.map(h=>`<tr><td>${date(h.t)}</td><td>${h.soc}%</td><td>${h.twelveV||'—'}</td><td>${esc(h.source)}</td><td>${esc(h.profileId)} v${h.profileVersion||1}</td><td>${esc(h.actor)}</td></tr>`).join(''))}<h3>Charging sessions</h3>${table(['Start','End SOC','kWh','Energy source'],r.chargingSessions.map(s=>`<tr><td>${esc(s.start)}</td><td>${s.endSoc}%</td><td>${number(s.kwh)}</td><td>${s.estimatedKwh?'Estimated':'Metered'}</td></tr>`).join(''))}<h3>Quarantine case</h3>${v.dossier?`<dl class="dl">${[['Reason',v.dossier.reason],['Opened',date(v.dossier.opened)],['Decision',v.dossier.decision],['Justification',v.dossier.justification||'Not recorded'],['Reviewed by',v.dossier.decidedBy||'Not recorded']].map(([key,value])=>`<div><dt>${key}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`:'<p>None</p>'}<h3>Current alerts</h3>${showAlerts(r.alerts)}<h3>Audit events</h3>${table(['At','Actor','Action'],r.audit.map(a=>`<tr><td>${esc(a.at)}</td><td>${esc(a.actor)}</td><td>${esc(a.action)}</td></tr>`).join(''))}<p class="muted">Snapshot of recorded terminal activity. This report does not certify battery condition or regulatory compliance.</p>${button('Print / Save as PDF','print','','primary')}`);
+  if(publicDemo&&D.scenario?.vin===vin){D.scenario.reportViewed=true;saveSandbox();render();}
 }
 function login(error=''){
   document.getElementById('nav').innerHTML='';document.getElementById('session').textContent='Local development edition';
@@ -203,6 +305,15 @@ function login(error=''){
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-action]');if(!el)return;const a=el.dataset.action,vin=el.dataset.vin,v=vehicle(vin);
   try{
+    if(a==='scenario-start'){startScenario(vin);return;}
+    if(a==='scenario-next'){await continueScenario();return;}
+    if(a==='scenario-end'){delete D.scenario;saveSandbox();render();return;}
+    if(a==='task-unassign'){await command('task-unassign',{vin,kind:el.dataset.kind});closeModal();toast('Task returned to the unassigned backlog.');return;}
+    if(a==='task-edit'){taskEditor(vin,el.dataset.kind);return;}
+    if(a==='task-open'){if(el.dataset.kind==='inspection'){mobileVin=vin;page='field';history.pushState(null,'','#field/'+vin);render();}else if(el.dataset.kind==='charging'){chargingQuery=vin;go('charging');}else if(el.dataset.kind==='safety'){go('safety');}else{selected=vin;go('detail');}return;}
+    if(a==='task-unassigned'){taskView='unassigned';taskOffset=0;render();return;}
+    if(a==='task-prev'||a==='task-next'){taskOffset=Math.max(0,taskOffset+(a==='task-next'?20:-20));render();return;}
+    if(a==='refresh-shift'){if(!offline)await load();render();return;}
     if(a==='close'){closeModal();return;}if(a==='print'){window.print();return;}
     if(a==='logout'){await api('/api/logout',{});user=null;D=null;alerts={};login();return;}
     if(a==='detail'){selected=vin;go('detail');return;}
@@ -231,6 +342,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('submit',async e=>{
   e.preventDefault();const f=e.target,values=new FormData(f);
   try{
+    if(f.id==='task-form'){await command('task-save',{vin:f.dataset.vin,kind:f.dataset.kind,owner:values.get('owner'),dueAt:values.get('dueAt')+':00Z'});closeModal();toast('Task owner and deadline saved.');return;}
     if(f.id==='login-form'){await api('/api/login',Object.fromEntries(values));await load();route();render();return;}
     if(f.id==='find-form'){const vin=String(values.get('vin')).trim().toUpperCase();if(!vehicle(vin))throw new Error('VIN not found in this yard.');mobileVin=vin;history.pushState(null,'','#field/'+vin);render();return;}
     if(f.id==='inspection-form'){
@@ -246,10 +358,11 @@ document.addEventListener('submit',async e=>{
 });
 document.addEventListener('input',e=>{
   if(e.target.id==='charging-search'){const value=e.target.value,pos=e.target.selectionStart;chargingQuery=value;render();const input=document.getElementById('charging-search');input.focus();input.setSelectionRange(pos,pos);}
+  if(e.target.id==='task-query'){const value=e.target.value,pos=e.target.selectionStart;taskQuery=value;taskOffset=0;render();const input=document.getElementById('task-query');input.focus();input.setSelectionRange(pos,pos);}
   if(e.target.id==='search'){const value=e.target.value,pos=e.target.selectionStart;filter.q=value;offset=0;render();const input=document.getElementById('search');input.focus();input.setSelectionRange(pos,pos);}
   if(e.target.dataset.profileField){draft??={...D.profiles.find(p=>p.id===profileId)};draft[e.target.dataset.profileField]=Number(e.target.value);const affected=active().filter(v=>v.profile===profileId);document.getElementById('simulation').textContent=`${affected.filter(v=>evaluate(v,profile(v),true).length).length} vehicles with alerts now · ${affected.filter(v=>evaluate(v,draft,true).length).length} with these settings`;}
 });
-document.addEventListener('change',e=>{const id=e.target.id;if(id==='manufacturer')filter.fab=e.target.value;if(id==='zone')filter.zone=e.target.value;if(id==='status')filter.status=e.target.value;if(['manufacturer','zone','status'].includes(id)){offset=0;render();}if(id==='emergency-zone'){zoneId=e.target.value;render();}});
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='task-view'||id==='task-account'){if(id==='task-view')taskView=e.target.value;else {taskAccount=e.target.value;if(publicDemo){D.demoAccount=taskAccount;saveSandbox();}}taskOffset=0;render();return;}if(id==='manufacturer')filter.fab=e.target.value;if(id==='zone')filter.zone=e.target.value;if(id==='status')filter.status=e.target.value;if(['manufacturer','zone','status'].includes(id)){offset=0;render();}if(id==='emergency-zone'){zoneId=e.target.value;render();}});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')closeModal();const dialog=document.querySelector('.sheet');if(e.key==='Tab'&&dialog){const controls=[...dialog.querySelectorAll('button,input,select,textarea,a[href]')];const first=controls[0],last=controls.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
 });

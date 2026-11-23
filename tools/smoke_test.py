@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise real HTTP commands against a DISPOSABLE VoltYard store."""
 import argparse
+import datetime
 import http.cookiejar
 import json
 import os
@@ -49,7 +50,16 @@ admin=login('admin');d=state(admin)
 assert len(d['vehicles'])==2000,'Use a fresh disposable seed for this test.'
 assert sum(z['count'] for z in d['zones'])==2000
 v=next(v for v in d['vehicles'] if v['zone'] not in ('Q-QUAR','A-STD') and v['soc']<40 and v['twelveV']=='OK')
-vin=v['vin'];initial=len(v['history']);revision=d['revision']
+vin=v['vin'];initial=len(v['history'])
+work=request(admin,'/api/state')['workItems'];item=next(t for t in work if t['kind']=='charging');workvin=item['vin'];due=(datetime.datetime.fromisoformat(request(admin,'/api/state')['shiftNow'].replace('Z','+00:00'))-datetime.timedelta(hours=1)).isoformat()
+command(admin,'task-save',{'vin':workvin,'kind':'charging','owner':'hse','dueAt':due},400)
+command(admin,'task-save',{'vin':workvin,'kind':'charging','owner':'operator','dueAt':due})
+snapshot=request(admin,'/api/state');task=next(t for t in snapshot['workItems'] if t['id']==item['id'])
+assert task['owner']=='operator' and task['overdue'] and task['priority']==item['priority']+50
+assert snapshot['data']['workAssignmentChanges'][-1]['actor']=='admin'
+command(admin,'task-unassign',{'vin':workvin,'kind':'charging'})
+assert not state(admin)['workAssignments'] and state(admin)['workAssignmentChanges'][-1]['owner'] is None
+revision=state(admin)['revision']
 request(admin,'/api/commands/inspect',{'revision':revision,'vin':vin,'soc':-1},400)
 request(admin,'/api/commands/inspect',{'revision':revision,'vin':vin,'twelveV':'OK','confirm':True},400)
 request(admin,'/api/commands/inspect',{'revision':revision,'vin':vin,'soc':40},400)
@@ -70,6 +80,8 @@ after=state(admin);session=after['chargingSessions'][-1]
 assert session['kwh']==15.3 and not session['estimatedKwh']
 assert not any(l['occupiedBy']==vin for l in after['chargers'])
 operator=login('operator')
+command(operator,'task-save',{'vin':workvin,'kind':'charging','owner':'operator','dueAt':due},403)
+command(operator,'task-unassign',{'vin':workvin,'kind':'charging'},403)
 command(operator,'profile',{'profile':d['profiles'][0]},403)
 command(operator,'inspect',{'vin':vin,'soc':40,'twelveV':'OK','suspected':True})
 command(admin,'charge-approve',{'vin':vin},409)
@@ -99,5 +111,5 @@ report=request(admin,'/api/reports/'+vin);assert report['vehicle']['vin']==vin a
 req=urllib.request.Request(base+'/api/commands/inspect',data=b'{}',headers={'Content-Type':'application/json','X-VoltYard-Client':'web','Origin':'https://untrusted.example'})
 try:admin.open(req);raise AssertionError('Cross-origin write was allowed')
 except urllib.error.HTTPError as e:assert e.code==403;checks+=1
-account=login('account');command(account,'inspect',{'vin':vin,'soc':40},403)
+account=login('account');command(account,'task-save',{'vin':workvin,'kind':'charging','owner':'operator','dueAt':due},403);command(account,'inspect',{'vin':vin,'soc':40},403)
 print(f'PASS: {checks} HTTP assertions; auth, roles, validation, append-only observations, stale writes, charging, quarantine, profiles, CSV, reports and origin protection.')

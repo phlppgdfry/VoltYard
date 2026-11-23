@@ -101,3 +101,33 @@ test('profile rejects duplicate destination rules and negative discharge',async(
  const next=structuredClone(a.get().profiles[0]);next.defaultDischargePerDay=-1;
  await assert.rejects(a.command('profile',{profile:next}),/threshold|interval/);
 });
+test('shift assignment has explainable priority, eligibility, history and unassignment',async()=>{
+ const a=app(),v=target(a.get()),vin=v.vin;
+ const item=a.run(`workList().find(t=>t.vin==='${vin}'&&t.kind==='charging')`);assert.ok(item.priority>=200);assert.match(item.explanation,/Base priority/);
+ await assert.rejects(a.command('task-save',{vin,kind:'charging',owner:'hse',dueAt:'2026-09-28T11:00:00Z'}),/eligible/);
+ await a.command('task-save',{vin,kind:'charging',owner:'operator',dueAt:'2026-09-28T11:00:00Z'});
+ const assigned=a.run(`workList().find(t=>t.id==='${vin}:charging')`);assert.equal(assigned.overdue,true);assert.equal(assigned.priority,item.priority+50);
+ assert.equal(a.get().workAssignmentChanges.length,1);
+ await a.command('task-unassign',{vin,kind:'charging'});assert.equal(a.get().workAssignmentChanges.length,2);assert.equal(a.get().workAssignmentChanges.at(-1).owner,null);
+});
+test('resolved assigned work completes and a later concern reopens it',async()=>{
+ const a=app(),vin=target(a.get()).vin;await a.command('task-save',{vin,kind:'charging',owner:'operator',dueAt:'2026-09-28T16:00:00Z'});
+ const v=a.get().vehicles.find(v=>v.vin===vin);v.departed=true;
+ assert.equal(a.run(`workList().find(t=>t.id==='${vin}:charging').completed`),true);
+ v.departed=false;assert.equal(a.run(`workList().find(t=>t.id==='${vin}:charging').completed`),false);
+});
+
+test('forecast at an already reached target creates review work instead of an impossible charge',()=>{
+ const a=app(),v=target(a.get());v.departure=null;v.soc=100;v.history=[{t:a.get().referenceDate,soc:100}];
+ a.get().profiles.find(p=>p.id===v.profile).defaultDischargePerDay=10;
+ const tasks=a.run(`workList().filter(t=>t.vin==='${v.vin}')`);assert.ok(tasks.some(t=>t.kind==='inspection'));assert.ok(!tasks.some(t=>t.kind==='charging'));
+});
+test('calendar-invalid shift deadlines are rejected atomically',async()=>{
+ const a=app(),v=target(a.get()),before=JSON.stringify(a.get());
+ await assert.rejects(a.command('task-save',{vin:v.vin,kind:'charging',owner:'operator',dueAt:'2026-02-30T16:00:00Z'}),/eligible/);assert.equal(JSON.stringify(a.get()),before);
+});
+
+test('new vehicle evidence invalidates an earlier scenario report review',async()=>{
+ const a=app(),vin=target(a.get()).vin;a.get().scenario={id:'departure',vin,historyCount:0,sessionCount:0,reportViewed:true};
+ await a.command('inspect',{vin,soc:18,twelveV:'OK',confirm:true});assert.equal(a.get().scenario.reportViewed,false);
+});

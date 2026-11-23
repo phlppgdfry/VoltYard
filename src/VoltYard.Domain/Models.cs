@@ -14,6 +14,8 @@ public sealed class YardData
     public Dictionary<string, ChargingOrder> Orders { get; set; } = [];
     public List<AuditEntry> Audit { get; set; } = [];
     public List<RuleProfile> ProfileHistory { get; set; } = [];
+    public List<WorkAssignmentChange> WorkAssignmentChanges { get; set; } = [];
+    public Dictionary<string, WorkAssignment> WorkAssignments { get; set; } = [];
     public long Revision { get; set; }
 }
 public sealed record Manufacturer(string Code, string Name);

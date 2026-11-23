@@ -53,7 +53,7 @@ These are corrections to the demonstrator. They do not close the production bloc
 | P1 | Auxiliary battery model | A three-value 12V field is not a general diagnostic model | Approved battery type/nominal voltage/test method and a separately observed mobility state |
 | P1 | Charging feasibility | First-free assignment ignores connector, AC/DC support, power, staff and site constraints | Equipment/vehicle compatibility, reservations, power budget, cancellations and fault handling |
 | P1 | Energy accounting | SOC change and nominal capacity do not establish billing-grade energy or an exact target | Meter identifiers/readings, estimate provenance, contract units, periods and reconciliation |
-| P1 | Task usability at scale | Charging search now reaches all tasks; staff assignment and deadline handling remain limited | Staff/zone assignment, departure deadlines, shift capacity and field navigation |
+| P1 | Task usability at scale | Charging search and basic demo owner/deadline dispatch now exist; physical shift capacity remains unvalidated | Individual staff/zone allocation, shift capacity and field validation |
 | P1 | Connectivity and duplicate entry | Repeated walking, unlocking vehicles and typing may cost more than the proposed saving | Observe real work, scan/device trial and measured offline/conflict requirements |
 | P1 | Notification ownership | Calculating current alerts is not durable acknowledgement/escalation | Alert owner, due time, acknowledge/resolve/reopen history and idempotent scheduled evaluation |
 | P1 | Readiness versus approval | No current alert does not prove carrier acceptance, condition, legal/customs release or safe loading | Separate statuses for missing evidence, work completion and authorised transport release |
@@ -101,3 +101,7 @@ The original review and its test totals above are historical evidence from 7 Nov
 Subsequent releases added charging search, extracted shared UI assets, browser-gated deployment, file ownership locking, safer HTTP errors, full mobile navigation and a clearer priority summary. The P1/P2 descriptions now reflect those changes. The operational P0 gates remain open: no operator pilot, approved source instructions, individual production identity, TOS reconciliation, complete durable evidence model or production recovery environment has been validated.
 
 No additional feature is required to present the declared portfolio scope. Better task assignment, explicit yard visits, connector-aware scheduling or decision assistance should follow operator discovery and measured needs. Adding AI alone would not resolve these gates.
+
+## Scenario/shift follow-up — 23 November 2026
+
+The portfolio now includes selectable goal-based scenarios and a persisted owner/deadline shift list, with explainable priority, assignment-change history and condition-derived reopening. See the [guide](../scenarios-and-shift.md). These implement demo coordination; they do not close production identity, visit modelling, integration, notification ownership, physical safety or continuity gates.

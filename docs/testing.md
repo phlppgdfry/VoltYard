@@ -66,3 +66,7 @@ The separately published backend UI is also exercised at both viewports by `npm 
 ## UI/UX refinement — 16 November 2026
 
 The demo.2 public suite has twelve Chromium cases across desktop/mobile. Two additional cases check all eight navigation destinations in the mobile viewport, the six-entry priority summary, direct entry into the full alerts-filtered vehicle list, and disabled first/last pagination controls. Priorities retain vehicle links and explicit severity/next-action text. This is a presentation change; domain thresholds and operational readiness limits remain unchanged.
+
+## Scenarios and shift work — 23 November 2026
+
+The release adds task projection/priority, eligible assignment, invalid deadlines, atomic failure, persistent assignment history, unassignment and completion/reopening regressions. Both departure and quarantine scenarios run to their evidence-derived end goal on desktop/mobile, and the personal shift flow verifies saved owner/deadline, overdue explanation, rescheduling and returning work to the backlog. The backend browser suite also assigns, reloads and unassigns work. HTTP checks cover authoritative work projection and dispatch role boundaries. Current release totals: 44 backend cases, 21 public adapter cases, 18 public browser journeys, two backend UI journeys and 92 HTTP assertions per disposable environment.

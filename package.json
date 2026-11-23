@@ -1,6 +1,6 @@
 {
   "name": "voltyard-verification",
-  "version": "0.3.0-demo.2",
+  "version": "0.4.0-demo.1",
   "private": true,
   "description": "Dependency-locked browser verification for the VoltYard portfolio release",
   "scripts": {

@@ -80,8 +80,8 @@ app.MapPost("/api/login",async (Login request,HttpContext ctx)=>
     return Results.Ok(new {user=request.User,role});
 }).RequireRateLimiting("login");
 app.MapPost("/api/logout",async (HttpContext ctx)=>{await ctx.SignOutAsync();return Results.Ok();}).RequireAuthorization();
-app.MapGet("/api/state",(IYardStore store,HttpContext ctx)=>store.Read(d=>new {data=d,user=ctx.User.Identity!.Name,role=ctx.User.FindFirstValue(ClaimTypes.Role),
-    alerts=d.Vehicles.ToDictionary(v=>v.Vin,v=>Rules.Evaluate(v,d.Profiles.First(p=>p.Id==v.Profile),d.Zones.First(z=>z.Code==v.Zone),DateOnly.Parse(d.ReferenceDate)))})).RequireAuthorization();
+app.MapGet("/api/state",(IYardStore store,TimeProvider clock,HttpContext ctx)=>store.Read(d=>{var now=clock.GetUtcNow();return new {data=d,workItems=ShiftWork.Build(d,now),shiftNow=now,user=ctx.User.Identity!.Name,role=ctx.User.FindFirstValue(ClaimTypes.Role),
+    alerts=d.Vehicles.ToDictionary(v=>v.Vin,v=>Rules.Evaluate(v,d.Profiles.First(p=>p.Id==v.Profile),d.Zones.First(z=>z.Code==v.Zone),DateOnly.Parse(d.ReferenceDate)))};})).RequireAuthorization();
 app.MapPost("/api/commands/{action}",(string action,YardCommand command,YardService service,HttpContext ctx)=>
 {
     if(!YardService.Permissions.TryGetValue(action,out var roles))return Results.NotFound();

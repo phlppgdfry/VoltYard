@@ -5,6 +5,9 @@ namespace VoltYard.Application;
 
 public sealed class YardCommand
 {
+    public string Kind { get; set; } = "";
+    public string Owner { get; set; } = "";
+    public DateTimeOffset? DueAt { get; set; }
     public long Revision { get; set; }
     public string Vin { get; set; } = "";
     public double? Soc { get; set; }
@@ -31,7 +34,7 @@ public sealed class YardService(IYardStore store, TimeProvider clock)
         ["charge-start"]=["Admin","Planner","Operator"], ["charge-stop"]=["Admin","Planner","Operator"],
         ["quarantine"]=["Admin","Planner","Operator","HSE"], ["move"]=["Admin","Planner","Operator","HSE"],
         ["decide"]=["Admin","HSE"], ["profile"]=["Admin"], ["import"]=["Admin","Planner"],
-        ["plan"]=["Admin","Planner"], ["depart"]=["Admin","Planner"]
+        ["task-unassign"]=["Admin","Planner"], ["task-save"]=["Admin","Planner"], ["plan"]=["Admin","Planner"], ["depart"]=["Admin","Planner"]
     };
     public object Execute(string action,YardCommand c,string actor) => store.Write(c.Revision,actor,action,c.Vin,d=>Apply(d,action,c,actor));
     private object Apply(YardData d,string action,YardCommand c,string actor)
@@ -40,6 +43,22 @@ public sealed class YardService(IYardStore store, TimeProvider clock)
         var stamp=today.ToString("yyyy-MM-dd");
         var observedSoc=c.Soc ?? double.NaN;
         c.Note ??= ""; c.Reason ??= ""; c.Justification ??= "";
+        if(action=="task-unassign")
+        {
+            if(!d.WorkAssignments.Remove(c.Vin+":"+c.Kind))throw new DomainException("No assignment to remove.",409);
+            d.WorkAssignmentChanges.Add(new(c.Vin,c.Kind,null,null,actor,clock.GetUtcNow()));
+            return new {message="Task returned to the unassigned backlog."};
+        }
+        if(action=="task-save")
+        {
+            var id=c.Vin+":"+c.Kind;
+            if(!ShiftWork.Owners.Contains(c.Owner)||!ShiftWork.Eligible(c.Kind,c.Owner)||c.DueAt is null||Math.Abs((c.DueAt.Value-clock.GetUtcNow()).TotalDays)>365)
+                throw new DomainException("Choose an eligible demo account and a deadline within one year of the current shift.");
+            if(!ShiftWork.Build(d,clock.GetUtcNow()).Any(t=>t.Id==id&&!t.Completed))throw new DomainException("This task is no longer open. Refresh the shift list.",409);
+            d.WorkAssignments[id]=new(){Vin=c.Vin,Kind=c.Kind,Owner=c.Owner,DueAt=c.DueAt.Value.ToUniversalTime(),AssignedAt=clock.GetUtcNow(),AssignedBy=actor};
+            d.WorkAssignmentChanges.Add(new(c.Vin,c.Kind,c.Owner,c.DueAt.Value.ToUniversalTime(),actor,clock.GetUtcNow()));
+            return new {message="Task owner and deadline saved."};
+        }
         if(action=="import")return Import(d,c.Csv,today);
         if(action=="profile")
         {

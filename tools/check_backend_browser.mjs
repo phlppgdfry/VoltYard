@@ -26,6 +26,11 @@ try{
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
   await page.goto(base+'/');
   await page.locator('[name="password"]').fill('VoltYard-browser-test-only-2026');await page.locator('#login-form button').click();
+  await page.locator('#nav [data-action="shift"]').click();await page.locator('#task-view').selectOption('unassigned');
+  await page.locator('.work-card [data-action="task-edit"]').first().click();await page.locator('#task-form [name="owner"]').selectOption('admin');
+  await page.locator('#task-form button[type="submit"]').click();await page.locator('#task-view').selectOption('mine');
+  assert.ok(await page.locator('.work-card').count()>0);await page.reload();await page.locator('.work-card [data-action="task-edit"]').first().click();
+  await page.locator('[data-action="task-unassign"]').click();await page.getByRole('heading',{name:'No tasks in this view'}).waitFor();
   await page.locator('[data-action="vehicles"]').first().click();const vin=await page.evaluate(()=>D.vehicles[0].vin);
   await page.locator('#search').fill(vin);await page.locator('[data-action="detail"][data-vin="'+vin+'"]').click();
   await page.locator('[data-action="inspect"]').first().click();await page.locator('[name="soc"]').fill('40');await page.locator('[name="twelveV"]').selectOption('OK');await page.locator('#inspection-form button[type="submit"]').click();

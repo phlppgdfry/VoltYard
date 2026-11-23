@@ -17,6 +17,8 @@
 | Rules | Versioned data profiles and model precedence | Must | Implemented |
 | Rules | Storage, stale inspection, forecast and departure evaluation | Must | Implemented |
 | Rules | Profile source attachments and approval workflow | Must for real operation | Planned |
+| Shift | Personal/team work, owner/deadline dispatch, history and condition-derived completion | Should | Implemented for demo identities |
+| Demo | Goal-based departure and quarantine scenarios | Should | Implemented in the isolated public sandbox |
 | Alerts | Current deterministic dashboard alerts | Must | Implemented |
 | Alerts | Acknowledge/resolve history and scheduled escalation | Should | Planned |
 | Alerts | SignalR and notifications | Should | Planned |

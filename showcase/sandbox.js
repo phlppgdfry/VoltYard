@@ -15,8 +15,9 @@
     ['Keep safety decisions explicit','A concern requires isolation and a reasoned HSE decision. Try releasing a case with a short justification to see validation.','safety'],
     ['Leave an evidence trail','Open the handover report to review inspections, charging records, current alerts and audit events. Print or save the report as PDF.','detail']
   ];
-  function validSaved(s){return s?.sandboxVersion===1&&Array.isArray(s.vehicles)&&s.vehicles.length>0&&['zones','profiles','manufacturers','chargers','audit','chargingSessions'].every(k=>Array.isArray(s[k]))&&s.billing&&s.orders&&s.vehicles.every(v=>Array.isArray(v.history)&&s.profiles.some(p=>p.id===v.profile)&&s.zones.some(z=>z.code===v.zone));}
+  function validSaved(s){return s?.sandboxVersion===1&&Array.isArray(s.vehicles)&&s.vehicles.length>0&&['zones','profiles','manufacturers','chargers','audit','chargingSessions'].every(k=>Array.isArray(s[k]))&&s.billing&&s.orders&&(!s.workAssignments||typeof s.workAssignments==='object'&&!Array.isArray(s.workAssignments)&&Object.values(s.workAssignments).every(a=>a&&workEligible(a.kind,a.owner)&&Number.isFinite(Date.parse(a.dueAt))&&s.vehicles.some(v=>v.vin===a.vin)))&&(!s.workAssignmentChanges||Array.isArray(s.workAssignmentChanges))&&(!s.scenario||scenarioCatalog.some(c=>c.id===s.scenario.id)&&s.vehicles.some(v=>v.vin===s.scenario.vin)&&Number.isInteger(s.scenario.historyCount)&&Number.isInteger(s.scenario.sessionCount))&&s.vehicles.every(v=>Array.isArray(v.history)&&s.profiles.some(p=>p.id===v.profile)&&s.zones.some(z=>z.code===v.zone));}
   try {const saved=JSON.parse(sessionStorage.getItem(key));if(validSaved(saved))D=saved;}catch{}
+  saveSandbox=save;taskAccount=D.demoAccount||'operator';
   D.orders??={};D.audit??=[];D.profileHistory??=[];D.chargingSessions??=[];
   const originalRender=render;
   render=()=>{
@@ -84,6 +85,8 @@
     });D.totalVehicles=D.vehicles.length;return {accepted,rejected:errors.length,errors};
   }
   function apply(action,c){
+    if(action==='task-unassign')return unassignWork(c,'Demo visitor');
+    if(action==='task-save')return saveWorkAssignment(c,'Demo visitor');
     if(action==='import')return importCsv(c.csv);
     if(action==='profile'){
       validateProfile(c.profile);const i=D.profiles.findIndex(p=>p.id===c.profile.id);if(i<0)fail('Profile not found.');const old=D.profiles[i];
@@ -139,7 +142,9 @@
   command=async(action,body={})=>{
     if(busy)fail('A request is already in progress.');busy=true;const before=structuredClone(D);
     try{
-      const result=apply(action,body);D.revision=(D.revision||0)+1;
+      const result=apply(action,body);
+      if(D.scenario&&!['task-save','task-unassign','depart'].includes(action)&&(body.vin===D.scenario.vin||action==='profile'))D.scenario.reportViewed=false;
+      D.revision=(D.revision||0)+1;
       D.audit.push({id:crypto.randomUUID(),at:new Date().toISOString(),actor:'Demo visitor',action,subject:body.vin||body.profile?.id||'CSV import',detail:'Browser-only sandbox command'});
       save();render();return result;
     }catch(error){D=before;throw error;}finally{busy=false;}
@@ -148,7 +153,7 @@
   document.body.prepend(bar);
   document.addEventListener('click',e=>{
     const action=e.target.closest('[data-sandbox]')?.dataset.sandbox;if(!action)return;
-    if(action==='reset'){if(!confirm('Reset all changes in this demo tab?'))return;D=structuredClone(initial);D.orders={};D.audit=[];D.profileHistory=[];draft=null;importResult=null;chargingQuery='';filter={q:'',fab:'',zone:'',status:''};offset=0;selected=null;mobileVin=null;tourIndex=null;clearTour();save();go('dashboard');toast('Demo reset. You have a fresh yard to explore.');}
+    if(action==='reset'){if(!confirm('Reset all changes in this demo tab?'))return;D=structuredClone(initial);D.orders={};D.audit=[];D.profileHistory=[];draft=null;importResult=null;taskView='mine';taskAccount='operator';taskQuery='';taskOffset=0;chargingQuery='';filter={q:'',fab:'',zone:'',status:''};offset=0;selected=null;mobileVin=null;tourIndex=null;clearTour();save();go('dashboard');toast('Demo reset. You have a fresh yard to explore.');}
     if(action==='tour'){tourIndex=0;viewStep();}
     if(action==='tour-close'){tourIndex=null;clearTour();render();}
     if(action==='tour-back'){tourIndex=Math.max(0,tourIndex-1);viewStep();}

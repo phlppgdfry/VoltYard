@@ -4,7 +4,7 @@
 
 VoltYard follows each vehicle by VIN, records battery inspections, evaluates configurable manufacturer profiles and brings charging and quarantine work into one operational view.
 
-**Release:** `v0.3.0-demo.2` — portfolio/demo prerelease. See [release notes](RELEASE_NOTES.md).
+**Release:** `v0.4.0-demo.1` — portfolio/demo prerelease. See [release notes](RELEASE_NOTES.md).
 
 **Status:** working local development application with a C#/.NET 10 backend and an English web interface. The repository also contains a product, research, validation and architecture dossier. This is a single-terminal demonstration, not an approved terminal safety system.
 
@@ -17,6 +17,16 @@ The public site is open to everyone without a login. It includes the portfolio c
 ![VoltYard dashboard](showcase/assets/dashboard.png)
 
 Build the static site with `python3 tools/build_pages.py`; verify it with `python3 tools/check_pages.py` and `node --test tests/public-sandbox.test.mjs` (Node 24 for sandbox tests). GitHub Actions publishes `_site/` to Pages on pushes to `main`. See [public showcase](docs/public-showcase.md).
+
+## Goal-based scenarios and shift work
+
+[Choose a scenario](https://phlppgdfry.github.io/VoltYard/demo/#scenarios) or [open My shift](https://phlppgdfry.github.io/VoltYard/demo/#shift).
+
+The public sandbox offers departure preparation and quarantine review scenarios. Each starts a fresh fictional tab-local yard after confirmation and tracks evidence from actual workflow actions. The persistent backend deliberately offers no scenario-reset endpoint.
+
+My shift works in both editions: dispatcher assignment, eligible demo owners, UTC deadlines, personal/unassigned/team/completed views, search and pagination, explicit priority scores and assignment-change history. Conditions resolve or reopen work automatically. Demo identities do not represent an individual staff identity system. See [scenario and shift guide](docs/scenarios-and-shift.md).
+
+![Personal shift work](showcase/assets/shift.png)
 
 ## Run locally
 
@@ -46,6 +56,7 @@ The smoke test creates and changes fictional records. Run it against a disposabl
 | Area | Implemented behaviour |
 |---|---|
 | Access | Cookie sessions, five demo roles, server-side command permissions, login rate limiting |
+| Shift work | Persisted owners/UTC deadlines, eligible roles, explainable ranking, assignment history and condition-derived completion/reopening |
 | Dashboard | Prioritised alerts, vehicle counts, zone occupancy and charger availability |
 | Vehicles | Search, manufacturer/zone/status filters, pagination, detail, history and SOC chart |
 | Inspections | SOC and 12V observations, damage/concern reporting, outlier confirmation, append-only records |

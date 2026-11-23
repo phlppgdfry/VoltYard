@@ -48,3 +48,7 @@ See [SECURITY.md](../../SECURITY.md). Do not publish production credentials, per
 ## Demo release controls
 
 Hosted API assets use a same-origin script CSP, frame blocking, MIME sniffing protection and same-origin referrers. Request bodies are bounded; malformed request binding returns HTTP 400 and unexpected errors return a generic problem with a trace identifier while details are logged server-side. File ownership is exclusive for the local process. npm and NuGet locks support reviewed restores. These checks do not certify the application for an internet-facing operational backend. Public Pages contains only synthetic data and a tab-local adapter.
+
+## Shift dispatch permissions
+
+Only Admin/Planner dispatch commands may assign, reschedule or unassign backend work. Eligible owners are validated server-side; assignment never grants charging approval, HSE release or departure authority. Commands require the current store revision, reject invalid/resolved work and preserve assignment-change provenance. The public demo account selector filters synthetic tab-local work only. Scenario reset is absent from the persistent API.

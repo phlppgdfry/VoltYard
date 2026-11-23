@@ -17,4 +17,6 @@ Status distinguishes proposed technology direction from the implemented local re
 
 | [0010](0010-demo-release-hardening.md) | Shared UI assets, locked dependencies and browser-gated demo release | Accepted and implemented |
 
+| [0011](0011-scenarios-and-shift.md) | Evidence-based scenarios and derived shift work | Accepted and implemented |
+
 Use the [template](template.md). Preserve superseded decisions and explain their replacement rather than rewriting history as if every proposal shipped.
