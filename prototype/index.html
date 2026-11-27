@@ -481,7 +481,7 @@ function render(){
 function route(){
   const [name,vin]=location.hash.slice(1).split('/');
   if((name==='detail'||name==='field')&&vin&&D&&vehicle(vin)){selected=vin;mobileVin=vin;page=name;}
-  else page=views[name]&&name!=='detail'?name:'dashboard';
+  else page=Object.hasOwn(views,name)&&name!=='detail'?name:'dashboard';
 }
 function go(next){
   if(next!=='rules')draft=null;
